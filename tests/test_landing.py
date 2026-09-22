@@ -13,6 +13,7 @@ from html.parser import HTMLParser
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.paths import current_year
 from app.services.featured import get_featured_watches
 
 client = TestClient(app)
@@ -187,6 +188,20 @@ def test_each_featured_watch_is_its_own_article() -> None:
     response = client.get("/")
 
     assert response.text.count("<article") == len(get_featured_watches())
+
+
+def test_footer_contact_is_a_real_link() -> None:
+    """A mailto: works with JavaScript disabled; plain text does not."""
+    response = client.get("/")
+
+    assert 'href="mailto:' in response.text
+
+
+def test_copyright_year_is_not_hardcoded() -> None:
+    """A year frozen into the template quietly goes stale every January."""
+    response = client.get("/")
+
+    assert str(current_year()) in response.text
 
 
 def test_image_sources_resolve() -> None:

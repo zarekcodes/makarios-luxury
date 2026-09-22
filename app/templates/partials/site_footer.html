@@ -1,12 +1,53 @@
-{# Minimal shell so base.html renders. The real footer, with contact details,
-   social links and the etymology line, arrives with the "Footer" story. #}
-<footer id="contact" class="mt-16 border-t-2 border-gold-500 bg-royal-950">
-  <div class="mx-auto max-w-6xl px-5 py-12 sm:px-8">
-    {% with tone = "dark" %}
-      {% include "partials/_brandmark.html" %}
-    {% endwith %}
-    <p class="mt-4 text-sm text-royal-100">
-      Authenticated pre-owned luxury watches.
-    </p>
+{#
+  Site footer.
+
+  TODO(owner): replace the placeholder email with the real address, and add
+  the social links once those accounts exist. They are left out rather than
+  pointed at "#", which would be a dead link and would fail the anchor test.
+#}
+<footer id="contact" class="border-t-2 border-gold-500 bg-royal-950">
+  <div class="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-16">
+    <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="lg:col-span-2">
+        {% with tone = "dark" %}
+          {% include "partials/_brandmark.html" %}
+        {% endwith %}
+        <p class="mt-5 max-w-[42ch] text-sm text-royal-100">
+          Authenticated pre-owned luxury watches, inspected and documented before they are listed.
+        </p>
+        <p class="mt-4 text-sm text-gold-300">
+          Makarios &mdash; &mu;&alpha;&kappa;&#940;&rho;&iota;&omicron;&sigmaf; &mdash;
+          Greek for blessed.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-eyebrow font-medium uppercase tracking-[0.18em] text-gold-400">Contact</h2>
+        <ul class="mt-4 space-y-3 text-sm text-royal-100">
+          <li>
+            <a href="mailto:hello@makariosluxury.com"
+               class="inline-block py-1.5 underline-offset-4 hover:text-white hover:underline">
+              hello@makariosluxury.com
+            </a>
+          </li>
+          <li class="text-royal-100">Viewings by appointment.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-eyebrow font-medium uppercase tracking-[0.18em] text-gold-400">Explore</h2>
+        <ul class="mt-4 space-y-3 text-sm">
+          {% with tone = "dark" %}
+            {% include "partials/nav_links.html" %}
+          {% endwith %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 border-t border-white/15 pt-6">
+      <p class="text-sm text-royal-100">
+        &copy; {{ current_year() }} Makarios Luxury. All rights reserved.
+      </p>
+    </div>
   </div>
 </footer>
