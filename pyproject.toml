@@ -12,6 +12,7 @@ dependencies = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["docs"]  # docs contain illustrative snippets, not runnable code
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

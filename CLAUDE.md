@@ -20,3 +20,5 @@ stack and structure and `docs/WORKFLOW.md` for process.
 - Pages must work without JavaScript (links and forms still function).
 - Add or update tests for every behavior change. CI (ruff + pytest) must pass.
 - Work happens on a branch tied to a GitHub issue; never commit directly to `main`.
+- `docs/LEARNING_GUIDE.md` is the owner's reference for how the project works. When you add a new
+  folder, pattern, or tool, update the relevant section (and change its `[Sprint N]` label to `[built]`).

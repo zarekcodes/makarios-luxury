@@ -30,6 +30,8 @@ uv run ruff format .        # auto-format
 
 ## Documentation
 
+- [Learning guide](docs/LEARNING_GUIDE.md): how the pieces fit together and why things live where they do. **Start here if you're new to the codebase.**
+- [CI/CD guide](docs/CI_CD_GUIDE.md): how the automated checks work, what to do when they fail, and how deployment will work
 - [MVP definition](docs/MVP.md): vision, users, and what's in and out of scope
 - [Architecture](docs/ARCHITECTURE.md): stack choices, structure, and open decisions
 - [Workflow](docs/WORKFLOW.md): sprint process, board, branching, Definition of Done

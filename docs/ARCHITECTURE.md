@@ -90,3 +90,4 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 | Hosting (Render / Railway / Fly.io) and Postgres provider | Sprint 3 |
 | Image storage in production (e.g. Cloudflare R2, S3) | Sprint 4 |
 | Transactional email provider | Sprint 5 |
+
