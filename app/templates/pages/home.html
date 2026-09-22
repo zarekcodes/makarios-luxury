@@ -1,19 +1,52 @@
 {% extends "base.html" %}
+{% from "partials/_media.html" import responsive_img with context %}
 
 {% block content %}
-  {# The hero, featured watches and trust sections land in their own stories.
-     This is enough to prove the toolchain renders styled output. #}
-  <section class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
-    <p class="text-eyebrow font-medium uppercase text-gold-700">
-      Makarios &middot; Greek for blessed
-    </p>
-    <h1 class="mt-4 text-display-1 text-royal-900">
-      Wear something worth keeping.
-    </h1>
-    <p class="mt-6 max-w-[62ch] text-lead text-slate-600">
-      Authenticated pre-owned luxury watches &mdash; each one inspected, graded, and documented
-      before it ever reaches your wrist.
-    </p>
+  {# Text first in the DOM, so a phone reads the pitch before it reaches the
+     image. No text sitting over a photo: it would hurt both contrast and the
+     largest-contentful-paint measurement. #}
+  <section aria-labelledby="hero-title"
+           class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:grid md:grid-cols-2 md:items-center
+                  md:gap-12 md:py-24 lg:gap-16 lg:py-32">
+    <div>
+      <p class="text-eyebrow font-medium uppercase text-gold-700">
+        Makarios &middot; Greek for blessed
+      </p>
+      <h1 id="hero-title" class="mt-4 text-display-1 text-royal-900">
+        Wear something worth keeping.
+      </h1>
+      <p class="mt-6 max-w-[62ch] text-lead text-slate-600">
+        Authenticated pre-owned luxury watches &mdash; each one inspected, graded, and documented
+        before it ever reaches your wrist.
+      </p>
+
+      <div class="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+        {# Sprint 4: this becomes /catalog once the catalog page exists. #}
+        <a href="#featured"
+           class="inline-flex items-center justify-center bg-royal-700 px-7 py-3.5 text-sm
+                  font-medium tracking-wide text-white transition-colors hover:bg-royal-800">
+          Browse the collection
+        </a>
+        <a href="#trust"
+           class="inline-flex items-center justify-center gap-1.5 px-1 py-2 text-sm font-medium
+                  text-royal-700 underline-offset-4 hover:underline">
+          How we authenticate
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-12 md:mt-0">
+      {{ responsive_img(
+           name="placeholder/hero",
+           widths=[600, 900, 1200],
+           sizes="(min-width: 768px) 45vw, 92vw",
+           alt="A gold dress watch with a pale dial, photographed against a soft neutral
+                background.",
+           width=1200, height=1500,
+           eager=true,
+           class_="w-full h-auto rounded-sm") }}
+    </div>
   </section>
 
   <section id="featured" aria-labelledby="featured-title"

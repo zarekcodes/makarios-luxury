@@ -138,6 +138,33 @@ def test_images_declare_dimensions_and_alt() -> None:
         assert image.get("alt") is not None, f"no alt attribute on {src}"
 
 
+def test_hero_image_is_not_lazy_loaded() -> None:
+    """The hero is the largest-contentful-paint element.
+
+    Lazy-loading it delays the very measurement it would appear to help, so
+    it must be eager and high priority while everything below is lazy.
+    """
+    response = client.get("/")
+
+    hero = [i for i in collect(response.text, "img") if "placeholder/hero" in (i.get("src") or "")]
+    assert len(hero) == 1, "expected exactly one hero image"
+
+    assert hero[0].get("loading") != "lazy"
+    assert hero[0].get("fetchpriority") == "high"
+
+
+def test_watch_images_below_the_fold_are_lazy() -> None:
+    response = client.get("/")
+
+    cards = [
+        i for i in collect(response.text, "img") if "placeholder/watch" in (i.get("src") or "")
+    ]
+    assert cards, "expected the featured watch images"
+
+    for image in cards:
+        assert image.get("loading") == "lazy"
+
+
 def test_featured_watches_come_from_the_service() -> None:
     """Proves the route -> service -> template wiring, not just that text exists.
 
