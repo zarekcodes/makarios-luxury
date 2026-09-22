@@ -155,11 +155,11 @@ def test_featured_watches_come_from_the_service() -> None:
         assert watch.price_label in response.text
 
 
-def test_featured_grid_is_a_list() -> None:
-    """Screen readers announce the number of items only for a real list."""
+def test_each_featured_watch_is_its_own_article() -> None:
+    """One card per watch, no duplicates and none silently dropped."""
     response = client.get("/")
 
-    assert response.text.count("<li>") == len(get_featured_watches())
+    assert response.text.count("<article") == len(get_featured_watches())
 
 
 def test_image_sources_resolve() -> None:
