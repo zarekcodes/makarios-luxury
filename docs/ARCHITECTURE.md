@@ -57,9 +57,15 @@ app/
     base.html    # Shared layout
     pages/       # Full-page templates
     partials/    # Fragments returned to HTMX requests
-  static/        # CSS, JS, images served at /static
+  static/        # Served at /static
+    css/         #   input.css (source) + app.css (generated, committed)
+    js/          #   htmx, vendored
+    fonts/       #   self-hosted display serif, subset
+    img/         #   brand assets and generated placeholders
 tests/           # pytest suite
-docs/            # MVP, architecture, workflow, sprint notes
+scripts/         # Developer tooling: CSS build, asset generators
+design/          # Source logos and photography (gitignored; see docs/BRAND.md)
+docs/            # MVP, architecture, brand, workflow, sprint notes
 ```
 
 Added as the project grows: `app/models/` (database models), `app/services/` (business logic,
@@ -81,6 +87,11 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 - `loading="lazy"` on below-the-fold images; explicit `width`/`height` to prevent layout shift.
 - Minified Tailwind CSS containing only used classes; htmx is the only required script.
 - Long cache headers on static assets (fingerprinted filenames).
+- **Everything is same-origin.** htmx is vendored and the display serif is self-hosted and subset
+  to Latin, so no page needs a connection to a third-party origin before it can render.
+- The font is preloaded, since the browser otherwise only discovers it after parsing the CSS.
+- Headings size with `clamp()` rather than breakpoint variants: fluid on every screen, and one
+  less thing to keep in sync.
 
 ## Open decisions
 

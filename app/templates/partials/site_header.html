@@ -1,0 +1,10 @@
+{# Minimal shell so base.html renders. The real header, with the desktop nav
+   and the no-JavaScript mobile disclosure menu, arrives with the "Site header
+   and navigation" story. #}
+<header class="border-b border-line">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+    <a href="/" class="no-underline">
+      {% include "partials/_brandmark.html" %}
+    </a>
+  </div>
+</header>

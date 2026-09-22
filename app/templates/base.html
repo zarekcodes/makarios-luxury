@@ -5,11 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Makarios Luxury{% endblock %}</title>
   <meta name="description" content="{% block description %}Authenticated pre-owned luxury watches.{% endblock %}">
-  {# Sprint 2: Tailwind stylesheet and htmx script get linked here. #}
+  <meta name="theme-color" content="#0F52BA">
+
+  {# Without this the browser only discovers the font after parsing app.css,
+     which makes the hero headline visibly swap fonts mid-load. #}
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ url_for('static', path='fonts/cormorant-garamond-600-latin.woff2') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', path='img/brand/favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', path='img/brand/apple-touch-icon.png') }}">
+
+  {% block extra_head %}{% endblock %}
+
+  {# htmx is wired up but nothing on the landing page swaps yet. The catalog
+     filters in Sprint 4 are its first real use. Deferred, so it never blocks
+     rendering, and vendored rather than CDN-loaded to avoid a second origin. #}
+  <script src="{{ url_for('static', path='js/htmx.min.js') }}" defer></script>
 </head>
-<body>
-  <main>
+<body class="{% block body_class %}{% endblock %} bg-white text-ink">
+  <a href="#main"
+     class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50
+            focus:bg-white focus:px-4 focus:py-2 focus:text-royal-700 focus:outline-2
+            focus:outline-royal-600">
+    Skip to content
+  </a>
+
+  {% include "partials/site_header.html" %}
+
+  <main id="main">
     {% block content %}{% endblock %}
   </main>
+
+  {% include "partials/site_footer.html" %}
+
+  {% block scripts %}{% endblock %}
 </body>
 </html>

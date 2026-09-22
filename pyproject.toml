@@ -22,6 +22,7 @@ testpaths = ["tests"]
 
 [dependency-groups]
 dev = [
+    "pillow>=12.3.0",
     "pytest>=9.1.1",
     "ruff>=0.16.7",
 ]

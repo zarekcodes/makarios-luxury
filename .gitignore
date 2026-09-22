@@ -20,3 +20,6 @@ media/
 
 # Design source assets (originals; optimized outputs live in app/static/img/)
 design/
+
+# Tailwind standalone binary (downloaded by scripts/tailwind.sh)
+bin/

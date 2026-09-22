@@ -1,0 +1,12 @@
+{# Minimal shell so base.html renders. The real footer, with contact details,
+   social links and the etymology line, arrives with the "Footer" story. #}
+<footer id="contact" class="mt-16 border-t-2 border-gold-500 bg-royal-950">
+  <div class="mx-auto max-w-6xl px-5 py-12 sm:px-8">
+    {% with tone = "dark" %}
+      {% include "partials/_brandmark.html" %}
+    {% endwith %}
+    <p class="mt-4 text-sm text-royal-100">
+      Authenticated pre-owned luxury watches.
+    </p>
+  </div>
+</footer>

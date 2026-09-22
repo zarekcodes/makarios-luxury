@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Makarios Luxury</h1>
-  <p>Authenticated pre-owned luxury watches. Coming soon.</p>
+  {# The hero, featured watches and trust sections land in their own stories.
+     This is enough to prove the toolchain renders styled output. #}
+  <section class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+    <p class="text-eyebrow font-medium uppercase text-gold-700">
+      Makarios &middot; Greek for blessed
+    </p>
+    <h1 class="mt-4 text-display-1 text-royal-900">
+      Wear something worth keeping.
+    </h1>
+    <p class="mt-6 max-w-[62ch] text-lead text-slate-600">
+      Authenticated pre-owned luxury watches &mdash; each one inspected, graded, and documented
+      before it ever reaches your wrist.
+    </p>
+  </section>
 {% endblock %}

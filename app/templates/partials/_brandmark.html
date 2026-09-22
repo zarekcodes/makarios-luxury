@@ -1,0 +1,26 @@
+{#
+  The brand lockup: circle badge plus the name set in the display serif.
+
+  This is the ONE file to edit when the real logo lands. The horizontal
+  wordmark in design/logo/ is not usable here because its background is solid
+  black rather than transparent; if a transparent lockup is produced later,
+  replace everything inside this file with a single <img> and nothing else in
+  the site needs to change.
+
+  Takes an optional `tone` variable: "dark" inverts the text for use on the
+  royal-950 footer. Defaults to the light-background treatment.
+#}
+{% set tone = tone | default("light") %}
+<span class="inline-flex items-center gap-2.5">
+  <img src="{{ url_for('static', path='img/brand/badge-72.webp') }}"
+       srcset="{{ url_for('static', path='img/brand/badge-72.webp') }} 72w,
+               {{ url_for('static', path='img/brand/badge-108.webp') }} 108w"
+       sizes="36px"
+       width="36" height="36"
+       alt=""
+       decoding="async">
+  <span class="font-display text-xl leading-none tracking-wide
+               {{ 'text-white' if tone == 'dark' else 'text-royal-900' }}">
+    Makarios<span class="{{ 'text-gold-300' if tone == 'dark' else 'text-gold-700' }}"> Luxury</span>
+  </span>
+</span>
