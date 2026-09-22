@@ -8,14 +8,17 @@
  * See docs/BRAND.md for the rules about how they may be used.
  */
 
-@import "tailwindcss";
-
 /*
- * Tell Tailwind where to scan for class names. Its automatic detection is
- * based on the working directory, so being explicit means the build produces
- * identical output no matter where it is run from. CI byte-compares the
- * result against the committed app.css, so that determinism matters.
+ * source(none) switches OFF Tailwind's automatic file detection, so the only
+ * thing scanned for class names is the directory named below.
+ *
+ * This matters more than it looks. Automatic detection walks the whole
+ * project, which means any stray class-like string in a Markdown file ends up
+ * in the stylesheet, and the output then depends on files that may not exist
+ * in a fresh clone. CI byte-compares this build against the committed
+ * app.css, so it has to depend on the templates and nothing else.
  */
+@import "tailwindcss" source(none);
 @source "../../templates";
 
 @theme {
