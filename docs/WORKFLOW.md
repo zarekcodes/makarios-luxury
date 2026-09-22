@@ -18,8 +18,10 @@ Tracking lives in the repo rather than in a separate tool, so the plan and the c
 place and the process is visible in the history.
 
 - **Backlog** = `docs/BACKLOG.md`, grouped into epics and a sprint-by-sprint roadmap.
-- **Sprint plan** = `docs/sprints/sprint-NN.md`: the goal, the committed stories, and their
-  estimates, written at the start of the sprint.
+- **Sprint plan** = `docs/sprints/sprint-NN.md`: the goal, the committed stories, their estimates
+  and any decisions made mid-sprint, written at the start of the sprint.
+- **Sprint review and retrospective** = `docs/sprints/local/`, which is gitignored. They are the
+  owner's written reflection and feed coursework submissions, so they stay off the repository.
 - **Progress** = the commits on the sprint branch, one per story.
 - **Estimates** = story points, Fibonacci (1, 2, 3, 5, 8), agreed at sprint planning.
 

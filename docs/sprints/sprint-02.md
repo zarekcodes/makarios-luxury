@@ -38,40 +38,7 @@ backlog. The full rules live in [BRAND.md](../BRAND.md).
   not a modal it needs no focus trap, Escape handler or scroll lock.
 - **No `hx-boost` yet.** There is no second page to navigate to; revisit in Sprint 4.
 
-## Sprint review
+## Sprint review and retrospective
 
-_What shipped:_
-
-- **A complete landing page** at `/`: header with navigation, hero, three featured watches, a trust
-  section and a footer. It works at 400px and on desktop.
-- **The frontend toolchain.** Tailwind CSS via the standalone CLI (no Node.js), built by
-  `scripts/tailwind.sh` with the version pinned in one place, and htmx vendored locally rather than
-  loaded from a CDN.
-- **A brand design system.** Colours sampled from the logo rather than guessed: the brand blue
-  `#0F52BA` is AAA-contrast both as text on white and as a background under white text. Recorded as
-  design tokens in `input.css` and as usage rules in `docs/BRAND.md`.
-- **Generated placeholder imagery.** `scripts/generate_placeholder_images.py` produces twelve WebP
-  files at three widths each, so `srcset` is exercised for real before there is any real
-  photography.
-- **A mobile menu that works with JavaScript disabled**, built on native `<details>`/`<summary>`.
-- **25 tests**, covering asset delivery, link integrity, image dimensions, and the no-JavaScript
-  navigation.
-- **A new CI job** that rebuilds the stylesheet and fails if the committed copy is out of date.
-
-_Bug found and fixed during the sprint:_ Tailwind's automatic file detection was scanning the whole
-project, not just the templates, so the stylesheet included rules harvested from Markdown code
-examples and would not rebuild identically from a clean checkout. Fixed with `source(none)`; the
-stylesheet shrank from 20.0 KB to 15.2 KB.
-
-_Page weight, first load at phone width:_ ~140 KB uncompressed, including a 16 KB (gzipped) htmx
-and a 23 KB subset font.
-
-_Lighthouse mobile performance score:_ _(run DevTools → Lighthouse → Mobile and record it here)_
-
-## Retrospective
-
-**What went well:**
-
-**What didn't:**
-
-**One change for Sprint 3:**
+Kept out of the repository, in `docs/sprints/local/` (gitignored), because they are the owner's
+written reflection and feed coursework submissions rather than the codebase.
