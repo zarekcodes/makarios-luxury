@@ -223,7 +223,21 @@ def test_footer_contact_is_a_real_link() -> None:
     """A mailto: works with JavaScript disabled; plain text does not."""
     response = client.get("/")
 
-    assert 'href="mailto:' in response.text
+    assert 'href="mailto:makarioslux@gmail.com"' in response.text
+
+
+def test_instagram_profile_is_linked() -> None:
+    """The link is asserted, not fetched: tests must not depend on network."""
+    response = client.get("/")
+
+    assert 'href="https://www.instagram.com/makariosluxury"' in response.text
+
+
+def test_no_placeholder_links() -> None:
+    """href="#" is a link that goes nowhere, and it is easy to leave behind."""
+    response = client.get("/")
+
+    assert 'href="#"' not in response.text
 
 
 def test_copyright_year_is_not_hardcoded() -> None:

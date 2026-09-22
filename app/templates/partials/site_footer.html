@@ -1,9 +1,9 @@
 {#
   Site footer.
 
-  TODO(owner): replace the placeholder email with the real address, and add
-  the social links once those accounts exist. They are left out rather than
-  pointed at "#", which would be a dead link and would fail the anchor test.
+  Social links open in the same tab on purpose: a forced new tab is a
+  surprise for screen reader and keyboard users, and the back button already
+  does the job. rel="me" states that this profile belongs to the site.
 #}
 <footer id="contact" class="border-t-2 border-gold-500 bg-royal-950">
   <div class="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-16">
@@ -25,9 +25,25 @@
         <h2 class="text-eyebrow font-medium uppercase tracking-[0.18em] text-gold-400">Contact</h2>
         <ul class="mt-4 space-y-3 text-sm text-royal-100">
           <li>
-            <a href="mailto:hello@makariosluxury.com"
+            <a href="mailto:makarioslux@gmail.com"
                class="inline-block py-1.5 underline-offset-4 hover:text-white hover:underline">
-              hello@makariosluxury.com
+              makarioslux@gmail.com
+            </a>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/makariosluxury"
+               rel="me noopener"
+               class="inline-flex items-center gap-2 py-1.5 underline-offset-4
+                      hover:text-white hover:underline">
+              <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                   aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                <circle cx="12" cy="12" r="4"></circle>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+              </svg>
+              @makariosluxury
+              <span class="sr-only">on Instagram</span>
             </a>
           </li>
           <li class="text-royal-100">Viewings by appointment.</li>
