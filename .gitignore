@@ -18,8 +18,10 @@ media/
 .idea/
 .DS_Store
 
-# Design source assets (originals; optimized outputs live in app/static/img/)
-design/
-
 # Tailwind standalone binary (downloaded by scripts/tailwind.sh)
 bin/
+
+# Owner's personal reference notes, kept on the local machine only.
+# Not part of the deliverable; see docs/ for the project documentation.
+docs/LEARNING_GUIDE.md
+docs/CI_CD_GUIDE.md

@@ -125,5 +125,5 @@ To swap in a new logo:
    `app/templates/partials/_brandmark.html` with a single `<img>`. Nothing
    else in the site needs to change.
 
-> `design/` is gitignored, so those originals exist only on your machine.
-> **Keep a backup somewhere else.**
+The originals in `design/` are committed, so a fresh clone can regenerate every derived asset
+without hunting for the source files.

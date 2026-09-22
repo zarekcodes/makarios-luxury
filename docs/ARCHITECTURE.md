@@ -64,7 +64,7 @@ app/
     img/         #   brand assets and generated placeholders
 tests/           # pytest suite
 scripts/         # Developer tooling: CSS build, asset generators
-design/          # Source logos and photography (gitignored; see docs/BRAND.md)
+design/          # Source logos and photography (see docs/BRAND.md)
 docs/            # MVP, architecture, brand, workflow, sprint notes
 ```
 

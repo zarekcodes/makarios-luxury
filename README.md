@@ -52,8 +52,6 @@ uv run python scripts/build_brand_assets.py        # logo badge + favicons from 
 ## Documentation
 
 - [Brand](docs/BRAND.md): palette, type, layout rules, and how to swap in a new logo
-- [Learning guide](docs/LEARNING_GUIDE.md): how the pieces fit together and why things live where they do. **Start here if you're new to the codebase.**
-- [CI/CD guide](docs/CI_CD_GUIDE.md): how the automated checks work, what to do when they fail, and how deployment will work
 - [MVP definition](docs/MVP.md): vision, users, and what's in and out of scope
 - [Architecture](docs/ARCHITECTURE.md): stack choices, structure, and open decisions
 - [Workflow](docs/WORKFLOW.md): sprint process, board, branching, Definition of Done
