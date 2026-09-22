@@ -19,8 +19,8 @@ stack and structure and `docs/WORKFLOW.md` for process.
   get the full page.
 - Pages must work without JavaScript (links and forms still function).
 - Add or update tests for every behavior change. CI (ruff + pytest) must pass.
-- Work happens on a sprint branch (`sprint-2`, `sprint-3`), one commit per story, each
-  referencing its issue. Never commit directly to `main`.
+- Work happens on a sprint branch (`sprint-2`, `sprint-3`), one commit per story, named for the
+  story it implements. Never commit directly to `main`.
 - `docs/LEARNING_GUIDE.md` and `docs/CI_CD_GUIDE.md` are the owner's personal reference notes. They
   are gitignored on purpose, so they exist only on the owner's machine and never appear in a diff or
   a PR. When they are present locally and you add a new folder, pattern, or tool, still update the

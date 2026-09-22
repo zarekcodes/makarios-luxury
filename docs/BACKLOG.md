@@ -1,7 +1,8 @@
 # Product Backlog (seed)
 
-Initial backlog for creating GitHub Issues. Once the issues exist, **GitHub Projects is the source
-of truth**. This file is only the starting snapshot. Estimate points during sprint planning.
+**This file is the backlog.** Stories are pulled from here into `docs/sprints/sprint-NN.md` at
+sprint planning and estimated there. See `docs/WORKFLOW.md` for why tracking lives in the repo
+rather than in GitHub Issues.
 
 ## Roadmap (tentative, re-planned every sprint)
 
