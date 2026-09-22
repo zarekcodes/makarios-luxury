@@ -30,17 +30,34 @@ estimate, and it's small enough to finish within one sprint.
 - Acceptance criteria met
 - Tests added or updated; CI passes (lint, format, tests)
 - Works at phone width (~400px) and desktop
-- Merged to `main` through a pull request that references its issue
+- Committed to the sprint branch, with `Closes #N` in the commit body
+- Reaches `main` when the sprint branch is merged through its pull request
 - Docs updated if behavior or setup changed
 
-## Branching and commits (GitHub Flow)
+## Branching and commits (GitHub Flow, sprint-scoped)
 
 - `main` is always working. Never commit directly to it.
-- One branch per issue: `feat/12-landing-hero`, `fix/18-mobile-nav`, `chore/3-ci`
-- Open a PR, fill in the template, and link the issue with `Closes #12` so it auto-closes on merge.
-- Squash-merge, and delete the branch after merging.
+- **One branch per sprint**, named for the sprint: `sprint-2`, `sprint-3`.
+- **One commit per story**, so each story stays individually reviewable and revertable, and the
+  sprint's work can still be read story by story in `git log`.
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/):
   `feat: add watch detail page`, `fix: ...`, `docs: ...`, `test: ...`, `chore: ...`
+- Reference the issue a commit closes in its body (`Closes #12`), so merging the sprint branch
+  closes every story it completed.
+- Open one pull request per sprint branch, fill in the template, and **merge without squashing**,
+  so the per-story commits survive on `main`.
+- Delete the branch after merging.
+
+### Why one branch per sprint
+
+A per-issue branch is the right default for a team, where several people need to work without
+tripping over each other. On a solo project the cost is real and the benefit is not: the landing
+page's header, hero and footer are visually interdependent, so separate branches would mean
+reviewing half-styled pages and rebasing repeatedly.
+
+Traceability is what actually matters for this project, and it survives: one commit per story,
+each naming its issue. The unit of review becomes the sprint rather than the story, which is also
+how the sprint review reads.
 
 ## Agentic coding (Claude Code)
 
