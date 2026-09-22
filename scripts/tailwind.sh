@@ -8,9 +8,16 @@
 #
 # Usage:
 #   ./scripts/tailwind.sh --watch     # development: rebuild on every save
-#   ./scripts/tailwind.sh --minify    # what we commit and what ships
+#   ./scripts/tailwind.sh             # one-off build
 #
-# Any arguments are passed straight through to the Tailwind CLI.
+# The output is ALWAYS minified, in both modes. That is deliberate: app.css is
+# committed, and CI rebuilds it and fails if the result differs from what is in
+# the repo. If watch mode wrote unminified CSS, then whichever mode you happened
+# to run last would decide what got committed, and CI would reject the build
+# after any ordinary development session. Producing one canonical output removes
+# that trap entirely.
+#
+# Any other arguments are passed straight through to the Tailwind CLI.
 
 set -euo pipefail
 
@@ -80,4 +87,6 @@ ensure_binary() {
 }
 
 ensure_binary
-exec "${BIN}" -i "${INPUT}" -o "${OUTPUT}" "$@"
+# --minify is passed first so that it applies even in watch mode; a second
+# --minify from the caller is harmless.
+exec "${BIN}" -i "${INPUT}" -o "${OUTPUT}" --minify "$@"

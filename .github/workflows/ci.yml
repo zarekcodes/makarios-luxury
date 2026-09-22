@@ -37,11 +37,11 @@ jobs:
           path: bin
           key: tailwind-${{ runner.os }}-v4.3.3
       - name: Rebuild the stylesheet
-        run: ./scripts/tailwind.sh --minify
+        run: ./scripts/tailwind.sh
       - name: Fail if the committed stylesheet is out of date
         run: |
           if ! git diff --exit-code -- app/static/css/app.css; then
             echo "::error::app/static/css/app.css does not match input.css."
-            echo "Run './scripts/tailwind.sh --minify' and commit the result."
+            echo "Run './scripts/tailwind.sh' and commit the result."
             exit 1
           fi

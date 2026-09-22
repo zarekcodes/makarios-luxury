@@ -36,12 +36,16 @@ API docs are auto-generated at http://127.0.0.1:8000/docs.
 uv run pytest                    # run tests
 uv run ruff check .              # lint
 uv run ruff format .             # auto-format
-./scripts/tailwind.sh --minify   # rebuild the CSS (commit the result)
+./scripts/tailwind.sh            # rebuild the CSS (commit the result)
 ```
 
 `app/static/css/app.css` is generated but committed, because the deployed server has no Tailwind
 binary. CI rebuilds it and fails if the committed file is out of date, so run the command above and
 commit the result whenever you change a template or `input.css`.
+
+The output is always minified, in watch mode too, so the file on disk is the same whichever command
+produced it. Without that, an ordinary development session would leave an unminified stylesheet
+staged and CI would reject it.
 
 Asset generators, only needed when the source material changes:
 
