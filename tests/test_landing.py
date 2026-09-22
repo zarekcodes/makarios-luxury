@@ -190,6 +190,35 @@ def test_each_featured_watch_is_its_own_article() -> None:
     assert response.text.count("<article") == len(get_featured_watches())
 
 
+def test_navigation_works_without_javascript() -> None:
+    """The mobile menu must be a native disclosure, not a scripted one.
+
+    The links have to be in the HTML the server sent, not injected later,
+    and the toggle has to be the <details> element that browsers open on
+    their own.
+    """
+    response = client.get("/")
+
+    assert "<details" in response.text
+    assert "<summary" in response.text
+
+    for href in ("#featured", "#trust", "#contact"):
+        assert f'href="{href}"' in response.text
+
+
+def test_summary_has_no_hand_written_aria_expanded() -> None:
+    """A static aria-expanded can never be updated, so it would always lie.
+
+    Browsers report a disclosure's state natively; writing the attribute by
+    hand is the usual way this pattern gets broken.
+    """
+    response = client.get("/")
+
+    summary_markup = response.text.split("<summary", 1)[1].split(">", 1)[0]
+
+    assert "aria-expanded" not in summary_markup
+
+
 def test_footer_contact_is_a_real_link() -> None:
     """A mailto: works with JavaScript disabled; plain text does not."""
     response = client.get("/")
