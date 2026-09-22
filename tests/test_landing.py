@@ -13,6 +13,7 @@ from html.parser import HTMLParser
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.services.featured import get_featured_watches
 
 client = TestClient(app)
 
@@ -135,6 +136,30 @@ def test_images_declare_dimensions_and_alt() -> None:
         assert image.get("width"), f"no width on {src}"
         assert image.get("height"), f"no height on {src}"
         assert image.get("alt") is not None, f"no alt attribute on {src}"
+
+
+def test_featured_watches_come_from_the_service() -> None:
+    """Proves the route -> service -> template wiring, not just that text exists.
+
+    Adding a watch to the service must make it appear on the page; this fails
+    if the template ever goes back to hardcoding the list.
+    """
+    response = client.get("/")
+
+    watches = get_featured_watches()
+    assert watches, "the service returned nothing to feature"
+
+    for watch in watches:
+        assert watch.name in response.text
+        assert watch.reference in response.text
+        assert watch.price_label in response.text
+
+
+def test_featured_grid_is_a_list() -> None:
+    """Screen readers announce the number of items only for a real list."""
+    response = client.get("/")
+
+    assert response.text.count("<li>") == len(get_featured_watches())
 
 
 def test_image_sources_resolve() -> None:

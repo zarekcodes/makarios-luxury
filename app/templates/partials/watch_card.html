@@ -1,0 +1,44 @@
+{#
+  One watch in the featured grid. Expects `watch` (a FeaturedWatch).
+
+  Written as its own file because the Sprint 4 catalog grid renders the same
+  card, and htmx will swap these in when the filters change.
+
+  The card is not a link yet: there is no detail page to link to until
+  Sprint 4. At that point the <h3> text becomes the anchor.
+#}
+{% from "partials/_media.html" import responsive_img with context %}
+<li>
+  <article class="group h-full">
+    <div class="overflow-hidden rounded-sm bg-cream">
+      {{ responsive_img(
+           name="placeholder/" ~ watch.slug,
+           widths=[400, 800, 1200],
+           sizes="(min-width: 1024px) 341px, (min-width: 640px) 45vw, 92vw",
+           alt=watch.alt,
+           width=800, height=1000,
+           class_="w-full h-auto") }}
+    </div>
+
+    <div class="mt-5 border-t border-line pt-4 transition-colors group-hover:border-gold-500">
+      <h3 class="text-display-3 text-royal-900">{{ watch.name }}</h3>
+
+      <dl class="mt-3 space-y-1 text-sm text-slate-500">
+        <div class="flex gap-2">
+          <dt class="min-w-24">Reference</dt>
+          <dd class="text-slate-600">{{ watch.reference }}</dd>
+        </div>
+        <div class="flex gap-2">
+          <dt class="min-w-24">Year</dt>
+          <dd class="text-slate-600">{{ watch.year }}</dd>
+        </div>
+        <div class="flex gap-2">
+          <dt class="min-w-24">Condition</dt>
+          <dd class="text-slate-600">{{ watch.condition }}</dd>
+        </div>
+      </dl>
+
+      <p class="mt-4 font-display text-xl text-royal-700">{{ watch.price_label }}</p>
+    </div>
+  </article>
+</li>

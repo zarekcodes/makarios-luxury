@@ -15,4 +15,20 @@
       before it ever reaches your wrist.
     </p>
   </section>
+
+  <section id="featured" aria-labelledby="featured-title"
+           class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+    <p class="text-eyebrow font-medium uppercase text-gold-700">In the case</p>
+    <h2 id="featured-title" class="mt-4 text-display-2 text-royal-900">
+      A few pieces currently available.
+    </h2>
+    <p class="mt-5 max-w-[62ch] text-slate-600">
+      A rotating selection from the collection. Every listing shows its reference, year, condition
+      grade, and what comes with it.
+    </p>
+
+    <div class="mt-12">
+      {% include "partials/featured_watches.html" %}
+    </div>
+  </section>
 {% endblock %}
