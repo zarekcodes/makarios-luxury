@@ -78,3 +78,17 @@ increment to a live URL. That's a core Agile principle and makes sprint reviews 
   keyboard and screen reader.
 - **About page.** As a buyer, I want to learn about the business so that I trust who I'm buying
   from.
+
+### Epic: Internal dashboard (`epic:dashboard`), after the MVP
+Long-term direction; see "Future: internal dashboard" in `ARCHITECTURE.md`. Stories are rough
+and will be split and estimated when the epic is scheduled.
+- **Dashboard access.** As the owner, I want my partner and me to log in with separate accounts
+  so that business data stays private.
+- **First source ingestion.** As the owner, I want one sourcing channel scraped on a schedule so
+  that new listings show up without manual searching.
+- **Deal and inventory records.** As the owner, I want purchases, sales, and costs recorded so
+  that profit per watch is computed automatically.
+- **KPI overview.** As the partner, I want a single page of key metrics (margin, turnover time,
+  inventory value) so that I can see performance at a glance.
+- **Price forecasting.** As the owner, I want estimated resale prices for a reference so that I
+  can judge whether a listing is a good buy.

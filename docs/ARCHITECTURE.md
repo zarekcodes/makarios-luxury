@@ -101,4 +101,46 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 | Hosting (Render / Railway / Fly.io) and Postgres provider | Sprint 3 |
 | Image storage in production (e.g. Cloudflare R2, S3) | Sprint 4 |
 | Transactional email provider | Sprint 5 |
+| Dashboard frontend stack (React + TypeScript vs. a lighter option such as Preact or Svelte) | After the MVP |
+
+## Future: internal dashboard
+
+The long-term goal goes beyond the storefront. The plan is a private dashboard for the owner and
+their business partner. It would pull in inventory from the places watches are sourced (dealers,
+local and online marketplaces, forums), then analyze the data, forecast, and track business KPIs.
+
+The storefront and the dashboard have opposite needs, so each gets its own frontend. **One FastAPI
+backend serves both.**
+
+| | Storefront (public) | Dashboard (private) |
+| --- | --- | --- |
+| Users | Buyers, mostly on phones | Owner and partner, logged in |
+| Priorities | First-load speed, SEO, images | Dense tables, charts, filters, interactivity |
+| Frontend | Jinja + htmx + Tailwind (this app) | Single-page app (SPA), stack still to be decided |
+| Talks to backend via | Server-rendered HTML | JSON from `/api` (authenticated) |
+
+```mermaid
+flowchart LR
+    Store["Storefront<br/>(Jinja + htmx)"]
+    Dash["Dashboard SPA<br/>(future)"]
+    subgraph Backend["FastAPI"]
+        Pages["Page routes"]
+        API["/api (JSON, auth)"]
+        Services["Services"]
+    end
+    Workers["Background jobs<br/>(scrapers, forecasting)"]
+    DB[("PostgreSQL")]
+    Sources["Dealers, marketplaces,<br/>forums"]
+
+    Store --> Pages --> Services
+    Dash --> API --> Services
+    Services --> DB
+    Sources --> Workers --> DB
+```
+
+Scraping, analysis, and forecasting stay in Python as background jobs, apart from the web
+requests. Adding the dashboard therefore means adding a frontend and JSON endpoints; the backend
+doesn't need rebuilding. The storefront stays server-rendered because a JavaScript bundle would cost
+mobile speed and SEO for no gain there. Design tools that export HTML + Tailwind (such as Google
+Stitch) work for both: their output drops into Jinja templates as-is, or ports to components later.
 

@@ -12,7 +12,8 @@ stack and structure and `docs/WORKFLOW.md` for process.
 
 ## Rules
 
-- No JavaScript frameworks or Node.js. Interactivity is htmx first, Alpine.js only if htmx can't do it.
+- Storefront: no JavaScript frameworks or Node.js. Interactivity is htmx first, Alpine.js only if
+  htmx can't do it. (The planned internal dashboard is the one exception; see `docs/ARCHITECTURE.md`.)
 - Mobile-first: every page must work well at ~400px wide. Performance is the top product priority.
 - Routes stay thin; put business logic in `app/services/`.
 - HTMX requests (`HX-Request` header) get a partial from `templates/partials/`; normal requests
