@@ -23,12 +23,19 @@ class FeaturedWatch:
     reference: str
     year: int
     condition: str
-    price_label: str
+    # Whole US dollars. None means the price is given on request, not listed.
+    price: int | None
     alt: str
 
     @property
     def name(self) -> str:
         return f"{self.brand} {self.model}"
+
+    @property
+    def price_label(self) -> str:
+        if self.price is None:
+            return "Price on request"
+        return f"${self.price:,}"
 
 
 _FEATURED = (
@@ -39,7 +46,7 @@ _FEATURED = (
         reference="AM-3120-SS",
         year=2019,
         condition="Excellent",
-        price_label="£8,400",
+        price=8400,
         alt="Steel chronograph with a pale dial on a navy leather strap.",
     ),
     FeaturedWatch(
@@ -49,7 +56,7 @@ _FEATURED = (
         reference="CR-880-YG",
         year=2016,
         condition="Very Good",
-        price_label="£12,950",
+        price=12950,
         alt="Yellow gold dress watch with a cream dial on a brown leather strap.",
     ),
     FeaturedWatch(
@@ -59,7 +66,7 @@ _FEATURED = (
         reference="ND-300-TI",
         year=2021,
         condition="Unworn",
-        price_label="Price on request",
+        price=None,
         alt="Titanium diver with a royal blue dial on a dark rubber strap.",
     ),
 )
