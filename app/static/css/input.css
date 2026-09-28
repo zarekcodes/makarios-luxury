@@ -68,8 +68,10 @@
   --text-eyebrow--line-height: 1.4;
   --text-eyebrow--letter-spacing: 0.18em;
 
-  --text-display-1: clamp(2.5rem, 8vw, 4.5rem);
-  --text-display-1--line-height: 1.05;
+  /* The hero headline is set over photography and has to hold its own
+   * against it, so it runs larger than a quiet editorial page would. */
+  --text-display-1: clamp(2.75rem, 10vw, 5.5rem);
+  --text-display-1--line-height: 1.02;
   --text-display-1--letter-spacing: -0.02em;
 
   --text-display-2: clamp(1.875rem, 5vw, 2.75rem);
@@ -100,10 +102,12 @@
 }
 
 @layer base {
+  /* Navy is the page, not a band on it. Setting it here as well as on
+   * <body>'s classes means iOS overscroll shows navy rather than white. */
   body {
     font-family: var(--font-sans);
-    color: var(--color-ink);
-    background-color: #fff;
+    color: var(--color-royal-100);
+    background-color: var(--color-royal-950);
     -webkit-font-smoothing: antialiased;
   }
 
@@ -115,11 +119,13 @@
   }
 
   /*
-   * A visible focus ring on every interactive element, in blue rather than
-   * gold: gold does not reach the 3:1 contrast that non-text indicators need.
+   * A visible focus ring on every interactive element. On navy it is gold:
+   * gold-400 measures 10.8:1 on royal-950 and 9.2:1 on royal-900, whereas the
+   * old royal-600 ring managed only 3.0:1 on royal-900, the bare minimum
+   * for a non-text indicator. See docs/BRAND.md.
    */
   :focus-visible {
-    outline: 2px solid var(--color-royal-600);
+    outline: 2px solid var(--color-gold-400);
     outline-offset: 2px;
   }
 

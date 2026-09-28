@@ -16,21 +16,33 @@
   3. The desktop and mobile navs are separate elements sharing one link file.
      Only one is ever displayed, so only one reaches the accessibility tree,
      and resizing past the breakpoint can never leave the menu stuck open.
+
+  A page can set `header_overlay = true` (the home page does) to float the
+  header over a full-bleed hero photograph instead of sitting above it. The
+  faint navy fade behind it keeps the links legible whatever the photo does.
+  Every other page gets a solid navy bar.
 #}
-<header class="relative border-b border-line">
+{% set overlay = header_overlay | default(false) %}
+<header class="{{ 'absolute inset-x-0 top-0 z-20 bg-linear-to-b from-royal-950/80 to-transparent'
+                  if overlay else
+                  'relative border-b border-white/10 bg-royal-950' }}">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
     <a href="/" class="shrink-0" aria-label="Makarios Luxury, home">
-      {% include "partials/_brandmark.html" %}
+      {% with tone = "dark" %}
+        {% include "partials/_brandmark.html" %}
+      {% endwith %}
     </a>
 
     <nav aria-label="Main" class="hidden md:block">
       <ul class="flex items-center gap-8">
-        {% include "partials/nav_links.html" %}
+        {% with tone = "dark" %}
+          {% include "partials/nav_links.html" %}
+        {% endwith %}
       </ul>
     </nav>
 
     <details class="md:hidden [&[open]_.menu-caret]:rotate-180">
-      <summary class="-mr-2 flex items-center gap-1.5 px-2 py-3 text-sm font-medium text-royal-900">
+      <summary class="-mr-2 flex items-center gap-1.5 px-2 py-3 text-sm font-medium text-white">
         Menu
         <svg class="menu-caret h-4 w-4 transition-transform" viewBox="0 0 20 20"
              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
@@ -40,9 +52,11 @@
       </summary>
 
       <nav aria-label="Main"
-           class="absolute inset-x-0 top-full z-10 border-b border-line bg-white px-5 pb-3">
-        <ul class="flex flex-col divide-y divide-line">
-          {% include "partials/nav_links.html" %}
+           class="absolute inset-x-0 top-full z-10 border-b border-white/10 bg-royal-950 px-5 pb-3">
+        <ul class="flex flex-col divide-y divide-white/10">
+          {% with tone = "dark" %}
+            {% include "partials/nav_links.html" %}
+          {% endwith %}
         </ul>
       </nav>
     </details>

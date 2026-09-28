@@ -12,6 +12,21 @@ class Settings(BaseSettings):
     environment: str = "development"
     debug: bool = False
 
+    # How buyers reach the business. Kept here rather than in the templates
+    # because the email appears in several places: the footer, the contact
+    # band, and every watch card's inquiry link.
+    contact_email: str = "makarioslux@gmail.com"
+    instagram_handle: str = "makariosluxury"
+
+    @property
+    def instagram_url(self) -> str:
+        return f"https://www.instagram.com/{self.instagram_handle}"
+
+    @property
+    def instagram_dm_url(self) -> str:
+        """Opens a direct message thread in the Instagram app, or on the web."""
+        return f"https://ig.me/m/{self.instagram_handle}"
+
 
 @lru_cache
 def get_settings() -> Settings:

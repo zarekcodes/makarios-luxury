@@ -42,6 +42,11 @@ increment to a live URL. That's a core Agile principle and makes sprint reviews 
   I feel confident buying a high-value piece.
 - **Footer.** As a buyer, I want contact info and social links in the footer so that I can reach
   the business.
+- **Landing page refresh** (Sprint 3). As a buyer, I want the landing page to lead with striking
+  watch photography, say plainly what Makarios sells, and give me one obvious way to ask about a
+  watch, so that I'm drawn in and know what to do next. *Acceptance:* a full-bleed photo hero that
+  works at 400px and on desktop, text contrast measured over the photo, an inquiry link on every
+  watch card, a closing contact band, and mobile Lighthouse performance still ≥ 90.
 
 ### Epic: Catalog (`epic:catalog`), Sprints 3–4
 - **Watch data model.** As the owner, I want watches stored with brand, model, reference, year,
@@ -60,6 +65,10 @@ increment to a live URL. That's a core Agile principle and makes sprint reviews 
   can evaluate a watch before contacting the seller.
 - **Optimized images.** As a buyer on a phone, I want images that load fast so that browsing
   feels smooth.
+- **Shop by brand** (stretch). As a buyer, I want to jump straight to the brands I collect so that I
+  don't scroll past everything else.
+- **Previously sold archive** (stretch). As a buyer, I want to see watches Makarios has already sold
+  so that I can judge the dealer's track record and the kind of pieces they handle.
 
 ### Epic: Inquiries (`epic:inquiries`), Sprint 5
 - **Inquiry form.** As a buyer, I want to send a question or offer about a specific watch so that
@@ -68,6 +77,10 @@ increment to a live URL. That's a core Agile principle and makes sprint reviews 
   respond quickly.
 - **Inquiries in admin.** As the owner, I want to see and mark inquiries as handled so that none
   fall through the cracks.
+- **Sell or source a watch** (stretch). As someone selling a watch, or looking for a specific
+  reference, I want a form for exactly that so that I can reach Makarios without writing the email
+  from scratch. Makarios already buys watches and sources on request; today the landing page's
+  contact band only mentions it.
 
 ### Epic: Polish (`epic:polish`), Sprint 6
 - **SEO metadata.** As the owner, I want proper titles, descriptions, and social previews on every
@@ -78,6 +91,8 @@ increment to a live URL. That's a core Agile principle and makes sprint reviews 
   keyboard and screen reader.
 - **About page.** As a buyer, I want to learn about the business so that I trust who I'm buying
   from.
+- **Testimonials** (stretch). As a buyer, I want to read what past clients say so that I trust a
+  dealer I haven't bought from before. Real, attributed reviews only, never invented ones.
 
 ### Epic: Internal dashboard (`epic:dashboard`), after the MVP
 Long-term direction; see "Future: internal dashboard" in `ARCHITECTURE.md`. Stories are rough

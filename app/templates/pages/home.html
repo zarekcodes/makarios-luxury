@@ -1,61 +1,104 @@
 {% extends "base.html" %}
-{% from "partials/_media.html" import responsive_img with context %}
+{% from "partials/_media.html" import responsive_img, srcset with context %}
+
+{# Float the header over the hero photograph. This is set at the top level,
+   outside any block, because Jinja runs a child template's top-level
+   assignments before rendering the layout, so base.html can read it. #}
+{% set header_overlay = true %}
 
 {% block content %}
-  {# Text first in the DOM, so a phone reads the pitch before it reaches the
-     image. No text sitting over a photo: it would hurt both contrast and the
-     largest-contentful-paint measurement. #}
+  {# The hero leads with the watch, full-bleed, with the words laid over it.
+
+     Two things keep that honest. A royal-950 gradient sits between photo and
+     text, so the copy keeps its contrast whatever the photograph does. And the
+     image stays eager and high priority, because it is the largest thing on
+     screen and so the largest-contentful-paint measurement.
+
+     The crop is art-directed by screen shape rather than width:
+
+     - Portrait (phones): a 4:5 crop shown at its natural shape across the top,
+       fading into the navy page. The text's top padding (90vw) clears where the
+       watch ends in that crop, so on a short phone the hero grows a little
+       rather than laying the headline across the dial. If a real photo frames
+       the watch differently, adjust that number to match.
+     - Landscape (tablets, laptops): a 16:9 crop covering the whole hero, with
+       the watch on the right and the text on the left. #}
   <section aria-labelledby="hero-title"
-           class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:grid md:grid-cols-2 md:items-center
-                  md:gap-12 md:py-24 lg:gap-16 lg:py-32">
-    <div>
-      <p class="text-eyebrow font-medium uppercase text-gold-700">
-        Makarios &middot; Greek for blessed
-      </p>
-      <h1 id="hero-title" class="mt-4 text-display-1 text-royal-900">
-        Wear something worth keeping.
-      </h1>
-      <p class="mt-6 max-w-[62ch] text-lead text-slate-600">
-        Authenticated pre-owned luxury watches &mdash; each one inspected, graded, and documented
-        before it ever reaches your wrist.
-      </p>
-
-      <div class="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-        {# Sprint 4: this becomes /catalog once the catalog page exists. #}
-        <a href="#featured"
-           class="inline-flex items-center justify-center bg-royal-700 px-7 py-3.5 text-sm
-                  font-medium tracking-wide text-white transition-colors hover:bg-royal-800">
-          Browse the collection
-        </a>
-        <a href="#trust"
-           class="inline-flex items-center justify-center gap-1.5 px-1 py-2 text-sm font-medium
-                  text-royal-700 underline-offset-4 hover:underline">
-          How we authenticate
-          <span aria-hidden="true">&rarr;</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="mt-12 md:mt-0">
+           class="relative isolate flex min-h-svh flex-col justify-end overflow-hidden
+                  landscape:min-h-[88svh] landscape:justify-center">
+    <picture>
+      <source media="(orientation: landscape)"
+              srcset="{{ srcset('placeholder/hero-wide', [960, 1440, 1920]) }}"
+              sizes="100vw"
+              width="1920" height="1080">
       {{ responsive_img(
-           name="placeholder/hero",
+           name="placeholder/hero-portrait",
            widths=[600, 900, 1200],
-           sizes="(min-width: 768px) 45vw, 92vw",
-           alt="A gold dress watch with a pale dial, photographed against a soft neutral
-                background.",
+           sizes="100vw",
+           alt="A gold dress watch with a pale dial on a navy leather strap, lit against a
+                dark background.",
            width=1200, height=1500,
            eager=true,
-           class_="w-full h-auto rounded-sm") }}
+           class_="absolute inset-x-0 top-0 -z-20 h-auto w-full landscape:inset-y-0
+                   landscape:h-full landscape:object-cover") }}
+    </picture>
+    <div aria-hidden="true"
+         class="absolute inset-x-0 top-0 -z-10 aspect-[4/5] bg-linear-to-t from-royal-950
+                via-royal-950/60 via-25% to-royal-950/0 to-45% landscape:inset-y-0
+                landscape:aspect-auto landscape:bg-linear-to-r landscape:from-15%
+                landscape:via-royal-950/70 landscape:via-45% landscape:to-100%"></div>
+
+    <div class="mx-auto w-full max-w-6xl px-5 pt-[90vw] pb-10 sm:px-8 landscape:pt-32
+                landscape:pb-14">
+      <div class="max-w-xl">
+        <p class="text-eyebrow font-medium uppercase text-gold-300">
+          Makarios &middot; Greek for blessed
+        </p>
+        <h1 id="hero-title" class="mt-4 text-display-1 text-white">
+          Wear something worth keeping.
+        </h1>
+        <p class="mt-6 max-w-[48ch] text-lead text-royal-100">
+          Authenticated pre-owned luxury watches, each one inspected, graded, and documented
+          before it&rsquo;s listed.
+        </p>
+
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          {# Sprint 4: this becomes /catalog once the catalog page exists. #}
+          <a href="#featured"
+             class="inline-flex items-center justify-center bg-white px-7 py-3.5 text-sm
+                    font-medium tracking-wide text-royal-950 transition-colors
+                    hover:bg-royal-100">
+            Shop the collection
+          </a>
+          <a href="#contact"
+             class="inline-flex items-center justify-center border border-gold-400 px-7 py-3.5
+                    text-sm font-medium tracking-wide text-white transition-colors
+                    hover:bg-white/10">
+            Ask about a watch
+          </a>
+        </div>
+      </div>
+
+      {# The three claims the trust section below spells out, stated early. #}
+      <ul class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-gold-500/40
+                 pt-5 text-eyebrow font-medium uppercase text-royal-100">
+        {% for step in ["Authenticated", "Graded", "Documented"] %}
+          <li class="flex items-center gap-2.5">
+            <span aria-hidden="true" class="size-1 rotate-45 bg-gold-400"></span>
+            {{ step }}
+          </li>
+        {% endfor %}
+      </ul>
     </div>
   </section>
 
   <section id="featured" aria-labelledby="featured-title"
            class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
-    <p class="text-eyebrow font-medium uppercase text-gold-700">In the case</p>
-    <h2 id="featured-title" class="mt-4 text-display-2 text-royal-900">
-      A few pieces currently available.
+    <p class="text-eyebrow font-medium uppercase text-gold-400">In the case</p>
+    <h2 id="featured-title" class="mt-4 text-display-2 text-white">
+      Available now.
     </h2>
-    <p class="mt-5 max-w-[62ch] text-slate-600">
+    <p class="mt-5 max-w-[62ch] text-royal-100">
       A rotating selection from the collection. Every listing shows its reference, year, condition
       grade, and what comes with it.
     </p>
@@ -65,10 +108,9 @@
     </div>
   </section>
 
-  {# The one dark band on the page. It is also the only place the true halo
-     gold is legible as text (10.6:1 on royal-950); on white it would fail
-     contrast badly. See docs/BRAND.md. #}
-  <section id="trust" aria-labelledby="trust-title" class="bg-royal-950">
+  {# One step lighter than the page, so the dark page still has a rhythm of
+     bands. Gold stays legible here: gold-400 measures 9.2:1 on royal-900. #}
+  <section id="trust" aria-labelledby="trust-title" class="bg-royal-900">
     <div class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
       <p class="text-eyebrow font-medium uppercase text-gold-400">The process</p>
       <h2 id="trust-title" class="mt-4 text-display-2 text-white">
@@ -102,6 +144,40 @@
           </p>
         </li>
       </ol>
+    </div>
+  </section>
+
+  {# The closing call to action. Both routes work with JavaScript off: a
+     mailto: opens the buyer's mail app, and ig.me opens a direct message in
+     Instagram. Until the Sprint 5 inquiry form exists, these are the form. #}
+  <section id="contact" aria-labelledby="contact-title">
+    <div class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:grid md:grid-cols-[3fr_2fr]
+                md:items-end md:gap-12 md:py-24">
+      <div>
+        <p class="text-eyebrow font-medium uppercase text-gold-400">Get in touch</p>
+        <h2 id="contact-title" class="mt-4 text-display-2 text-white">
+          Ask about any watch.
+        </h2>
+        <p class="mt-5 max-w-[52ch] text-lead text-royal-100">
+          Questions, offers, and viewings by appointment. After a specific reference?
+          We&rsquo;ll source it. Selling a watch? We buy those too.
+        </p>
+      </div>
+
+      <div class="mt-9 flex flex-col gap-3 md:mt-0">
+        <a href="mailto:{{ settings.contact_email }}?subject={{ 'Inquiry' | urlencode }}"
+           class="inline-flex items-center justify-center bg-white px-7 py-3.5 text-sm
+                  font-medium tracking-wide text-royal-950 transition-colors hover:bg-royal-100">
+          Email us
+        </a>
+        <a href="{{ settings.instagram_dm_url }}"
+           rel="noopener"
+           class="inline-flex items-center justify-center border border-gold-400 px-7 py-3.5
+                  text-sm font-medium tracking-wide text-white transition-colors
+                  hover:bg-white/10">
+          Message on Instagram
+        </a>
+      </div>
     </div>
   </section>
 {% endblock %}

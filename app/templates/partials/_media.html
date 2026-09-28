@@ -1,9 +1,26 @@
 {#
-  Responsive image helper.
+  Responsive image helpers.
 
-  Import it WITH CONTEXT, or url_for() will be undefined inside the macro:
+  Import them WITH CONTEXT, or url_for() will be undefined inside the macros:
 
-      {% from "partials/_media.html" import responsive_img with context %}
+      {% from "partials/_media.html" import responsive_img, srcset with context %}
+#}
+
+{#
+  srcset(name, widths): the srcset string on its own. Used directly by a
+  <source> inside a <picture>, where the hero offers a different crop per
+  screen shape (art direction), and by responsive_img below.
+#}
+{% macro srcset(name, widths) -%}
+  {%- set candidates = [] -%}
+  {%- for w in widths -%}
+    {%- set _ = candidates.append(url_for('static', path='img/' ~ name ~ '-' ~ w ~ '.webp') ~ ' ' ~ w ~ 'w') -%}
+  {%- endfor -%}
+  {{ candidates | join(', ') }}
+{%- endmacro %}
+
+{#
+  responsive_img(...): a complete <img>.
 
   Arguments:
     name    path under /static/img, without the "-<width>.webp" suffix
@@ -18,12 +35,8 @@
     class_  extra classes for the <img>
 #}
 {% macro responsive_img(name, widths, sizes, alt, width, height, eager=false, class_="") -%}
-  {%- set srcset = [] -%}
-  {%- for w in widths -%}
-    {%- set _ = srcset.append(url_for('static', path='img/' ~ name ~ '-' ~ w ~ '.webp') ~ ' ' ~ w ~ 'w') -%}
-  {%- endfor -%}
   <img src="{{ url_for('static', path='img/' ~ name ~ '-' ~ widths[0] ~ '.webp') }}"
-       srcset="{{ srcset | join(', ') }}"
+       srcset="{{ srcset(name, widths) }}"
        sizes="{{ sizes }}"
        width="{{ width }}" height="{{ height }}"
        alt="{{ alt }}"

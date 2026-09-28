@@ -18,6 +18,7 @@ BASE = FeaturedWatch(
     year=2020,
     condition="Excellent",
     price=5000,
+    box_papers="Box and papers",
     alt="A test watch.",
 )
 
