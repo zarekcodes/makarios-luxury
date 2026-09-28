@@ -94,6 +94,28 @@ increment to a live URL. That's a core Agile principle and makes sprint reviews 
 - **Testimonials** (stretch). As a buyer, I want to read what past clients say so that I trust a
   dealer I haven't bought from before. Real, attributed reviews only, never invented ones.
 
+### Epic: Blog (`epic:blog`), stretch: Sprint 7 or after the MVP
+Gives the site the owner's own voice. Posts answer the questions that come up again and again with
+prospective buyers, and with anyone who finds out he resells watches. `MVP.md` already lists "Blog
+/ educational content" as a stretch goal. The stories are rough and will be split and estimated when
+the epic is scheduled.
+- **Blog list and post pages.** As a buyer, I want to read the owner's take on common watch
+  questions so that I get to know who I'd be buying from and trust his judgement before I ask
+  about a piece.
+- **Writing a post without touching templates.** As the owner, I want to write and publish a post
+  in plain text (such as Markdown) so that sharing an answer is as easy as giving it in person.
+  *To decide when scheduled:* Markdown files in the repo, rendered by the server (simplest, and the
+  fastest pages), or posts in the database and edited in the admin area.
+- **Latest posts on the landing page.** As a buyer, I want to see a few recent posts on the home
+  page so that I find them without looking for them.
+- **Linking posts to watches.** As a buyer reading a post such as "our favourite watches under
+  $5,000", I want to reach the watches it mentions that are in stock so that I can act on the
+  advice.
+
+Seed topics from the owner: *What to buy a new grad* and *Our favourite watches under $X*. More in
+the same vein, suggestions only: buying a first "real" watch, whether box and papers matter, and
+what "unworn" actually means.
+
 ### Epic: Internal dashboard (`epic:dashboard`), after the MVP
 Long-term direction; see "Future: internal dashboard" in `ARCHITECTURE.md`. Stories are rough
 and will be split and estimated when the epic is scheduled.
