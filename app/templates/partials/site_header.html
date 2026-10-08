@@ -1,0 +1,50 @@
+{#
+  Site header.
+
+  The mobile menu is a native <details>/<summary> disclosure, so it opens and
+  closes with no JavaScript at all. Three things about it are deliberate:
+
+  1. It is a panel anchored under the header, not a full-screen overlay. It
+     covers the top of the page rather than the whole of it, which means it
+     is not a modal: no focus trap, no Escape handler, no aria-modal and no
+     scroll lock — none of which could be built without JavaScript anyway.
+     Tab order is already correct, because the links follow <summary> in the
+     DOM.
+  2. There is NO hand-written aria-expanded on the <summary>. Without
+     JavaScript it could never be updated, and a permanently wrong value is
+     worse than none. Browsers already expose a disclosure's open state.
+  3. The desktop and mobile navs are separate elements sharing one link file.
+     Only one is ever displayed, so only one reaches the accessibility tree,
+     and resizing past the breakpoint can never leave the menu stuck open.
+#}
+<header class="relative border-b border-line">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+    <a href="/" class="shrink-0" aria-label="Makarios Luxury, home">
+      {% include "partials/_brandmark.html" %}
+    </a>
+
+    <nav aria-label="Main" class="hidden md:block">
+      <ul class="flex items-center gap-8">
+        {% include "partials/nav_links.html" %}
+      </ul>
+    </nav>
+
+    <details class="md:hidden [&[open]_.menu-caret]:rotate-180">
+      <summary class="-mr-2 flex items-center gap-1.5 px-2 py-3 text-sm font-medium text-royal-900">
+        Menu
+        <svg class="menu-caret h-4 w-4 transition-transform" viewBox="0 0 20 20"
+             fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+             stroke-linejoin="round" aria-hidden="true">
+          <path d="m5 7.5 5 5 5-5"></path>
+        </svg>
+      </summary>
+
+      <nav aria-label="Main"
+           class="absolute inset-x-0 top-full z-10 border-b border-line bg-white px-5 pb-3">
+        <ul class="flex flex-col divide-y divide-line">
+          {% include "partials/nav_links.html" %}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>

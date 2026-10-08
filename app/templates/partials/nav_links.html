@@ -1,0 +1,30 @@
+{#
+  The site's navigation links, written once and included in three places: the
+  desktop nav, the mobile disclosure menu, and the footer.
+
+  Writing them once is what keeps the two header navs from drifting apart.
+  They are the same list, so only one of the two is ever visible at a time.
+
+  Takes an optional `tone`: "dark" for the footer, light otherwise.
+
+  Sprint 4: "Collection" points at /catalog once that page exists.
+#}
+{% set tone = tone | default("light") %}
+{% set link_class = (
+     "text-royal-100 hover:text-white"
+     if tone == "dark" else
+     "text-slate-600 hover:text-royal-700"
+   ) %}
+{% for item in [
+     ("#featured", "Collection"),
+     ("#trust", "Authentication"),
+     ("#contact", "Contact"),
+   ] %}
+  <li>
+    <a href="{{ item[0] }}"
+       class="inline-block py-1.5 text-sm underline-offset-4 transition-colors hover:underline
+              {{ link_class }}">
+      {{ item[1] }}
+    </a>
+  </li>
+{% endfor %}

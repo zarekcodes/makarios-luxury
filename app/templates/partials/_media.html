@@ -1,0 +1,33 @@
+{#
+  Responsive image helper.
+
+  Import it WITH CONTEXT, or url_for() will be undefined inside the macro:
+
+      {% from "partials/_media.html" import responsive_img with context %}
+
+  Arguments:
+    name    path under /static/img, without the "-<width>.webp" suffix
+    widths  the generated widths, e.g. [400, 800, 1200]
+    sizes   how wide the image will be displayed, per breakpoint. Getting this
+            roughly right is what makes srcset actually save bytes.
+    alt     describe the picture; "" only for decoration
+    width   intrinsic width of the default file
+    height  intrinsic height of the default file
+    eager   true for the LCP image (the hero). Lazy-loading that one costs
+            more than it saves.
+    class_  extra classes for the <img>
+#}
+{% macro responsive_img(name, widths, sizes, alt, width, height, eager=false, class_="") -%}
+  {%- set srcset = [] -%}
+  {%- for w in widths -%}
+    {%- set _ = srcset.append(url_for('static', path='img/' ~ name ~ '-' ~ w ~ '.webp') ~ ' ' ~ w ~ 'w') -%}
+  {%- endfor -%}
+  <img src="{{ url_for('static', path='img/' ~ name ~ '-' ~ widths[0] ~ '.webp') }}"
+       srcset="{{ srcset | join(', ') }}"
+       sizes="{{ sizes }}"
+       width="{{ width }}" height="{{ height }}"
+       alt="{{ alt }}"
+       {% if eager %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+       decoding="async"
+       {% if class_ %}class="{{ class_ }}"{% endif %}>
+{%- endmacro %}

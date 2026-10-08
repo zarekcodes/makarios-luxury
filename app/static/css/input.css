@@ -1,0 +1,153 @@
+/*
+ * Tailwind source file. This is the file you edit; app.css is generated.
+ *
+ * Build it with:  ./scripts/tailwind.sh --watch     (development)
+ *                 ./scripts/tailwind.sh --minify    (what we commit)
+ *
+ * The design tokens below are the single source of truth for the brand.
+ * See docs/BRAND.md for the rules about how they may be used.
+ */
+
+/*
+ * source(none) switches OFF Tailwind's automatic file detection, so the only
+ * thing scanned for class names is the directory named below.
+ *
+ * This matters more than it looks. Automatic detection walks the whole
+ * project, which means any stray class-like string in a Markdown file ends up
+ * in the stylesheet, and the output then depends on files that may not exist
+ * in a fresh clone. CI byte-compares this build against the committed
+ * app.css, so it has to depend on the templates and nothing else.
+ */
+@import "tailwindcss" source(none);
+@source "../../templates";
+
+@theme {
+  /* ---- Brand blue -------------------------------------------------------
+   * royal-700 (#0F52BA) is sampled directly from the logo badge. It is AAA
+   * both as text on white and as a background under white text, which is why
+   * it can serve as link color, heading color and button fill at once.
+   */
+  --color-royal-950: #02193b;
+  --color-royal-900: #052557;
+  --color-royal-800: #093a86;
+  --color-royal-700: #0f52ba;
+  --color-royal-600: #2b6dd4;
+  --color-royal-100: #e0eafa;
+  --color-royal-50: #f2f6fd;
+
+  /* ---- Gold -------------------------------------------------------------
+   * Sampled from the halo in the logo. Bright gold is decorative on light
+   * backgrounds and only becomes legible text on royal-950. gold-700 is the
+   * darkened variant that is safe as text on white. See docs/BRAND.md.
+   */
+  --color-gold-700: #886711;
+  --color-gold-500: #f2b30d;
+  --color-gold-400: #fac438;
+  --color-gold-300: #ffd770;
+
+  /* ---- Neutrals ---------------------------------------------------------- */
+  --color-ink: #0b1220;
+  --color-slate-600: #4a5568;
+  --color-slate-500: #5b6678;
+  --color-silver-400: #bfbfbf;
+  --color-line: #e6e8ee;
+  --color-cream: #faf8f4;
+
+  /* ---- Typefaces ---------------------------------------------------------
+   * One self-hosted display serif; the body stack costs nothing to download.
+   */
+  --font-display: "Cormorant Garamond", ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* ---- Type scale --------------------------------------------------------
+   * clamp() scales headings fluidly with the viewport, so there is no jump at
+   * a breakpoint and no separate mobile size to maintain.
+   */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.18em;
+
+  --text-display-1: clamp(2.5rem, 8vw, 4.5rem);
+  --text-display-1--line-height: 1.05;
+  --text-display-1--letter-spacing: -0.02em;
+
+  --text-display-2: clamp(1.875rem, 5vw, 2.75rem);
+  --text-display-2--line-height: 1.15;
+  --text-display-2--letter-spacing: -0.01em;
+
+  --text-display-3: 1.5rem;
+  --text-display-3--line-height: 1.25;
+
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.6;
+}
+
+/*
+ * The display serif, self-hosted and subset to Latin. Serving it ourselves
+ * avoids a third-party connection, and font-display: swap means text is
+ * readable immediately rather than invisible while the font loads.
+ */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/static/fonts/cormorant-garamond-600-latin.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00ff, U+0131, U+0152-0153, U+02bb-02bc, U+02c6, U+02da, U+02dc, U+2000-206f, U+2074,
+    U+20ac, U+2122, U+2191, U+2193, U+2212, U+2215, U+feff, U+fffd;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  /*
+   * A visible focus ring on every interactive element, in blue rather than
+   * gold: gold does not reach the 3:1 contrast that non-text indicators need.
+   */
+  :focus-visible {
+    outline: 2px solid var(--color-royal-600);
+    outline-offset: 2px;
+  }
+
+  /* The mobile menu is a native <details> disclosure; hide the default marker. */
+  summary {
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

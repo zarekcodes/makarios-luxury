@@ -1,0 +1,15 @@
+{#
+  The featured watches grid. Expects `watches`.
+
+  A separate file because Sprint 4's catalog filters will target exactly this
+  fragment: the route returns this file alone when the request carries an
+  HX-Request header, and the full page otherwise.
+
+  A <ul> rather than a stack of <div>s, so screen readers announce how many
+  pieces there are before reading them.
+#}
+<ul class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+  {% for watch in watches %}
+    {% include "partials/watch_card.html" %}
+  {% endfor %}
+</ul>

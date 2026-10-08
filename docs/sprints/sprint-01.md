@@ -1,25 +1,20 @@
 # Sprint 1: Foundations
 
-**Dates:** _TBD_ – _TBD_
+**Dates:** 2026-09-14 – 2026-09-21
 **Sprint goal:** A version-controlled, tested project skeleton with a defined MVP, architecture, and
 backlog, ready for feature work in Sprint 2.
 
 ## Committed stories
 
-| Issue | Story | Points | Status |
-| --- | --- | --- | --- |
-| # | Project scaffolding (FastAPI app, tests, CI, lint) | | |
-| # | MVP and architecture docs | | |
-| # | Backlog and board setup in GitHub Projects | | |
+| Story | Points | Status |
+| --- | --- | --- |
+| Project scaffolding (FastAPI app, tests, CI, lint) | 3 | Done |
+| MVP and architecture docs | 2 | Done |
+| Backlog and roadmap | 2 | Done |
 
-## Sprint review
+**Committed: 7 points. Completed: 7.**
 
-_What was demoed / what shipped:_
+## Sprint review and retrospective
 
-## Retrospective
-
-**What went well:**
-
-**What didn't:**
-
-**One change for Sprint 2:**
+Kept out of the repository, in `docs/sprints/local/` (gitignored), because they are the owner's
+written reflection and feed coursework submissions rather than the codebase.

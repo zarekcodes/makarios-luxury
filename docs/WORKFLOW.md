@@ -12,13 +12,23 @@ This project follows **Scrum-style Agile**, adapted for a solo developer, with *
 | **Retrospective** | Last day | What went well / what didn't / one thing to change next sprint. |
 | **Backlog refinement** | Mid-sprint | Split, clarify, and re-prioritize upcoming stories. |
 
-## Tooling: GitHub Projects
+## Tooling: the repository itself
 
-- **Backlog** = GitHub Issues using the *User story* template. `docs/BACKLOG.md` is the seed list.
-- **Board columns:** Backlog → Sprint (Ready) → In Progress → In Review → Done
-- **Sprints** = the Project's *Iteration* field (set the length to match the sprint).
-- **Estimates** = a *Story Points* number field (Fibonacci: 1, 2, 3, 5, 8).
-- **Labels:** `story`, `bug`, `chore`, `docs`, plus an epic label (e.g. `epic:catalog`).
+Tracking lives in the repo rather than in a separate tool, so the plan and the code stay in one
+place and the process is visible in the history.
+
+- **Backlog** = `docs/BACKLOG.md`, grouped into epics and a sprint-by-sprint roadmap.
+- **Sprint plan** = `docs/sprints/sprint-NN.md`: the goal, the committed stories, their estimates
+  and any decisions made mid-sprint, written at the start of the sprint.
+- **Sprint review and retrospective** = `docs/sprints/local/`, which is gitignored. They are the
+  owner's written reflection and feed coursework submissions, so they stay off the repository.
+- **Progress** = the commits on the sprint branch, one per story.
+- **Estimates** = story points, Fibonacci (1, 2, 3, 5, 8), agreed at sprint planning.
+
+GitHub Issues and a Projects board would add a status column and a burndown chart. They are worth
+adopting if the backlog outgrows a single file, or if the course requires them; the issue templates
+in `.github/ISSUE_TEMPLATE/` are already there for that. Until then they would be extra
+bookkeeping for one person with no extra information.
 
 ## Definition of Ready
 
@@ -30,17 +40,34 @@ estimate, and it's small enough to finish within one sprint.
 - Acceptance criteria met
 - Tests added or updated; CI passes (lint, format, tests)
 - Works at phone width (~400px) and desktop
-- Merged to `main` through a pull request that references its issue
+- Committed to the sprint branch as a single, clearly named commit
+- Reaches `main` when the sprint branch is merged through its pull request
 - Docs updated if behavior or setup changed
 
-## Branching and commits (GitHub Flow)
+## Branching and commits (GitHub Flow, sprint-scoped)
 
 - `main` is always working. Never commit directly to it.
-- One branch per issue: `feat/12-landing-hero`, `fix/18-mobile-nav`, `chore/3-ci`
-- Open a PR, fill in the template, and link the issue with `Closes #12` so it auto-closes on merge.
-- Squash-merge, and delete the branch after merging.
+- **One branch per sprint**, named for the sprint: `sprint-2`, `sprint-3`.
+- **One commit per story**, so each story stays individually reviewable and revertable, and the
+  sprint's work can still be read story by story in `git log`.
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/):
   `feat: add watch detail page`, `fix: ...`, `docs: ...`, `test: ...`, `chore: ...`
+- Name the story a commit implements in its subject line, so the sprint reads story by story. If
+  the backlog ever moves to GitHub Issues, add `Closes #12` to the commit body as well.
+- Open one pull request per sprint branch, fill in the template, and **merge without squashing**,
+  so the per-story commits survive on `main`.
+- Delete the branch after merging.
+
+### Why one branch per sprint
+
+A per-issue branch is the right default for a team, where several people need to work without
+tripping over each other. On a solo project the cost is real and the benefit is not: the landing
+page's header, hero and footer are visually interdependent, so separate branches would mean
+reviewing half-styled pages and rebasing repeatedly.
+
+Traceability is what actually matters for this project, and it survives: one commit per story,
+each naming its issue. The unit of review becomes the sprint rather than the story, which is also
+how the sprint review reads.
 
 ## Agentic coding (Claude Code)
 

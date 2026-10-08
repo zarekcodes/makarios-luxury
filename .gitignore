@@ -17,3 +17,15 @@ media/
 .vscode/
 .idea/
 .DS_Store
+
+# Tailwind standalone binary (downloaded by scripts/tailwind.sh)
+bin/
+
+# Owner's personal reference notes, kept on the local machine only.
+# Not part of the deliverable; see docs/ for the project documentation.
+docs/LEARNING_GUIDE.md
+docs/CI_CD_GUIDE.md
+
+# Sprint reviews and retrospectives: the owner's written reflection, drafted
+# here and submitted through the course LMS. The sprint plans stay committed.
+docs/sprints/local/

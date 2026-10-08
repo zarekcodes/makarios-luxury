@@ -1,6 +1,107 @@
 {% extends "base.html" %}
+{% from "partials/_media.html" import responsive_img with context %}
 
 {% block content %}
-  <h1>Makarios Luxury</h1>
-  <p>Authenticated pre-owned luxury watches. Coming soon.</p>
+  {# Text first in the DOM, so a phone reads the pitch before it reaches the
+     image. No text sitting over a photo: it would hurt both contrast and the
+     largest-contentful-paint measurement. #}
+  <section aria-labelledby="hero-title"
+           class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:grid md:grid-cols-2 md:items-center
+                  md:gap-12 md:py-24 lg:gap-16 lg:py-32">
+    <div>
+      <p class="text-eyebrow font-medium uppercase text-gold-700">
+        Makarios &middot; Greek for blessed
+      </p>
+      <h1 id="hero-title" class="mt-4 text-display-1 text-royal-900">
+        Wear something worth keeping.
+      </h1>
+      <p class="mt-6 max-w-[62ch] text-lead text-slate-600">
+        Authenticated pre-owned luxury watches &mdash; each one inspected, graded, and documented
+        before it ever reaches your wrist.
+      </p>
+
+      <div class="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+        {# Sprint 4: this becomes /catalog once the catalog page exists. #}
+        <a href="#featured"
+           class="inline-flex items-center justify-center bg-royal-700 px-7 py-3.5 text-sm
+                  font-medium tracking-wide text-white transition-colors hover:bg-royal-800">
+          Browse the collection
+        </a>
+        <a href="#trust"
+           class="inline-flex items-center justify-center gap-1.5 px-1 py-2 text-sm font-medium
+                  text-royal-700 underline-offset-4 hover:underline">
+          How we authenticate
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-12 md:mt-0">
+      {{ responsive_img(
+           name="placeholder/hero",
+           widths=[600, 900, 1200],
+           sizes="(min-width: 768px) 45vw, 92vw",
+           alt="A gold dress watch with a pale dial, photographed against a soft neutral
+                background.",
+           width=1200, height=1500,
+           eager=true,
+           class_="w-full h-auto rounded-sm") }}
+    </div>
+  </section>
+
+  <section id="featured" aria-labelledby="featured-title"
+           class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+    <p class="text-eyebrow font-medium uppercase text-gold-700">In the case</p>
+    <h2 id="featured-title" class="mt-4 text-display-2 text-royal-900">
+      A few pieces currently available.
+    </h2>
+    <p class="mt-5 max-w-[62ch] text-slate-600">
+      A rotating selection from the collection. Every listing shows its reference, year, condition
+      grade, and what comes with it.
+    </p>
+
+    <div class="mt-12">
+      {% include "partials/featured_watches.html" %}
+    </div>
+  </section>
+
+  {# The one dark band on the page. It is also the only place the true halo
+     gold is legible as text (10.6:1 on royal-950); on white it would fail
+     contrast badly. See docs/BRAND.md. #}
+  <section id="trust" aria-labelledby="trust-title" class="bg-royal-950">
+    <div class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+      <p class="text-eyebrow font-medium uppercase text-gold-400">The process</p>
+      <h2 id="trust-title" class="mt-4 text-display-2 text-white">
+        How every watch earns its place.
+      </h2>
+
+      {# An <ol>, not a <ul>: this is the order a watch actually moves through. #}
+      <ol class="mt-12 grid grid-cols-1 gap-10 md:grid-cols-3">
+        <li>
+          {% include "partials/_icon_shield.html" %}
+          <h3 class="mt-5 text-display-3 text-white">Authenticated</h3>
+          <p class="mt-3 text-royal-100">
+            Movement, serial, and reference are verified against the manufacturer&rsquo;s records.
+            If a part isn&rsquo;t original, we say so.
+          </p>
+        </li>
+        <li>
+          {% include "partials/_icon_scale.html" %}
+          <h3 class="mt-5 text-display-3 text-white">Graded</h3>
+          <p class="mt-3 text-royal-100">
+            A plain-language condition scale &mdash; Unworn, Excellent, Very Good, Good &mdash;
+            with the criteria published, not implied.
+          </p>
+        </li>
+        <li>
+          {% include "partials/_icon_document.html" %}
+          <h3 class="mt-5 text-display-3 text-white">Documented</h3>
+          <p class="mt-3 text-royal-100">
+            Box, papers, and service history listed honestly. Photographed from every angle,
+            including the flaws.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
 {% endblock %}

@@ -19,3 +19,29 @@ jobs:
         run: uv run ruff format --check .
       - name: Test
         run: uv run pytest
+
+  # The generated stylesheet is committed, because the deployed app serves it
+  # directly and has no Node or Tailwind binary available. That only stays
+  # honest if something checks the committed file matches the source, which is
+  # what this job does: rebuild it, then fail if the result differs.
+  css:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Only a cache key. The real version lives in scripts/tailwind.sh, which
+      # re-downloads if the cached binary is the wrong one, so a stale key here
+      # costs a download rather than producing a wrong build.
+      - name: Cache the Tailwind binary
+        uses: actions/cache@v4
+        with:
+          path: bin
+          key: tailwind-${{ runner.os }}-v4.3.3
+      - name: Rebuild the stylesheet
+        run: ./scripts/tailwind.sh
+      - name: Fail if the committed stylesheet is out of date
+        run: |
+          if ! git diff --exit-code -- app/static/css/app.css; then
+            echo "::error::app/static/css/app.css does not match input.css."
+            echo "Run './scripts/tailwind.sh' and commit the result."
+            exit 1
+          fi
