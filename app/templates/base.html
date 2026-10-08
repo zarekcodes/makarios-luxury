@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Makarios Luxury{% endblock %}</title>
   <meta name="description" content="{% block description %}Authenticated pre-owned luxury watches.{% endblock %}">
-  <meta name="theme-color" content="#0F52BA">
+  {# royal-950, so a phone's browser bar runs straight into the navy header. #}
+  <meta name="theme-color" content="#02193B">
 
   {# Without this the browser only discovers the font after parsing app.css,
      which makes the hero headline visibly swap fonts mid-load. #}
@@ -24,11 +25,10 @@
      rendering, and vendored rather than CDN-loaded to avoid a second origin. #}
   <script src="{{ url_for('static', path='js/htmx.min.js') }}" defer></script>
 </head>
-<body class="{% block body_class %}{% endblock %} bg-white text-ink">
+<body class="{% block body_class %}{% endblock %} bg-royal-950 text-royal-100">
   <a href="#main"
      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50
-            focus:bg-white focus:px-4 focus:py-2 focus:text-royal-700 focus:outline-2
-            focus:outline-royal-600">
+            focus:bg-white focus:px-4 focus:py-2 focus:text-royal-950">
     Skip to content
   </a>
 

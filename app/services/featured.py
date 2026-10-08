@@ -23,12 +23,31 @@ class FeaturedWatch:
     reference: str
     year: int
     condition: str
-    price_label: str
+    # Whole US dollars. None means the price is given on request, not listed.
+    price: int | None
+    # What comes with the watch, e.g. "Box and papers" or "Watch only". Buyers
+    # weigh this almost as heavily as condition, so every listing states it.
+    box_papers: str
     alt: str
 
     @property
     def name(self) -> str:
         return f"{self.brand} {self.model}"
+
+    @property
+    def price_label(self) -> str:
+        if self.price is None:
+            return "Price on request"
+        return f"${self.price:,}"
+
+    @property
+    def inquiry_subject(self) -> str:
+        """The subject line of an email about this watch.
+
+        It carries the reference, so the owner knows exactly which piece a
+        buyer means without having to ask.
+        """
+        return f"Inquiry: {self.name}, ref. {self.reference}"
 
 
 _FEATURED = (
@@ -39,7 +58,8 @@ _FEATURED = (
         reference="AM-3120-SS",
         year=2019,
         condition="Excellent",
-        price_label="£8,400",
+        price=8400,
+        box_papers="Box and papers",
         alt="Steel chronograph with a pale dial on a navy leather strap.",
     ),
     FeaturedWatch(
@@ -49,7 +69,8 @@ _FEATURED = (
         reference="CR-880-YG",
         year=2016,
         condition="Very Good",
-        price_label="£12,950",
+        price=12950,
+        box_papers="Papers only",
         alt="Yellow gold dress watch with a cream dial on a brown leather strap.",
     ),
     FeaturedWatch(
@@ -59,7 +80,8 @@ _FEATURED = (
         reference="ND-300-TI",
         year=2021,
         condition="Unworn",
-        price_label="Price on request",
+        price=None,
+        box_papers="Box and papers",
         alt="Titanium diver with a royal blue dial on a dark rubber strap.",
     ),
 )

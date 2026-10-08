@@ -3,6 +3,8 @@ from pathlib import Path
 
 from fastapi.templating import Jinja2Templates
 
+from app.config import get_settings
+
 APP_DIR = Path(__file__).resolve().parent
 STATIC_DIR = APP_DIR / "static"
 TEMPLATES_DIR = APP_DIR / "templates"
@@ -15,5 +17,6 @@ def current_year() -> int:
 
 
 # Available in every template, so shared layout pieces like the footer copyright
-# don't depend on each route remembering to pass it.
+# and the contact links don't depend on each route remembering to pass them.
 templates.env.globals["current_year"] = current_year
+templates.env.globals["settings"] = get_settings()

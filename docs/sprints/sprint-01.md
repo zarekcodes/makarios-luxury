@@ -6,11 +6,11 @@ backlog, ready for feature work in Sprint 2.
 
 ## Committed stories
 
-| Story | Points | Status |
-| --- | --- | --- |
-| Project scaffolding (FastAPI app, tests, CI, lint) | 3 | Done |
-| MVP and architecture docs | 2 | Done |
-| Backlog and roadmap | 2 | Done |
+| Story | Issue | Points | Status |
+| --- | --- | --- | --- |
+| Project scaffolding (FastAPI app, tests, CI, lint) | [#8] | 3 | Done |
+| MVP and architecture docs | [#9] | 2 | Done |
+| Backlog and roadmap | [#10] | 2 | Done |
 
 **Committed: 7 points. Completed: 7.**
 
@@ -18,3 +18,7 @@ backlog, ready for feature work in Sprint 2.
 
 Kept out of the repository, in `docs/sprints/local/` (gitignored), because they are the owner's
 written reflection and feed coursework submissions rather than the codebase.
+
+[#8]: https://github.com/zarekcodes/makarios-luxury/issues/8
+[#9]: https://github.com/zarekcodes/makarios-luxury/issues/9
+[#10]: https://github.com/zarekcodes/makarios-luxury/issues/10

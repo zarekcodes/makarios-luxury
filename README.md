@@ -59,5 +59,6 @@ uv run python scripts/build_brand_assets.py        # logo badge + favicons from 
 - [MVP definition](docs/MVP.md): vision, users, and what's in and out of scope
 - [Architecture](docs/ARCHITECTURE.md): stack choices, structure, and open decisions
 - [Workflow](docs/WORKFLOW.md): sprint process, board, branching, Definition of Done
-- [Backlog seed](docs/BACKLOG.md): roadmap and initial user stories
+- [Roadmap and epics](docs/BACKLOG.md): the sprint-by-sprint plan; the backlog itself is the
+  [project board](https://github.com/users/zarekcodes/projects/2)
 - [Sprint notes](docs/sprints/): per-sprint goals, reviews, and retrospectives

@@ -5,7 +5,7 @@
   surprise for screen reader and keyboard users, and the back button already
   does the job. rel="me" states that this profile belongs to the site.
 #}
-<footer id="contact" class="border-t-2 border-gold-500 bg-royal-950">
+<footer class="border-t-2 border-gold-500 bg-royal-950">
   <div class="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-16">
     <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
       <div class="lg:col-span-2">
@@ -25,13 +25,13 @@
         <h2 class="text-eyebrow font-medium uppercase tracking-[0.18em] text-gold-400">Contact</h2>
         <ul class="mt-4 space-y-3 text-sm text-royal-100">
           <li>
-            <a href="mailto:makarioslux@gmail.com"
+            <a href="mailto:{{ settings.contact_email }}"
                class="inline-block py-1.5 underline-offset-4 hover:text-white hover:underline">
-              makarioslux@gmail.com
+              {{ settings.contact_email }}
             </a>
           </li>
           <li>
-            <a href="https://www.instagram.com/makariosluxury"
+            <a href="{{ settings.instagram_url }}"
                rel="me noopener"
                class="inline-flex items-center gap-2 py-1.5 underline-offset-4
                       hover:text-white hover:underline">
@@ -42,7 +42,7 @@
                 <circle cx="12" cy="12" r="4"></circle>
                 <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
               </svg>
-              @makariosluxury
+              @{{ settings.instagram_handle }}
               <span class="sr-only">on Instagram</span>
             </a>
           </li>

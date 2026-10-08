@@ -9,11 +9,13 @@ Jinja syntax.
 
 import re
 from html.parser import HTMLParser
+from urllib.parse import parse_qs, urlsplit
 
 from fastapi.testclient import TestClient
 
+from app.config import get_settings
 from app.main import app
-from app.paths import current_year
+from app.paths import STATIC_DIR, current_year
 from app.services.featured import get_featured_watches
 
 client = TestClient(app)
@@ -139,6 +141,19 @@ def test_images_declare_dimensions_and_alt() -> None:
         assert image.get("alt") is not None, f"no alt attribute on {src}"
 
 
+def test_picture_sources_declare_dimensions() -> None:
+    """An art-directed <source> has its own shape, so it needs its own size.
+
+    Without width/height on the <source>, the browser reserves space using the
+    <img>'s portrait shape and then jumps when the landscape crop arrives.
+    """
+    response = client.get("/")
+
+    for source in collect(response.text, "source"):
+        assert source.get("width"), f"no width on <source media={source.get('media')}>"
+        assert source.get("height"), f"no height on <source media={source.get('media')}>"
+
+
 def test_hero_image_is_not_lazy_loaded() -> None:
     """The hero is the largest-contentful-paint element.
 
@@ -152,6 +167,40 @@ def test_hero_image_is_not_lazy_loaded() -> None:
 
     assert hero[0].get("loading") != "lazy"
     assert hero[0].get("fetchpriority") == "high"
+
+
+def test_hero_is_art_directed() -> None:
+    """Landscape screens get a wide crop; everything else falls back to portrait.
+
+    The fallback matters: a browser that matches no <source> still shows the
+    <img>, so the portrait crop must be the one on the <img> itself.
+    """
+    response = client.get("/")
+
+    sources = [
+        s for s in collect(response.text, "source") if "hero-wide" in (s.get("srcset") or "")
+    ]
+    assert len(sources) == 1, "expected one landscape <source> for the hero"
+    assert "landscape" in (sources[0].get("media") or "")
+
+    hero = [i for i in collect(response.text, "img") if "hero-portrait" in (i.get("src") or "")]
+    assert len(hero) == 1, "the hero <img> should carry the portrait crop"
+
+
+def test_hero_images_fit_the_performance_budget() -> None:
+    """The hero is the largest-contentful-paint image, so its weight is the page's speed.
+
+    The ceiling is generous for today's stand-ins (about 50 KB at most) and is
+    there to catch the day a real photo is dropped in unoptimised: a phone
+    straight off a camera easily produces several megabytes.
+    """
+    budget = 150_000
+    variants = sorted((STATIC_DIR / "img" / "placeholder").glob("hero-*.webp"))
+    assert variants, "no hero images found"
+
+    for path in variants:
+        size = path.stat().st_size
+        assert size <= budget, f"{path.name} is {size:,} bytes, over the {budget:,} budget"
 
 
 def test_watch_images_below_the_fold_are_lazy() -> None:
@@ -181,6 +230,26 @@ def test_featured_watches_come_from_the_service() -> None:
         assert watch.name in response.text
         assert watch.reference in response.text
         assert watch.price_label in response.text
+        assert watch.box_papers in response.text
+
+
+def test_every_featured_watch_has_an_inquiry_link() -> None:
+    """Each card's Inquire link must name its own watch.
+
+    Decoded rather than string-matched, so this checks what a mail app will
+    actually show in the subject line, not how the URL happens to be escaped.
+    """
+    response = client.get("/")
+
+    subjects = []
+    for href in hrefs(response.text):
+        if href.startswith(f"mailto:{get_settings().contact_email}?"):
+            subjects += parse_qs(urlsplit(href).query).get("subject", [])
+
+    for watch in get_featured_watches():
+        assert any(watch.reference in subject for subject in subjects), (
+            f"no inquiry link for {watch.name} ({watch.reference})"
+        )
 
 
 def test_each_featured_watch_is_its_own_article() -> None:
@@ -233,6 +302,13 @@ def test_instagram_profile_is_linked() -> None:
     assert 'href="https://www.instagram.com/makariosluxury"' in response.text
 
 
+def test_instagram_direct_message_is_linked() -> None:
+    """The contact band's second call to action opens a DM, not the profile."""
+    response = client.get("/")
+
+    assert 'href="https://ig.me/m/makariosluxury"' in response.text
+
+
 def test_no_placeholder_links() -> None:
     """href="#" is a link that goes nowhere, and it is easy to leave behind."""
     response = client.get("/")
@@ -248,10 +324,14 @@ def test_copyright_year_is_not_hardcoded() -> None:
 
 
 def test_image_sources_resolve() -> None:
-    """Every src and every srcset candidate must actually be served."""
+    """Every src and every srcset candidate must actually be served.
+
+    That includes the <source> elements inside a <picture>, which only one
+    screen shape ever requests, so a missing file there is easy to miss.
+    """
     response = client.get("/")
 
-    for image in collect(response.text, "img"):
+    for image in collect(response.text, "img") + collect(response.text, "source"):
         candidates = [image.get("src") or ""]
         candidates += re.findall(r"(\S+)\s+\d+w", image.get("srcset") or "")
 
