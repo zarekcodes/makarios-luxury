@@ -1,20 +1,20 @@
 # Sprint 2: Landing page MVP
 
-**Dates:** 2026-09-22 – 2026-10-05
+**Dates:** 2026-09-22 (planned through 10-05; Sprint 3 began on 09-23)
 **Sprint goal:** A polished, responsive landing page built on static placeholder content, on a
 Tailwind + htmx toolchain that CI verifies.
 
 ## Committed stories
 
-| Story | Points | Status |
-| --- | --- | --- |
-| Frontend tooling (Tailwind, htmx, design tokens, brand assets) | 5 | Done |
-| Placeholder watch imagery | 2 | Done |
-| Site header and navigation | 3 | Done |
-| Hero section | 3 | Done |
-| Featured watches | 3 | Done |
-| Trust section | 2 | Done |
-| Footer | 2 | Done |
+| Story | Issue | Points | Status |
+| --- | --- | --- | --- |
+| Frontend tooling (Tailwind, htmx, design tokens, brand assets) | [#11] | 5 | Done |
+| Placeholder watch imagery | [#12] | 2 | Done |
+| Site header and navigation | [#13] | 3 | Done |
+| Hero section | [#14] | 3 | Done |
+| Featured watches | [#15] | 3 | Done |
+| Trust section | [#16] | 2 | Done |
+| Footer | [#17] | 2 | Done |
 
 **Committed: 20 points. Completed: 20.**
 
@@ -42,3 +42,11 @@ backlog. The full rules live in [BRAND.md](../BRAND.md).
 
 Kept out of the repository, in `docs/sprints/local/` (gitignored), because they are the owner's
 written reflection and feed coursework submissions rather than the codebase.
+
+[#11]: https://github.com/zarekcodes/makarios-luxury/issues/11
+[#12]: https://github.com/zarekcodes/makarios-luxury/issues/12
+[#13]: https://github.com/zarekcodes/makarios-luxury/issues/13
+[#14]: https://github.com/zarekcodes/makarios-luxury/issues/14
+[#15]: https://github.com/zarekcodes/makarios-luxury/issues/15
+[#16]: https://github.com/zarekcodes/makarios-luxury/issues/16
+[#17]: https://github.com/zarekcodes/makarios-luxury/issues/17
