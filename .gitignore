@@ -5,18 +5,36 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# Environment / secrets
+# Environment / secrets. Any .env variant (.env.production, .env.local) stays
+# local; only the example file, which holds no real values, is committed.
 .env
+.env.*
+!.env.example
+*.pem
+*.key
 
-# Local data
+# Local data. SQLite also writes -journal, -wal and -shm files next to the
+# database, holding the same data.
 *.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
 *.sqlite3
 media/
+
+# Test and coverage output
+.coverage
+htmlcov/
 
 # Editors / OS
 .vscode/
 .idea/
 .DS_Store
+
+# Claude Code's per-machine settings. This machine's global gitignore already
+# covers it; listed here so a clone anywhere else ignores it too.
+.claude/settings.local.json
 
 # Tailwind standalone binary (downloaded by scripts/tailwind.sh)
 bin/
