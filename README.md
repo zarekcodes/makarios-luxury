@@ -6,7 +6,7 @@ inventory and send inquiries; the owner manages listings from an admin area.
 Built as a semester project for Development Processes & Methodologies using Agile (Scrum-style,
 1–2 week sprints).
 
-**Stack:** FastAPI · Jinja2 · htmx · Tailwind CSS · SQLAlchemy · pytest · GitHub Actions
+**Stack:** FastAPI · Jinja2 · htmx · Tailwind CSS · SQLAlchemy + Alembic · pytest · GitHub Actions
 
 ## Getting started
 
@@ -15,6 +15,8 @@ Requires [uv](https://docs.astral.sh/uv/).
 ```bash
 uv sync                          # install dependencies into .venv
 cp .env.example .env             # local settings
+uv run alembic upgrade head      # create the local SQLite database, makarios.db
+uv run python -m app.cli seed    # load the placeholder watches
 uv run fastapi dev app/main.py   # start with auto-reload at http://127.0.0.1:8000
 ```
 
@@ -38,6 +40,16 @@ uv run ruff check .              # lint
 uv run ruff format .             # auto-format
 ./scripts/tailwind.sh            # rebuild the CSS (commit the result)
 ```
+
+The database schema changes only through migrations in `migrations/versions/`:
+
+```bash
+uv run alembic upgrade head                           # apply new migrations (after a pull, too)
+uv run alembic revision --autogenerate -m "<change>"  # after changing a model; review the file
+```
+
+A test fails if a model changes without its migration. See `migrations/README` for what to check
+in a generated file.
 
 `app/static/css/app.css` is generated but committed, because the deployed server has no Tailwind
 binary. CI rebuilds it and fails if the committed file is out of date, so run the command above and

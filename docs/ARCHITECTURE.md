@@ -50,6 +50,11 @@ app/
   main.py        # App factory: mounts static files, registers routers
   config.py      # Settings from environment variables (MAKARIOS_*)
   paths.py       # Filesystem paths + shared Jinja templates object
+  db.py          # Database engine and the per-request session (get_session)
+  cli.py         # Owner and developer commands: python -m app.cli
+  seed.py        # Placeholder watches for development and tests
+  models/        # SQLAlchemy models: the database tables
+  services/      # Business logic, kept out of routes so it's testable
   routes/
     pages.py     # HTML routes (full pages and HTMX partials)
     api.py       # JSON routes under /api
@@ -62,14 +67,12 @@ app/
     js/          #   htmx, vendored
     fonts/       #   self-hosted display serif, subset
     img/         #   brand assets and generated placeholders
-tests/           # pytest suite
+migrations/      # Alembic: one file per schema change, in versions/
+tests/           # pytest suite; conftest.py gives each test an in-memory database
 scripts/         # Developer tooling: CSS build, asset generators
 design/          # Source logos and photography (see docs/BRAND.md)
 docs/            # MVP, architecture, brand, workflow, sprint notes
 ```
-
-Added as the project grows: `app/models/` (database models), `app/services/` (business logic,
-kept out of routes so it's testable), `app/db.py` (engine and session).
 
 ## Conventions
 
@@ -77,6 +80,11 @@ kept out of routes so it's testable), `app/db.py` (engine and session).
 - **One URL, two responses.** A page route returns the full page normally, and only the
   changed fragment when the request has the `HX-Request` header.
 - **Progressive enhancement.** Links and forms work without JavaScript; htmx makes them smoother.
+- **Synchronous database access.** SQLAlchemy runs synchronously, so a route that uses the
+  database is a plain `def`, which FastAPI runs on a thread pool. An `async def` route would block
+  the server while it waited on a query.
+- **The schema changes only through migrations.** A test runs the migrations and fails if the
+  result differs from the models.
 
 ## Performance strategy
 

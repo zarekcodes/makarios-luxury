@@ -5,8 +5,10 @@ description = "Website for Makarios Luxury, a pre-owned luxury watch reseller."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.20.0",
     "fastapi[standard]>=0.141.1",
     "pydantic-settings>=2.15.0",
+    "sqlalchemy>=2.1.5",
 ]
 
 [tool.ruff]

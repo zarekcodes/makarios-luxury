@@ -12,6 +12,7 @@ from html.parser import HTMLParser
 from urllib.parse import parse_qs, urlsplit
 
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.main import app
@@ -215,7 +216,7 @@ def test_watch_images_below_the_fold_are_lazy() -> None:
         assert image.get("loading") == "lazy"
 
 
-def test_featured_watches_come_from_the_service() -> None:
+def test_featured_watches_come_from_the_service(session: Session) -> None:
     """Proves the route -> service -> template wiring, not just that text exists.
 
     Adding a watch to the service must make it appear on the page; this fails
@@ -223,7 +224,7 @@ def test_featured_watches_come_from_the_service() -> None:
     """
     response = client.get("/")
 
-    watches = get_featured_watches()
+    watches = get_featured_watches(session)
     assert watches, "the service returned nothing to feature"
 
     for watch in watches:
@@ -233,7 +234,7 @@ def test_featured_watches_come_from_the_service() -> None:
         assert watch.box_papers in response.text
 
 
-def test_every_featured_watch_has_an_inquiry_link() -> None:
+def test_every_featured_watch_has_an_inquiry_link(session: Session) -> None:
     """Each card's Inquire link must name its own watch.
 
     Decoded rather than string-matched, so this checks what a mail app will
@@ -246,17 +247,17 @@ def test_every_featured_watch_has_an_inquiry_link() -> None:
         if href.startswith(f"mailto:{get_settings().contact_email}?"):
             subjects += parse_qs(urlsplit(href).query).get("subject", [])
 
-    for watch in get_featured_watches():
+    for watch in get_featured_watches(session):
         assert any(watch.reference in subject for subject in subjects), (
             f"no inquiry link for {watch.name} ({watch.reference})"
         )
 
 
-def test_each_featured_watch_is_its_own_article() -> None:
+def test_each_featured_watch_is_its_own_article(session: Session) -> None:
     """One card per watch, no duplicates and none silently dropped."""
     response = client.get("/")
 
-    assert response.text.count("<article") == len(get_featured_watches())
+    assert response.text.count("<article") == len(get_featured_watches(session))
 
 
 def test_navigation_works_without_javascript() -> None:

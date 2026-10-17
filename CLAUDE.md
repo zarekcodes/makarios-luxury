@@ -5,7 +5,10 @@ stack and structure and `docs/WORKFLOW.md` for process.
 
 ## Commands
 
-- Run: `uv run fastapi dev app/main.py`
+- Run: `uv run fastapi dev app/main.py` (first time: `uv run alembic upgrade head`, then
+  `uv run python -m app.cli seed` for the placeholder watches)
+- New migration after a model change: `uv run alembic revision --autogenerate -m "<change>"`,
+  then review the file (see `migrations/README`)
 - Test: `uv run pytest`
 - Lint/format: `uv run ruff check . && uv run ruff format .`
 - Add a dependency: `uv add <pkg>` (dev-only: `uv add --dev <pkg>`). Never use pip.
@@ -16,6 +19,8 @@ stack and structure and `docs/WORKFLOW.md` for process.
   htmx can't do it. (The planned internal dashboard is the one exception; see `docs/ARCHITECTURE.md`.)
 - Mobile-first: every page must work well at ~400px wide. Performance is the top product priority.
 - Routes stay thin; put business logic in `app/services/`.
+- Routes that use the database are plain `def`, not `async def`: SQLAlchemy is synchronous here,
+  and FastAPI runs a plain `def` on a thread pool.
 - HTMX requests (`HX-Request` header) get a partial from `templates/partials/`; normal requests
   get the full page.
 - Pages must work without JavaScript (links and forms still function).

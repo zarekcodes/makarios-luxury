@@ -1,20 +1,20 @@
 """Catalog queries: narrowing the list of watches a buyer sees.
 
 The catalog filters story needs a price range, and it is business logic, so it
-lives here rather than in a route. It works on anything the featured service
-returns today and will keep working once the watches come from the database.
+lives here rather than in a route. It filters watches already loaded, so it
+needs no database of its own.
 """
 
 from collections.abc import Iterable
 
-from app.services.featured import FeaturedWatch
+from app.models import Watch
 
 
 def filter_by_price(
-    watches: Iterable[FeaturedWatch],
+    watches: Iterable[Watch],
     min_price: int | None = None,
     max_price: int | None = None,
-) -> list[FeaturedWatch]:
+) -> list[Watch]:
     """Return the watches priced within [min_price, max_price], both ends inclusive.
 
     Either bound may be None, meaning no limit on that side. A watch priced on

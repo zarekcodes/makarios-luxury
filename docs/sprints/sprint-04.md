@@ -29,6 +29,24 @@ partitioning and boundary value analysis.
 - **Only the data stories fit.** With four days left, the sprint took the two stories that need
   no outside decision. Deploy needs a host and a Postgres provider chosen and an account created.
   Admin needs the SQLAdmin-or-hand-built decision and depends on the data model anyway.
+- **Synchronous SQLAlchemy, with plain `def` routes.** Async SQLAlchemy needs async drivers and
+  changes how related rows load. At this site's traffic a thread pool is plenty, so a route that
+  queries the database is a plain `def`, which FastAPI runs on its thread pool.
+- **Fixed lists live in the database as names, checked by the database.** Condition, box and
+  papers, and status are Python enums. Each is stored as the member's name (`VERY_GOOD`) in a
+  string column with a CHECK constraint, and the page prints its label ("Very Good"). A native
+  Postgres enum type was ruled out because it's awkward to change in a migration.
+- **Photos get their own table**, ordered by position, so the detail page's gallery ([#27]) needs
+  no schema change. Alt text moved from the watch to the photo it describes.
+- **A `featured` flag picks the landing page's watches**: newest listing first, at most three,
+  which is the grid's width on a laptop.
+- **Slugs describe the watch** (`aurelian-meridian-chronograph`), because they'll be the detail
+  page's URLs.
+- **Placeholder watches load by a command, not a migration.** `python -m app.cli seed` can run
+  any number of times. Migrations carry only the schema, so production never receives the
+  invented watches.
+- **Each test gets its own in-memory SQLite database**, a fake in test-double terms. One more
+  test runs the real migrations and fails if they drift from the models.
 
 ## Sprint review and retrospective
 
@@ -40,3 +58,4 @@ written reflection and feed coursework submissions rather than the codebase.
 [#22]: https://github.com/zarekcodes/makarios-luxury/issues/22
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#24]: https://github.com/zarekcodes/makarios-luxury/issues/24
+[#27]: https://github.com/zarekcodes/makarios-luxury/issues/27

@@ -1,11 +1,14 @@
 {#
-  One watch in the featured grid. Expects `watch` (a FeaturedWatch).
+  One watch in the featured grid. Expects `watch` (a Watch model).
 
-  Written as its own file because the Sprint 4 catalog grid renders the same
-  card, and htmx will swap these in when the filters change.
+  Written as its own file because the catalog grid (#25) renders the same
+  card, and htmx will swap these in when the filters change (#26).
 
-  The card is not a link yet: there is no detail page to link to until
-  Sprint 4. At that point the <h3> text becomes the anchor.
+  The card is not a link yet: there is no detail page to link to until the
+  watch detail page (#27). At that point the <h3> text becomes the anchor.
+
+  A watch not yet photographed keeps the card's 4:5 shape with an empty frame,
+  so the grid doesn't jump.
 
   "Inquire" is a plain mailto: with the watch's name and reference already in
   the subject, so it works with JavaScript off and the owner never has to ask
@@ -18,14 +21,19 @@
 <li>
   <article class="group flex h-full flex-col">
     <div class="overflow-hidden rounded-sm bg-royal-900">
-      {{ responsive_img(
-           name="placeholder/" ~ watch.slug,
-           widths=[400, 800, 1200],
-           sizes="(min-width: 1024px) 341px, (min-width: 640px) 45vw, 92vw",
-           alt=watch.alt,
-           width=800, height=1000,
-           class_="w-full h-auto transition-transform duration-700 ease-out
-                   group-hover:scale-[1.03]") }}
+      {% set photo = watch.primary_photo %}
+      {% if photo %}
+        {{ responsive_img(
+             name=photo.image,
+             widths=[400, 800, 1200],
+             sizes="(min-width: 1024px) 341px, (min-width: 640px) 45vw, 92vw",
+             alt=photo.alt,
+             width=800, height=1000,
+             class_="w-full h-auto transition-transform duration-700 ease-out
+                     group-hover:scale-[1.03]") }}
+      {% else %}
+        <div class="aspect-[4/5]"></div>
+      {% endif %}
     </div>
 
     <div class="mt-5 flex flex-1 flex-col border-t border-white/15 pt-4 transition-colors

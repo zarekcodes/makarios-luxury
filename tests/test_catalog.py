@@ -9,34 +9,29 @@ the technique it comes from.
 No test double is needed here. filter_by_price() receives its watches as an
 argument instead of fetching them, and it touches no database, file, network
 or clock, so every test already controls every input by building watches in
-memory. Those watches are test data, not doubles: they are the real
-FeaturedWatch type, passed in as values. A double becomes necessary one layer
-up, once the catalog route loads watches from the database in Sprint 4. That
-route is where a stub or fake will stand in for the query.
+memory. Those watches are test data, not doubles: they are the real Watch
+model, created but never saved. The page tests one layer up do load watches
+from a database, and there a fake (an in-memory SQLite database, see
+conftest.py) stands in for the real one.
 """
-
-from dataclasses import replace
 
 import pytest
 
+from app.models import BoxPapers, Condition, Watch
 from app.services.catalog import filter_by_price
-from app.services.featured import FeaturedWatch
-
-BASE = FeaturedWatch(
-    slug="test",
-    brand="Testbrand",
-    model="Model",
-    reference="TB-1",
-    year=2020,
-    condition="Excellent",
-    price=5000,
-    box_papers="Box and papers",
-    alt="A test watch.",
-)
 
 
-def watch(price: int | None) -> FeaturedWatch:
-    return replace(BASE, slug=f"watch-{price}", price=price)
+def watch(price: int | None) -> Watch:
+    return Watch(
+        slug=f"watch-{price}",
+        brand="Testbrand",
+        model="Model",
+        reference="TB-1",
+        year=2020,
+        condition=Condition.EXCELLENT,
+        price=price,
+        box_papers=BoxPapers.BOX_AND_PAPERS,
+    )
 
 
 def test_price_inside_range_is_included() -> None:
