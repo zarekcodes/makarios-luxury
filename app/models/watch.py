@@ -77,6 +77,10 @@ class Watch(Base):
         return f"{self.brand} {self.model}"
 
     @property
+    def is_available(self) -> bool:
+        return self.status is WatchStatus.AVAILABLE
+
+    @property
     def price_label(self) -> str:
         if self.price is None:
             return "Price on request"

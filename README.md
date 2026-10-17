@@ -51,6 +51,12 @@ uv run alembic revision --autogenerate -m "<change>"  # after changing a model; 
 A test fails if a model changes without its migration. See `migrations/README` for what to check
 in a generated file.
 
+Until the admin area exists, the owner marks a watch's status from the command line:
+
+```bash
+uv run python -m app.cli status aurelian-meridian-chronograph on-hold   # or available, or sold
+```
+
 `app/static/css/app.css` is generated but committed, because the deployed server has no Tailwind
 binary. CI rebuilds it and fails if the committed file is out of date, so run the command above and
 commit the result whenever you change a template or `input.css`.

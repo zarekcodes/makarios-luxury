@@ -47,6 +47,13 @@ partitioning and boundary value analysis.
   invented watches.
 - **Each test gets its own in-memory SQLite database**, a fake in test-double terms. One more
   test runs the real migrations and fails if they drift from the models.
+- **The owner sets a status with a command until the admin area exists**:
+  `python -m app.cli status <slug> on-hold` (or `available`, or `sold`). The command calls
+  `set_status()` in the inventory service, which the admin area ([#23]) will reuse, so the rule
+  stays in one place.
+- **A sold watch leaves the landing page on its own**, even while it's still marked featured, so
+  marking it sold is the only step to remember. **A watch on hold stays, labelled "On hold"**,
+  because holds fall through and a buyer may want to be next in line.
 
 ## Sprint review and retrospective
 
