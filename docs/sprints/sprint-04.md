@@ -16,13 +16,36 @@ screenshot therefore shows the board at this late planning, not on day one.
 | --- | --- | --- | --- |
 | Watch data model | [#21] | 5 | Committed |
 | Mark watch status | [#22] | 2 | Committed |
+| Price filter tests: lower bound, open range, invalid range | [#50], a task of [#26] | 1 | Done on 2026-10-11, before planning |
 | Admin inventory management | [#23] | – | Moved to the backlog; a candidate for Sprint 5 |
 | Deploy to production | [#24] | – | Moved to the backlog; a candidate for Sprint 5 |
 
-**Committed: 7 points.**
+**Committed: 7 points, plus 1 for the price filter tests done before planning: 8 in all.**
 
-Also on the branch: five more unit tests for the price filter ([#20]), drawn from equivalence
-partitioning and boundary value analysis.
+[#50] adds five unit tests to the price filter from [#20], drawn from equivalence partitioning
+and boundary value analysis. Its story, [#26], isn't in this sprint, so like [#20] in Sprint 3 the
+task carries its own point.
+
+## Tasks
+
+Each story is split into tasks on the board, as its sub-issues. The tasks were split out on
+2026-10-17, after the code was written, so their created dates come after the commits. They show
+each story's technical slices, not a plan made in advance. The points stay on the stories, so the
+Velocity view counts each point once.
+
+| Task | Issue | Story |
+| --- | --- | --- |
+| Watch and Photo models with checked enums | [#42] | [#21] |
+| Database engine and per-request session | [#43] | [#21] |
+| Alembic setup, first migration, and drift test | [#44] | [#21] |
+| Seed command for the placeholder watches | [#45] | [#21] |
+| Landing page reads featured watches from the database | [#46] | [#21] |
+| In-memory test database and model tests | [#47] | [#21] |
+| Inventory service and status command | [#48] | [#22] |
+| Hide sold watches, label watches on hold | [#49] | [#22] |
+
+The story commits close [#21] and [#22]. The tasks close through the sprint pull request's
+description, which lists each one.
 
 ## Decisions made this sprint
 
@@ -66,3 +89,13 @@ written reflection and feed coursework submissions rather than the codebase.
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#24]: https://github.com/zarekcodes/makarios-luxury/issues/24
 [#27]: https://github.com/zarekcodes/makarios-luxury/issues/27
+[#26]: https://github.com/zarekcodes/makarios-luxury/issues/26
+[#42]: https://github.com/zarekcodes/makarios-luxury/issues/42
+[#43]: https://github.com/zarekcodes/makarios-luxury/issues/43
+[#44]: https://github.com/zarekcodes/makarios-luxury/issues/44
+[#45]: https://github.com/zarekcodes/makarios-luxury/issues/45
+[#46]: https://github.com/zarekcodes/makarios-luxury/issues/46
+[#47]: https://github.com/zarekcodes/makarios-luxury/issues/47
+[#48]: https://github.com/zarekcodes/makarios-luxury/issues/48
+[#49]: https://github.com/zarekcodes/makarios-luxury/issues/49
+[#50]: https://github.com/zarekcodes/makarios-luxury/issues/50
