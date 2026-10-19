@@ -21,7 +21,7 @@ def _to_ascii(text: str) -> str:
 
 def slugify(text: str) -> str:
     """Return text as a slug: lowercase letters and digits, with one hyphen between words."""
-    return _SEPARATOR.sub("-", _to_ascii(text).lower())
+    return _SEPARATOR.sub("-", _to_ascii(text).lower()).strip("-")
 
 
 def unique_slug(slug: str, taken: Container[str]) -> str:
