@@ -9,3 +9,9 @@ from app.services.slugs import slugify
 def test_slug_is_lowercase_words_joined_by_hyphens() -> None:
     """The simplest name: plain words with a single space between them."""
     assert slugify("Aurelian Meridian Chronograph") == "aurelian-meridian-chronograph"
+
+
+def test_punctuation_between_words_becomes_one_hyphen() -> None:
+    """A lone mark, or a run of marks and spaces, turns into a single hyphen."""
+    assert slugify("Patek Philippe Nautilus 5711/1A") == "patek-philippe-nautilus-5711-1a"
+    assert slugify("Cartier Tank Louis, Large Model") == "cartier-tank-louis-large-model"
