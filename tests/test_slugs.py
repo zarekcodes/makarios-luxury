@@ -3,7 +3,7 @@
 Written test-first: each test came before the code that makes it pass.
 """
 
-from app.services.slugs import slugify
+from app.services.slugs import slugify, unique_slug
 
 
 def test_slug_is_lowercase_words_joined_by_hyphens() -> None:
@@ -21,3 +21,11 @@ def test_accented_letters_keep_their_base_letter() -> None:
     """An accent falls away ("ö" to "o", "é" to "e") instead of splitting the word."""
     assert slugify("A. Lange & Söhne Datograph") == "a-lange-sohne-datograph"
     assert slugify("Montblanc Héritage Chronométrie") == "montblanc-heritage-chronometrie"
+
+
+def test_a_taken_slug_gets_the_next_free_number() -> None:
+    """Two watches of the same model need different URLs, so a repeat is numbered from 2."""
+    assert unique_slug("rolex-submariner", taken=set()) == "rolex-submariner"
+    assert unique_slug("rolex-submariner", taken={"rolex-submariner"}) == "rolex-submariner-2"
+    taken = {"rolex-submariner", "rolex-submariner-2"}
+    assert unique_slug("rolex-submariner", taken=taken) == "rolex-submariner-3"
