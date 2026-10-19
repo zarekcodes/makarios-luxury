@@ -23,6 +23,12 @@ def test_accented_letters_keep_their_base_letter() -> None:
     assert slugify("Montblanc Héritage Chronométrie") == "montblanc-heritage-chronometrie"
 
 
+def test_no_hyphen_at_either_end() -> None:
+    """Punctuation at the start or end of a name leaves no stray hyphen behind."""
+    assert slugify("Rolex Daytona (Paul Newman)") == "rolex-daytona-paul-newman"
+    assert slugify('"Snowflake" Grand Seiko') == "snowflake-grand-seiko"
+
+
 def test_a_taken_slug_gets_the_next_free_number() -> None:
     """Two watches of the same model need different URLs, so a repeat is numbered from 2."""
     assert unique_slug("rolex-submariner", taken=set()) == "rolex-submariner"
