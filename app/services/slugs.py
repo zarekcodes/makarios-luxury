@@ -26,9 +26,8 @@ def slugify(text: str) -> str:
 
 def unique_slug(slug: str, taken: Container[str]) -> str:
     """Return slug, or if it's taken, slug with the lowest free number from 2 up."""
-    if slug not in taken:
-        return slug
-    number = 2
-    while f"{slug}-{number}" in taken:
+    candidate, number = slug, 2
+    while candidate in taken:
+        candidate = f"{slug}-{number}"
         number += 1
-    return f"{slug}-{number}"
+    return candidate
