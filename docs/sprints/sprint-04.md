@@ -14,17 +14,26 @@ screenshot therefore shows the board at this late planning, not on day one.
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
-| Watch data model | [#21] | 5 | Committed |
-| Mark watch status | [#22] | 2 | Committed |
+| Watch data model | [#21] | 5 | Done |
+| Mark watch status | [#22] | 2 | Done |
 | Price filter tests: lower bound, open range, invalid range | [#50], a task of [#26] | 1 | Done on 2026-10-11, before planning |
+| Generate watch slugs test-first | [#52], a task of [#23] | 1 | Done on 2026-10-18, after planning; reviewed in [#51] |
 | Admin inventory management | [#23] | – | Moved to the backlog; a candidate for Sprint 5 |
 | Deploy to production | [#24] | – | Moved to the backlog; a candidate for Sprint 5 |
 
-**Committed: 7 points, plus 1 for the price filter tests done before planning: 8 in all.**
+**Committed: 7 points at planning. Completed: 9 points**, adding 1 for the price filter tests
+done before planning and 1 for the slug work added during the sprint. The tests grew from 40 to
+79. Each story is one commit on the `sprint-4` branch; the slug work arrives as its own merged
+pull request, one commit per red, green and refactor step.
 
 [#50] adds five unit tests to the price filter from [#20], drawn from equivalence partitioning
 and boundary value analysis. Its story, [#26], isn't in this sprint, so like [#20] in Sprint 3 the
 task carries its own point.
+
+[#52] was done test-first for a course assignment (five red-green-refactor cycles) and reviewed
+in its own pull request, [#51], before merging into `sprint-4`. Its story, admin inventory
+management ([#23]), is in the backlog, so it also carries its own point. It gives the admin area
+the slugs it will need when the owner adds a watch.
 
 ## Tasks
 
@@ -99,3 +108,5 @@ written reflection and feed coursework submissions rather than the codebase.
 [#48]: https://github.com/zarekcodes/makarios-luxury/issues/48
 [#49]: https://github.com/zarekcodes/makarios-luxury/issues/49
 [#50]: https://github.com/zarekcodes/makarios-luxury/issues/50
+[#51]: https://github.com/zarekcodes/makarios-luxury/pull/51
+[#52]: https://github.com/zarekcodes/makarios-luxury/issues/52
