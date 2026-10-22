@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     environment: str = "development"
     debug: bool = False
 
+    # SQLite in a file at the project root for development. Production sets a
+    # Postgres URL here through MAKARIOS_DATABASE_URL.
+    database_url: str = "sqlite:///makarios.db"
+
     # How buyers reach the business. Kept here rather than in the templates
     # because the email appears in several places: the footer, the contact
     # band, and every watch card's inquiry link.

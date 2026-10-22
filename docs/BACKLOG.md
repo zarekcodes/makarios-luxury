@@ -12,18 +12,19 @@ keeps what a board shows poorly: the sprint-by-sprint roadmap and a summary of e
 | 1 | **Foundations:** repo, scaffolding, CI, MVP + architecture defined, backlog created |
 | 2 | **Landing page MVP:** responsive, polished landing page using static placeholder content |
 | 3 | **Landing page refresh:** photo-led redesign (catalog data + deploy carried over) |
-| 4 | **Catalog data + deploy:** database, watch model, admin inventory management, first deploy |
-| 5 | **Catalog pages:** listing with HTMX filters, detail page with gallery, image pipeline |
+| 4 | **Catalog data:** database, watch model, watch status (admin + deploy moved to Sprint 5) |
+| 5 | **Deploy + admin, then catalog pages:** first deploy, admin inventory management; listing with HTMX filters, detail page with gallery, image pipeline |
 | 6 | **Inquiries:** inquiry/offer form, email notification, inquiries in admin |
 | 7 | **Polish:** SEO, performance (Lighthouse ≥ 90), accessibility, About/Contact pages |
 | 8 | **Hardening + final demo:** bug fixes, stretch goals if time allows |
 
-Deploying in Sprint 4 rather than at the end means every sprint after that ships a working
-increment to a live URL. That's a core Agile principle and makes sprint reviews real demos.
+Deploying early rather than at the end means every sprint after that ships a working increment
+to a live URL. That's a core Agile principle and makes sprint reviews real demos.
 
-Sprint 3 went to the landing page refresh, so its data and deploy work, and every sprint after
-it, moved back by one. Sprint 4 planning decides whether the semester has room for an eighth
-sprint or later scope gets cut.
+Sprint 3 went to the landing page refresh, so its data and deploy work moved to Sprint 4. Sprint 4
+was planned late, on day 10, and took only the data stories, so admin and deploy moved again, to
+Sprint 5. Sprints 5–8 now hold more work than four sprints have room for. Sprint 5 planning decides
+what moves, and whether stretch goals or later scope get cut.
 
 ## Epics
 

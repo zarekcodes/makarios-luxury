@@ -39,7 +39,7 @@ flowchart LR
 | Interactivity | **htmx** (+ Alpine.js only if needed) | About 14 KB of JS instead of a React bundle. Partial page updates (filters, forms) with no build step. |
 | Styling | **Tailwind CSS** (standalone CLI) | Fast to build a polished, responsive UI; the standalone binary means no Node.js. |
 | Database | **SQLAlchemy 2.0 + Alembic** on SQLite (dev) / PostgreSQL (prod) | Typed ORM, versioned migrations, zero setup locally. |
-| Admin | **SQLAdmin** (tentative, decide in Sprint 4) | Django-style admin panel for SQLAlchemy models; avoids hand-building inventory CRUD. |
+| Admin | **SQLAdmin** (tentative, decide in Sprint 5) | Django-style admin panel for SQLAlchemy models; avoids hand-building inventory CRUD. |
 | Package mgmt | **uv** | Fast, reproducible installs via `uv.lock`. |
 | Quality | **Ruff** (lint + format), **pytest**, GitHub Actions CI | Every PR is linted and tested automatically. |
 
@@ -50,6 +50,11 @@ app/
   main.py        # App factory: mounts static files, registers routers
   config.py      # Settings from environment variables (MAKARIOS_*)
   paths.py       # Filesystem paths + shared Jinja templates object
+  db.py          # Database engine and the per-request session (get_session)
+  cli.py         # Owner and developer commands: python -m app.cli
+  seed.py        # Placeholder watches for development and tests
+  models/        # SQLAlchemy models: the database tables
+  services/      # Business logic, kept out of routes so it's testable
   routes/
     pages.py     # HTML routes (full pages and HTMX partials)
     api.py       # JSON routes under /api
@@ -62,14 +67,12 @@ app/
     js/          #   htmx, vendored
     fonts/       #   self-hosted display serif, subset
     img/         #   brand assets and generated placeholders
-tests/           # pytest suite
+migrations/      # Alembic: one file per schema change, in versions/
+tests/           # pytest suite; conftest.py gives each test an in-memory database
 scripts/         # Developer tooling: CSS build, asset generators
 design/          # Source logos and photography (see docs/BRAND.md)
 docs/            # MVP, architecture, brand, workflow, sprint notes
 ```
-
-Added as the project grows: `app/models/` (database models), `app/services/` (business logic,
-kept out of routes so it's testable), `app/db.py` (engine and session).
 
 ## Conventions
 
@@ -77,6 +80,11 @@ kept out of routes so it's testable), `app/db.py` (engine and session).
 - **One URL, two responses.** A page route returns the full page normally, and only the
   changed fragment when the request has the `HX-Request` header.
 - **Progressive enhancement.** Links and forms work without JavaScript; htmx makes them smoother.
+- **Synchronous database access.** SQLAlchemy runs synchronously, so a route that uses the
+  database is a plain `def`, which FastAPI runs on a thread pool. An `async def` route would block
+  the server while it waited on a query.
+- **The schema changes only through migrations.** A test runs the migrations and fails if the
+  result differs from the models.
 
 ## Performance strategy
 
@@ -97,8 +105,8 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 
 | Decision | Target sprint |
 | --- | --- |
-| Admin approach: SQLAdmin vs. hand-built pages | Sprint 4 |
-| Hosting (Render / Railway / Fly.io) and Postgres provider | Sprint 4 |
+| Admin approach: SQLAdmin vs. hand-built pages | Sprint 5 |
+| Hosting (Render / Railway / Fly.io) and Postgres provider | Sprint 5 |
 | Image storage in production (e.g. Cloudflare R2, S3) | Sprint 5 |
 | Transactional email provider | Sprint 6 |
 | Dashboard frontend stack (React + TypeScript vs. a lighter option such as Preact or Svelte) | After the MVP |

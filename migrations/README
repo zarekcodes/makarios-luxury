@@ -1,0 +1,25 @@
+Database migrations, managed by Alembic.
+
+Each file in versions/ is one change to the schema, applied in order. The
+database records the last one it ran, in the alembic_version table.
+
+    uv run alembic upgrade head                           # apply everything not yet applied
+    uv run alembic revision --autogenerate -m "<change>"  # write a migration for a model change
+    uv run alembic downgrade -1                           # undo the latest one
+
+The URL comes from the app's settings (MAKARIOS_DATABASE_URL), never from
+alembic.ini, so the app and its migrations always use the same database.
+
+Autogenerate writes a first draft, not a finished migration. Before committing
+one, read it and check:
+
+- It does what you meant. Autogenerate can't see a rename: it writes a drop
+  and an add, which loses the column's data. Rewrite those as a rename.
+- No CHECK constraint appears twice. A new table with an enum column gets the
+  constraint from the sa.Enum(..., create_constraint=True) column type, and
+  autogenerate also writes explicit sa.CheckConstraint lines for it. Delete the
+  sa.CheckConstraint lines and keep the column types.
+- It reverses cleanly: downgrade() undoes upgrade().
+
+tests/test_migrations.py runs every migration up and back down, and fails if
+the result differs from the models.
