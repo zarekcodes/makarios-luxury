@@ -39,7 +39,8 @@ flowchart LR
 | Interactivity | **htmx** (+ Alpine.js only if needed) | About 14 KB of JS instead of a React bundle. Partial page updates (filters, forms) with no build step. |
 | Styling | **Tailwind CSS** (standalone CLI) | Fast to build a polished, responsive UI; the standalone binary means no Node.js. |
 | Database | **SQLAlchemy 2.0 + Alembic** on SQLite (dev) / PostgreSQL (prod) | Typed ORM, versioned migrations, zero setup locally. |
-| Admin | **SQLAdmin** (tentative, decide in Sprint 5) | Django-style admin panel for SQLAlchemy models; avoids hand-building inventory CRUD. |
+| Admin | **SQLAdmin**, with a hand-written login | Django-style admin panel for SQLAlchemy models; avoids hand-building inventory CRUD. |
+| Hosting | **Railway** (Hobby plan), app and Postgres | Doesn't sleep, keeps Postgres and the app on one platform, about $5 a month at this traffic. |
 | Package mgmt | **uv** | Fast, reproducible installs via `uv.lock`. |
 | Quality | **Ruff** (lint + format), **pytest**, GitHub Actions CI | Every PR is linted and tested automatically. |
 
@@ -105,9 +106,7 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 
 | Decision | Target sprint |
 | --- | --- |
-| Admin approach: SQLAdmin vs. hand-built pages | Sprint 5 |
-| Hosting (Render / Railway / Fly.io) and Postgres provider | Sprint 5 |
-| Image storage in production (e.g. Cloudflare R2, S3) | Sprint 5 |
+| Image storage in production (a Railway volume or object storage) | Sprint 6 |
 | Transactional email provider | Sprint 6 |
 | Dashboard frontend stack (React + TypeScript vs. a lighter option such as Preact or Svelte) | After the MVP |
 

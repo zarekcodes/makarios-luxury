@@ -13,7 +13,7 @@ keeps what a board shows poorly: the sprint-by-sprint roadmap and a summary of e
 | 2 | **Landing page MVP:** responsive, polished landing page using static placeholder content |
 | 3 | **Landing page refresh:** photo-led redesign (catalog data + deploy carried over) |
 | 4 | **Catalog data:** database, watch model, watch status (admin + deploy moved to Sprint 5) |
-| 5 | **Deploy + admin, then catalog pages:** first deploy, admin inventory management; listing with HTMX filters, detail page with gallery, image pipeline |
+| 5 | **Live site:** first deploy (Railway), admin login (catalog pages moved to Sprint 6) |
 | 6 | **Inquiries:** inquiry/offer form, email notification, inquiries in admin |
 | 7 | **Polish:** SEO, performance (Lighthouse ≥ 90), accessibility, About/Contact pages |
 | 8 | **Hardening + final demo:** bug fixes, stretch goals if time allows |
@@ -22,9 +22,11 @@ Deploying early rather than at the end means every sprint after that ships a wor
 to a live URL. That's a core Agile principle and makes sprint reviews real demos.
 
 Sprint 3 went to the landing page refresh, so its data and deploy work moved to Sprint 4. Sprint 4
-was planned late, on day 10, and took only the data stories, so admin and deploy moved again, to
-Sprint 5. Sprints 5–8 now hold more work than four sprints have room for. Sprint 5 planning decides
-what moves, and whether stretch goals or later scope get cut.
+took only the data stories, so admin and deploy moved again, to Sprint 5. Sprints 5–8 now hold
+more work than four sprints have room for. Sprint 5 takes deploy and admin login only. The
+semester's cut line: testimonials, shop by brand, the sold archive, the sell-or-source form and
+the blog are out, and the About page is the next cut if a sprint misses its goal. Sprints 6–8 are
+re-planned once the remaining stories are estimated, during Sprint 5's backlog refinement.
 
 ## Epics
 
