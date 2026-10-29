@@ -15,6 +15,7 @@ from collections.abc import Callable, Sequence
 
 from sqlalchemy.orm import Session
 
+from app.config import Settings, get_settings
 from app.db import SessionLocal
 from app.models import WatchStatus
 from app.seed import seed
@@ -27,11 +28,14 @@ STATUS_ARGUMENTS = {status.name.lower().replace("_", "-"): status for status in 
 def main(
     argv: Sequence[str] | None = None,
     session_factory: Callable[[], Session] = SessionLocal,
+    settings: Settings | None = None,
 ) -> int:
     """Run one command and return the process exit code.
 
-    The session factory is a parameter so tests can hand in their own database.
+    The session factory and settings are parameters so tests can hand in their
+    own database and environment.
     """
+    settings = settings or get_settings()
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("seed", help="load the placeholder watches")
@@ -42,6 +46,11 @@ def main(
 
     with session_factory() as session:
         if args.command == "seed":
+            # The placeholders are invented watches, so they must never be
+            # offered to real buyers.
+            if settings.is_production:
+                print("Refusing to seed placeholder watches in production.", file=sys.stderr)
+                return 1
             added = seed(session)
             print(f"Added {added} placeholder watch(es).")
 

@@ -30,12 +30,13 @@ rebuilds every time you save:
 The script downloads the pinned Tailwind standalone binary into `bin/` (gitignored) on first use.
 There is no Node.js and no `package.json` in this project.
 
-API docs are auto-generated at http://127.0.0.1:8000/docs.
+API docs are auto-generated at http://127.0.0.1:8000/docs (development only; production hides
+them).
 
 ## Common commands
 
 ```bash
-uv run pytest                    # run tests
+uv run pytest                    # run tests (on SQLite; see docs/DEPLOY.md for Postgres)
 uv run ruff check .              # lint
 uv run ruff format .             # auto-format
 ./scripts/tailwind.sh            # rebuild the CSS (commit the result)
@@ -76,6 +77,7 @@ uv run python scripts/build_brand_assets.py        # logo badge + favicons from 
 - [Brand](docs/BRAND.md): palette, type, layout rules, and how to swap in a new logo
 - [MVP definition](docs/MVP.md): vision, users, and what's in and out of scope
 - [Architecture](docs/ARCHITECTURE.md): stack choices, structure, and open decisions
+- [Deploying](docs/DEPLOY.md): Railway setup, production variables, migrations, rollback
 - [Workflow](docs/WORKFLOW.md): sprint process, board, branching, Definition of Done
 - [Roadmap and epics](docs/BACKLOG.md): the sprint-by-sprint plan; the backlog itself is the
   [project board](https://github.com/users/zarekcodes/projects/2)

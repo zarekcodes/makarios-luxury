@@ -2,7 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # Sprint branches too: Railway deploys the current sprint's branch only
+    # after these checks pass (see docs/DEPLOY.md).
+    branches: [main, "sprint-*"]
   pull_request:
 
 jobs:
@@ -18,6 +20,33 @@ jobs:
       - name: Check formatting
         run: uv run ruff format --check .
       - name: Test
+        run: uv run pytest
+
+  # The same suite against Postgres, the database production runs. SQLite
+  # accepts things Postgres refuses (0 for a boolean, a string longer than its
+  # column), so a pass on SQLite alone doesn't prove the app works in production.
+  test-postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      MAKARIOS_TEST_DATABASE_URL: postgresql+psycopg://postgres:test@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Test on Postgres
         run: uv run pytest
 
   # The generated stylesheet is committed, because the deployed app serves it

@@ -12,10 +12,12 @@ from html.parser import HTMLParser
 from urllib.parse import parse_qs, urlsplit
 
 from fastapi.testclient import TestClient
+from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.main import app
+from app.models import Photo, Watch
 from app.paths import STATIC_DIR, current_year
 from app.services.featured import get_featured_watches
 
@@ -42,6 +44,15 @@ def collect(html: str, wanted: str) -> list[dict[str, str | None]]:
 
 def hrefs(html: str) -> list[str]:
     return re.findall(r'href="([^"]+)"', html)
+
+
+def mailto_subjects(html: str) -> list[str]:
+    """The subject lines of the page's email links, decoded as a mail app shows them."""
+    subjects = []
+    for href in hrefs(html):
+        if href.startswith(f"mailto:{get_settings().contact_email}?"):
+            subjects += parse_qs(urlsplit(href).query).get("subject", [])
+    return subjects
 
 
 def test_home_page_renders() -> None:
@@ -240,12 +251,7 @@ def test_every_featured_watch_has_an_inquiry_link(session: Session) -> None:
     Decoded rather than string-matched, so this checks what a mail app will
     actually show in the subject line, not how the URL happens to be escaped.
     """
-    response = client.get("/")
-
-    subjects = []
-    for href in hrefs(response.text):
-        if href.startswith(f"mailto:{get_settings().contact_email}?"):
-            subjects += parse_qs(urlsplit(href).query).get("subject", [])
+    subjects = mailto_subjects(client.get("/").text)
 
     for watch in get_featured_watches(session):
         assert any(watch.reference in subject for subject in subjects), (
@@ -258,6 +264,36 @@ def test_each_featured_watch_is_its_own_article(session: Session) -> None:
     response = client.get("/")
 
     assert response.text.count("<article") == len(get_featured_watches(session))
+
+
+def remove_every_watch(session: Session) -> None:
+    session.execute(delete(Photo))
+    session.execute(delete(Watch))
+    session.flush()
+
+
+def test_with_no_watches_listed_the_page_offers_sourcing(session: Session) -> None:
+    """Production starts with nothing listed, and the page has to read well that way.
+
+    No cards, no heading promising watches that aren't there, and a way to ask
+    for a piece instead.
+    """
+    remove_every_watch(session)
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "<article" not in response.text
+    assert "Available now." not in response.text
+    assert "Sourcing request" in mailto_subjects(response.text)
+
+
+def test_with_watches_listed_there_is_no_sourcing_note() -> None:
+    """The control for the test above: the seeded watches show, and the empty state doesn't."""
+    response = client.get("/")
+
+    assert "Available now." in response.text
+    assert "Sourcing request" not in mailto_subjects(response.text)
 
 
 def test_navigation_works_without_javascript() -> None:

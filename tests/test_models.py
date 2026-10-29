@@ -37,7 +37,7 @@ def insert_sql(**overrides: str) -> str:
         "condition": "'EXCELLENT'",
         "box_papers": "'WATCH_ONLY'",
         "status": "'AVAILABLE'",
-        "featured": "0",
+        "featured": "FALSE",  # Postgres refuses 0 for a boolean; SQLite takes either
     } | overrides
     return f"INSERT INTO watches ({', '.join(values)}) VALUES ({', '.join(values.values())})"
 
@@ -85,7 +85,7 @@ def test_two_watches_cannot_share_a_slug(session: Session) -> None:
 
 @pytest.mark.parametrize(
     "column, value",
-    [("condition", "'MINT'"), ("box_papers", "'BOX_AND_WARRANTY'"), ("status", "'RESERVED'")],
+    [("condition", "'MINT'"), ("box_papers", "'WARRANTY_ONLY'"), ("status", "'RESERVED'")],
 )
 def test_the_database_rejects_values_off_the_published_lists(
     session: Session, column: str, value: str
