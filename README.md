@@ -52,7 +52,14 @@ uv run alembic revision --autogenerate -m "<change>"  # after changing a model; 
 A test fails if a model changes without its migration. See `migrations/README` for what to check
 in a generated file.
 
-Until the admin area exists, the owner marks a watch's status from the command line:
+The owners manage watches at http://127.0.0.1:8000/admin. Create a local account first:
+
+```bash
+uv run python -m app.cli admin-password <name>    # prompts for the password; also resets it
+uv run python -m app.cli admin-remove <name>      # delete an account
+```
+
+A watch's status can also be set from the command line:
 
 ```bash
 uv run python -m app.cli status aurelian-meridian-chronograph on-hold   # or available, or sold

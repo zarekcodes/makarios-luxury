@@ -2,8 +2,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import main
-from app.config import Settings
 from app.main import app
+from tests.conftest import production_settings
 
 client = TestClient(app)
 
@@ -31,7 +31,7 @@ def test_pages_are_compressed() -> None:
 
 
 def test_production_hides_the_api_docs(monkeypatch: pytest.MonkeyPatch) -> None:
-    production = Settings(_env_file=None, environment="production")
+    production = production_settings()
     monkeypatch.setattr(main, "get_settings", lambda: production)
     production_client = TestClient(main.create_app())
 

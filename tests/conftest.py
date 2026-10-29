@@ -21,6 +21,7 @@ from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
+from app.config import Settings
 from app.db import create_db_engine, get_session
 from app.main import app
 from app.models import Base
@@ -28,6 +29,12 @@ from app.seed import seed
 
 # None runs the suite on in-memory SQLite.
 TEST_DATABASE_URL = os.environ.get("MAKARIOS_TEST_DATABASE_URL")
+
+
+def production_settings(**overrides: object) -> Settings:
+    """Settings that pass the production checks, ignoring the developer's .env file."""
+    values: dict[str, object] = {"environment": "production", "secret_key": "s" * 32}
+    return Settings(_env_file=None, **(values | overrides))
 
 
 @pytest.fixture

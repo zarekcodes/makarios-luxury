@@ -9,8 +9,8 @@ watches in production, and the owner can log in to a protected admin area.
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
-| Deploy to production | [#24] | 5 | Todo |
-| Admin login | [#54], split from [#23] | 3 | Todo |
+| Deploy to production | [#24] | 5 | In progress: built and passing CI; the live deploy waits on a Railway account |
+| Admin login | [#54], split from [#23] | 3 | In progress: built; ships once the deploy is live |
 
 **Committed: 8 points**, against a Sprint 4 velocity of 9 points. Deploy comes first. See
 "Decisions" for the checkpoint.

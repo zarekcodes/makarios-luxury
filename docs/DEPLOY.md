@@ -29,9 +29,11 @@ Set on the app service under **Variables**. None of them live in the repository.
 | --- | --- | --- |
 | `MAKARIOS_ENVIRONMENT` | `production` | Turns on the production checks: no debug, no API docs, no seeding. |
 | `MAKARIOS_DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | A reference to the database service's private URL. The app rewrites its `postgresql://` scheme to use psycopg 3. |
+| `MAKARIOS_SECRET_KEY` | the output of `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` | Signs the admin's session cookie. Anyone who has it can forge a login, so it lives only here. |
 
-Railway sets `PORT` itself. `MAKARIOS_DEBUG` defaults to off, and the app refuses to start in
-production if it's on.
+Railway sets `PORT` itself. `MAKARIOS_DEBUG` defaults to off. The app refuses to start in
+production if debug is on, or if the secret key is missing or shorter than 32 characters.
+Changing the secret key signs every owner out, which also makes it the emergency logout.
 
 ## First-time setup
 
@@ -61,6 +63,29 @@ curl -s https://<domain>/api/health   # {"status":"ok"}
 
 Then load the home page on a phone, and run PageSpeed Insights (mobile) on the URL. The target is
 a performance score of 90 or above.
+
+## Admin accounts
+
+Each owner has their own account at `/admin`. Accounts are rows in the production database, so
+they're managed from a laptop that connects to it. Copy the database's **public** URL from the
+Postgres service's **Variables** (`DATABASE_PUBLIC_URL`) and paste it at a hidden prompt, so it
+stays out of your shell history:
+
+```bash
+read -rs MAKARIOS_DATABASE_URL && export MAKARIOS_DATABASE_URL   # bash or zsh
+read -sx MAKARIOS_DATABASE_URL                                   # fish
+uv run python -m app.cli admin-password <name>   # create the account, or set a new password
+uv run python -m app.cli admin-remove <name>     # delete it
+```
+
+The password is typed at a prompt that doesn't echo, twice, and needs at least 12 characters. A
+passphrase of a few words works well. Let each owner type their own password, so nobody else
+ever knows it. A new password, or a removed account, signs that owner out everywhere at once.
+
+After five failed logins from one address within 15 minutes, that address is refused until the
+oldest failure is 15 minutes old. The count lives in the app's memory, so a redeploy clears it.
+Every login, failed login and change made in the admin is written to the service's logs, with
+the owner's name.
 
 ## Rolling back
 

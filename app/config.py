@@ -4,6 +4,12 @@ from typing import Self
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+DEVELOPMENT_SECRET_KEY = "development-only-not-secret"
+
+# 32 random bytes, the size `secrets.token_urlsafe(32)` makes, is far beyond
+# guessing. Anything shorter is likely a placeholder typed by hand.
+MIN_SECRET_KEY_LENGTH = 32
+
 
 class Settings(BaseSettings):
     """App configuration, read from environment variables prefixed with MAKARIOS_ (or .env)."""
@@ -33,6 +39,11 @@ class Settings(BaseSettings):
             return f"postgresql+psycopg://{rest}"
         return url
 
+    # Signs the admin's session cookie, so it can't be forged or edited.
+    # Production must set its own (see docs/DEPLOY.md); anyone who knows this
+    # one could sign themselves in.
+    secret_key: str = DEVELOPMENT_SECRET_KEY
+
     # How buyers reach the business. Kept here rather than in the templates
     # because the email appears in several places: the footer, the contact
     # band, and every watch card's inquiry link.
@@ -48,10 +59,21 @@ class Settings(BaseSettings):
         """Fail at startup, rather than serve production with a development setting.
 
         Debug mode shows tracebacks, with code and local values, to whoever
-        triggers an error.
+        triggers an error. The development secret key is in this file, so
+        anyone could sign an admin session with it.
         """
-        if self.is_production and self.debug:
+        if not self.is_production:
+            return self
+        if self.debug:
             raise ValueError("MAKARIOS_DEBUG must be off when MAKARIOS_ENVIRONMENT=production")
+        if (
+            self.secret_key == DEVELOPMENT_SECRET_KEY
+            or len(self.secret_key) < MIN_SECRET_KEY_LENGTH
+        ):
+            raise ValueError(
+                f"production needs its own MAKARIOS_SECRET_KEY of at least "
+                f"{MIN_SECRET_KEY_LENGTH} characters"
+            )
         return self
 
     @property
