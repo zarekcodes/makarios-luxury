@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     def use_the_psycopg_driver(cls, url: str) -> str:
         """Point a plain Postgres URL at psycopg 3.
 
-        Railway hands out `postgresql://...` URLs. SQLAlchemy reads that scheme
+        Hosts hand out `postgresql://...` URLs. SQLAlchemy reads that scheme
         as "Postgres through psycopg2", a driver this project doesn't install,
         so the scheme is rewritten to name psycopg 3 explicitly. Heroku-style
         `postgres://` gets the same treatment. Anything else passes unchanged.

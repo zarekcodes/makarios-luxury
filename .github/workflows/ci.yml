@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    # Sprint branches too: Railway deploys the current sprint's branch only
+    # Sprint branches too: Render deploys the current sprint's branch only
     # after these checks pass (see docs/DEPLOY.md).
     branches: [main, "sprint-*"]
   pull_request:

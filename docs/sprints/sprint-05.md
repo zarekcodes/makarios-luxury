@@ -9,7 +9,7 @@ watches in production, and the owner can log in to a protected admin area.
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
-| Deploy to production | [#24] | 5 | In progress: built and passing CI; the live deploy waits on a Railway account |
+| Deploy to production | [#24] | 5 | In progress: built and passing CI; the live deploy waits on a Render account |
 | Admin login | [#54], split from [#23] | 3 | In progress: built; ships once the deploy is live |
 
 **Committed: 8 points**, against a Sprint 4 velocity of 9 points. Deploy comes first. See
@@ -21,7 +21,7 @@ As the owner, I want the site live on a real URL so that customers can use it.
 
 Acceptance criteria:
 
-- The site is served over HTTPS at a public Railway URL.
+- The site is served over HTTPS at a public Render URL.
 - Production reads Postgres through `MAKARIOS_DATABASE_URL`, and migrations run on every deploy
   before the new version takes traffic.
 - Production has no placeholder watches. The landing page reads well with no watches at all.
@@ -35,7 +35,7 @@ Tasks:
 | Task | Issue |
 | --- | --- |
 | Postgres driver, with migrations and tests run against Postgres | [#55] |
-| Accept Railway's Postgres URL (`postgresql://` to `postgresql+psycopg://`) | [#56] |
+| Accept the host's Postgres URL (`postgresql://` to `postgresql+psycopg://`) | [#56] |
 | Landing page state for when no watches are listed | [#57] |
 | Production settings and pre-deploy migrations | [#58] |
 | First deploy, checked live | [#59] |
@@ -78,7 +78,7 @@ get their estimate too.
 
 ## Decisions made this sprint
 
-- **Railway, on the Hobby plan.** $5 a month, which includes $5 of usage. The app and Postgres
+- **Railway, on the Hobby plan** (replaced by Render; see below). $5 a month, which includes $5 of usage. The app and Postgres
   together are estimated at $5–6 a month at this site's traffic. Render's free tier was ruled out
   because its web service sleeps after 15 idle minutes and takes about a minute to wake, which
   defeats the performance goal, and its free Postgres is deleted after 30 days. Fly.io and a
@@ -103,6 +103,20 @@ get their estimate too.
   and its smallest Postgres, about $13 a month against Railway's $5–6. The same Dockerfile
   carries over, and Render also runs migrations in a pre-deploy step and only swaps to a new
   version once it starts cleanly.
+- **Production moved to Render on 2026-11-01.** Railway's signups were still paused after the
+  cutoff, and its last update, on 2026-10-29, gave no date. Render costs about $13 a month, against
+  Railway's estimated $5–6: an always-on web service at $7 and the smallest Postgres at about
+  $6–7. Only the host's configuration changed, from `railway.toml` to `render.yaml`. The
+  database now accepts no connections from the internet, and Render generates the secret key.
+  Render compresses responses at its proxy, so the app's gzip middleware came out.
+- **Login was built while the deploy waited.** The checkpoint existed to keep effort on the
+  deploy, and from 2026-10-28 the deploy needed only an account. So both stories were finished
+  before the checkpoint, and the first deploy carries both.
+- **The login throttle could be bypassed, and was fixed before any deploy.** It read the client
+  address from the first entry of `X-Forwarded-For`, which a visitor can make up, so changing it
+  on each attempt avoided the limit. It now counts from the end of the header. A test that sent
+  repeated failures from one fixed client had passed, and the bug was found by checking how the
+  header behaves behind a proxy while choosing the new host. The tests now cover a made-up entry.
 - **Two owners, each with an account; two-factor login is its own story.** On 2026-10-28, before
   login work started, it became clear the owner's business partner, who is less technical, will
   use the admin too. [#54] now gives each owner an account in an `admin_users` table instead of
@@ -115,8 +129,7 @@ get their estimate too.
   registration before the first message, and is open to SIM swapping. A Discord webhook works as
   a login alert, not as a factor, since a shared channel would let either owner approve the
   other's login.
-- **Image storage in production moves to Sprint 6**, with photo upload. Railway offers volumes and
-  object storage, so the choice stays on one platform.
+- **Image storage in production moves to Sprint 6**, with photo upload.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#24]: https://github.com/zarekcodes/makarios-luxury/issues/24

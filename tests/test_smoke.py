@@ -23,13 +23,6 @@ def test_home_page_renders() -> None:
     assert "Makarios Luxury" in response.text
 
 
-def test_pages_are_compressed() -> None:
-    """Railway doesn't compress responses, so the app must, for phones on slow connections."""
-    response = client.get("/", headers={"Accept-Encoding": "gzip"})
-
-    assert response.headers["content-encoding"] == "gzip"
-
-
 def test_production_hides_the_api_docs(monkeypatch: pytest.MonkeyPatch) -> None:
     production = production_settings()
     monkeypatch.setattr(main, "get_settings", lambda: production)

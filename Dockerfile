@@ -1,4 +1,4 @@
-# The production image: what Railway builds and runs (see docs/DEPLOY.md).
+# The production image: what Render builds and runs (see docs/DEPLOY.md).
 #
 # Two stages. The first has uv and builds the virtualenv; the second copies
 # only the finished app across, so uv itself (about 40 MB) never ships.
@@ -38,8 +38,10 @@ USER app
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1
 
-# `fastapi run` serves on 0.0.0.0 and reads the port from $PORT, which Railway
-# sets. Proxy headers are on by default; trusting them from any address is
-# safe here because only Railway's proxy can reach the container, and it's
-# what gives the app the buyer's real IP instead of the proxy's.
+# `fastapi run` serves on 0.0.0.0 and reads the port from $PORT, which Render
+# sets. Trusting proxy headers from any address is for X-Forwarded-Proto, so the
+# app knows the visit was HTTPS and builds https:// links, since the proxy's own
+# address isn't known in advance. It also makes request.client the FIRST entry
+# of X-Forwarded-For, which a visitor can make up, so nothing security-related
+# may rely on it: see client_address in app/admin.py.
 CMD ["fastapi", "run", "app/main.py", "--forwarded-allow-ips", "*"]

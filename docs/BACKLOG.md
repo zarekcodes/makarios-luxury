@@ -13,7 +13,7 @@ keeps what a board shows poorly: the sprint-by-sprint roadmap and a summary of e
 | 2 | **Landing page MVP:** responsive, polished landing page using static placeholder content |
 | 3 | **Landing page refresh:** photo-led redesign (catalog data + deploy carried over) |
 | 4 | **Catalog data:** database, watch model, watch status (admin + deploy moved to Sprint 5) |
-| 5 | **Live site:** first deploy (Railway), admin login (catalog pages moved to Sprint 6) |
+| 5 | **Live site:** first deploy (Render), admin login (catalog pages moved to Sprint 6) |
 | 6 | **Inquiries:** inquiry/offer form, email notification, inquiries in admin |
 | 7 | **Polish:** SEO, performance (Lighthouse ≥ 90), accessibility, About/Contact pages |
 | 8 | **Hardening + final demo:** bug fixes, stretch goals if time allows |

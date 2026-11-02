@@ -84,7 +84,7 @@ uv run python scripts/build_brand_assets.py        # logo badge + favicons from 
 - [Brand](docs/BRAND.md): palette, type, layout rules, and how to swap in a new logo
 - [MVP definition](docs/MVP.md): vision, users, and what's in and out of scope
 - [Architecture](docs/ARCHITECTURE.md): stack choices, structure, and open decisions
-- [Deploying](docs/DEPLOY.md): Railway setup, production variables, migrations, rollback
+- [Deploying](docs/DEPLOY.md): Render setup, production variables, migrations, rollback
 - [Workflow](docs/WORKFLOW.md): sprint process, board, branching, Definition of Done
 - [Roadmap and epics](docs/BACKLOG.md): the sprint-by-sprint plan; the backlog itself is the
   [project board](https://github.com/users/zarekcodes/projects/2)

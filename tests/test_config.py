@@ -1,4 +1,4 @@
-"""Settings: the database URL Railway provides, and the production safety checks."""
+"""Settings: the database URL the host provides, and the production safety checks."""
 
 import pytest
 from pydantic import ValidationError
@@ -15,14 +15,14 @@ def settings(**values: object) -> Settings:
 @pytest.mark.parametrize(
     "given",
     [
-        "postgresql://user:secret@db.railway.internal:5432/railway",
-        "postgres://user:secret@db.railway.internal:5432/railway",
-        "postgresql+psycopg://user:secret@db.railway.internal:5432/railway",
+        "postgresql://user:secret@db.internal:5432/makarios",
+        "postgres://user:secret@db.internal:5432/makarios",
+        "postgresql+psycopg://user:secret@db.internal:5432/makarios",
     ],
 )
 def test_a_postgres_url_uses_the_psycopg_driver(given: str) -> None:
     assert settings(database_url=given).database_url == (
-        "postgresql+psycopg://user:secret@db.railway.internal:5432/railway"
+        "postgresql+psycopg://user:secret@db.internal:5432/makarios"
     )
 
 

@@ -1,0 +1,41 @@
+# The production setup on Render, read when the Blueprint syncs (see docs/DEPLOY.md).
+
+services:
+  - type: web
+    name: makarios-luxury
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # Always on, unlike the free plan, which sleeps when idle and takes about a
+    # minute to wake. Also needed for preDeployCommand and the dashboard shell.
+    plan: 0.5c-512mb
+    # Can't change after creation. The closest region to Texas, and the database
+    # must share it to be reachable over the private network.
+    region: ohio
+    # Runs in the new image before it takes traffic. If a migration fails, the
+    # deploy stops and the previous version keeps serving, so new code never
+    # runs against an old schema.
+    preDeployCommand: alembic upgrade head
+    # Render sends traffic to the new version only once this answers 200.
+    healthCheckPath: /api/health
+    # Deploy only after CI passes on the Blueprint's branch.
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: MAKARIOS_ENVIRONMENT
+        value: production
+      - key: MAKARIOS_DATABASE_URL
+        fromDatabase:
+          name: makarios-db
+          property: connectionString
+      # Render generates this once, and it never appears in the repository.
+      - key: MAKARIOS_SECRET_KEY
+        generateValue: true
+
+databases:
+  - name: makarios-db
+    plan: 0.1c-256mb
+    region: ohio
+    # The version CI tests against. Can't change after creation.
+    postgresMajorVersion: "17"
+    # No connections from the internet at all: only the app, over the private
+    # network. Accounts are managed from the service's dashboard shell.
+    ipAllowList: []
