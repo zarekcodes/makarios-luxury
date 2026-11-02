@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Self
 
-from pydantic import field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEVELOPMENT_SECRET_KEY = "development-only-not-secret"
@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     # Production must set its own (see docs/DEPLOY.md); anyone who knows this
     # one could sign themselves in.
     secret_key: str = DEVELOPMENT_SECRET_KEY
+
+    # How many proxies in front of the app add to X-Forwarded-For. It decides
+    # which entry of that header is the visitor's address for the login throttle
+    # (see client_address in app/admin.py).
+    proxy_hops: int = Field(default=1, ge=1)
 
     # How buyers reach the business. Kept here rather than in the templates
     # because the email appears in several places: the footer, the contact

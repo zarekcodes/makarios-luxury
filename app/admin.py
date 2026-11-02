@@ -69,12 +69,13 @@ class AdminAuth(AuthenticationBackend):
         )
         self.session_maker = session_maker
         self.throttle = throttle
+        self.proxy_hops = settings.proxy_hops
         # Set by mount_admin, which creates the Admin this backend serves; the
         # refusal page renders with its templates.
         self.admin: Admin | None = None
 
     async def login(self, request: Request) -> Response | bool:
-        address = client_address(request)
+        address = client_address(request, self.proxy_hops)
         if self.throttle.is_refused(address):
             return await self._refuse(request, address)
 
@@ -87,7 +88,13 @@ class AdminAuth(AuthenticationBackend):
             self.throttle.record_failure(address)
             # Not the username: an owner who types their password into the
             # username box would otherwise put it in the log.
-            audit_log.warning("admin login failed address=%s", address)
+            # The full header too, for checking proxy_hops against what the
+            # host really sends (see docs/DEPLOY.md).
+            audit_log.warning(
+                "admin login failed address=%s forwarded=%r",
+                address,
+                request.headers.getlist("x-forwarded-for"),
+            )
             return False
 
         self.throttle.reset(address)
@@ -149,12 +156,29 @@ class AdminAuth(AuthenticationBackend):
         )
 
 
-def client_address(request: Request) -> str:
-    """The visitor's IP address.
+def client_address(request: Request, proxy_hops: int) -> str:
+    """The visitor's IP address, counted from the end of X-Forwarded-For.
 
-    Behind the host's proxy this is the address the proxy forwarded, because
-    the server trusts its X-Forwarded-For header (see the Dockerfile).
+    Each proxy a request passes through adds the address it saw to the END of
+    this header, and keeps whatever was there already. So a visitor can fill
+    the start with anything, and only the last proxy_hops entries are ours.
+    The entry at that position is the address our outermost proxy saw.
+
+    request.client won't do here: the server rewrites it from the header's
+    FIRST entry, which is the visitor's to choose. Throttling on that would let
+    a guesser send a new made-up address with every attempt and never be refused.
+
+    A proxy_hops that's too small errs safely: everyone behind one proxy shares
+    a count. Too large, and the visitor picks their own address.
     """
+    forwarded = [
+        address.strip()
+        for header in request.headers.getlist("x-forwarded-for")
+        for address in header.split(",")
+        if address.strip()
+    ]
+    if forwarded:
+        return forwarded[-min(proxy_hops, len(forwarded))]
     return request.client.host if request.client else "unknown"
 
 

@@ -13,8 +13,9 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session, sessionmaker
+from starlette.requests import Request
 
-from app.admin import mount_admin
+from app.admin import client_address, mount_admin
 from app.config import Settings
 from app.main import app as real_app
 from app.models import Watch
@@ -69,10 +70,13 @@ def client(session_maker: Callable[[], Session], clock: FakeClock) -> TestClient
     return admin_client(session_maker, clock)
 
 
-def log_in(client: TestClient, username: str, password: str) -> httpx.Response:
+def log_in(
+    client: TestClient, username: str, password: str, forwarded_for: str | None = None
+) -> httpx.Response:
     return client.post(
         "/admin/login",
         data={"username": username, "password": password},
+        headers={"X-Forwarded-For": forwarded_for} if forwarded_for else None,
         follow_redirects=False,
     )
 
@@ -180,6 +184,69 @@ def test_the_refusal_lifts_once_the_window_passes(
     clock.now += 15 * 60 + 1
 
     assert log_in(client, owner, PASSWORD).status_code == 302
+
+
+def test_a_made_up_forwarded_address_does_not_escape_the_throttle(
+    client: TestClient, owner: str
+) -> None:
+    """A guesser can fill the start of X-Forwarded-For; the proxy adds the real address last."""
+    for attempt in range(5):
+        forwarded = f"10.0.0.{attempt}, 203.0.113.7"
+        assert log_in(client, owner, "wrong guess", forwarded).status_code == 400
+
+    assert log_in(client, owner, PASSWORD, "10.0.0.99, 203.0.113.7").status_code == 429
+
+
+def test_a_second_x_forwarded_for_header_does_not_escape_the_throttle(
+    client: TestClient, owner: str
+) -> None:
+    """The real address may arrive on its own line, after any the visitor sent."""
+    headers = [("x-forwarded-for", "10.0.0.1"), ("x-forwarded-for", "203.0.113.7")]
+    for _ in range(5):
+        client.post(
+            "/admin/login",
+            data={"username": owner, "password": "wrong guess"},
+            headers=httpx.Headers(headers),
+        )
+
+    refused = client.post(
+        "/admin/login",
+        data={"username": owner, "password": PASSWORD},
+        headers=httpx.Headers([("x-forwarded-for", "10.0.0.2"), headers[1]]),
+    )
+
+    assert refused.status_code == 429
+
+
+def test_visitors_at_different_addresses_are_counted_apart(client: TestClient, owner: str) -> None:
+    for _ in range(5):
+        log_in(client, owner, "wrong guess", "203.0.113.7")
+
+    assert log_in(client, owner, PASSWORD, "203.0.113.8").status_code == 302
+
+
+def request_with(forwarded_for: str | None) -> Request:
+    headers = [(b"x-forwarded-for", forwarded_for.encode())] if forwarded_for else []
+    return Request({"type": "http", "headers": headers, "client": ("198.51.100.1", 1234)})
+
+
+@pytest.mark.parametrize(
+    "forwarded_for, proxy_hops, expected",
+    [
+        ("203.0.113.7", 1, "203.0.113.7"),
+        ("9.9.9.9, 203.0.113.7", 1, "203.0.113.7"),
+        ("9.9.9.9, 203.0.113.7, 172.68.0.1", 1, "172.68.0.1"),
+        ("9.9.9.9, 203.0.113.7, 172.68.0.1", 2, "203.0.113.7"),
+        # Fewer entries than hops: every one of them came from our proxies.
+        ("203.0.113.7", 2, "203.0.113.7"),
+        # No header at all: not behind a proxy, as in development.
+        (None, 1, "198.51.100.1"),
+    ],
+)
+def test_client_address_counts_from_the_end(
+    forwarded_for: str | None, proxy_hops: int, expected: str
+) -> None:
+    assert client_address(request_with(forwarded_for), proxy_hops) == expected
 
 
 def test_production_cookies_are_locked_down(
