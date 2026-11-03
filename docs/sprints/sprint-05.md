@@ -165,6 +165,10 @@ open question about two-factor login are in `docs/BACKLOG.md`.
   mobile scored 100 for performance, accessibility, best practices and SEO (first contentful
   paint 0.8 s, largest contentful paint 1.2 s, total blocking time 0 ms, layout shift 0), against
   a target of 90. The API docs are hidden, `/admin` redirects to its login, and pages are gzipped.
+- **Owner accounts wait for Sprint 6.** The login is live and tested, but no account exists in
+  production yet. The owner creates one at the start of Sprint 6 (`docs/DEPLOY.md`), and the
+  business partner's account waits until after the semester. The sprint review shows the login
+  page and a refused password, rather than a signed-in admin.
 - **The throttle counts two proxies on Railway.** The live check showed Railway's edge replaces a
   visitor's `X-Forwarded-For` with their real address, and that a Railway proxy then appends its
   own. With one hop, the throttle would have counted by the proxy's address, so every visitor would
