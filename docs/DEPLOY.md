@@ -43,8 +43,9 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 Set only the variables in this table. In particular, leave out `MAKARIOS_DEBUG`: it defaults to
 off, and `.env.example`'s `MAKARIOS_DEBUG=true` is for development only.
 
-Railway sets `PORT` itself. The app refuses to start in production if debug is on, or if the
-secret key is missing, shorter than 32 characters, or contains spaces, quotes or brackets, which a
+Railway sets `PORT` itself. The app refuses to start in production if debug is on, if
+`MAKARIOS_DATABASE_URL` is missing or isn't Postgres, or if the secret key is missing, shorter
+than 32 characters, or contains spaces, quotes or brackets, which a
 generated key never does. A settings error in the logs never shows the values it was given.
 Changing the secret key signs every owner out, which also makes it the emergency logout.
 

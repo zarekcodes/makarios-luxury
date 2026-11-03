@@ -33,7 +33,11 @@ TEST_DATABASE_URL = os.environ.get("MAKARIOS_TEST_DATABASE_URL")
 
 def production_settings(**overrides: object) -> Settings:
     """Settings that pass the production checks, ignoring the developer's .env file."""
-    values: dict[str, object] = {"environment": "production", "secret_key": "s" * 32}
+    values: dict[str, object] = {
+        "environment": "production",
+        "secret_key": "s" * 32,
+        "database_url": "postgresql://user:secret@db.internal:5432/makarios",
+    }
     return Settings(_env_file=None, **(values | overrides))
 
 

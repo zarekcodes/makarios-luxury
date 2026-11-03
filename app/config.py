@@ -74,12 +74,21 @@ class Settings(BaseSettings):
 
         Debug mode shows tracebacks, with code and local values, to whoever
         triggers an error. The development secret key is in this file, so
-        anyone could sign an admin session with it.
+        anyone could sign an admin session with it. SQLite is development's
+        database, so in production it means the real URL never arrived.
         """
         if not self.is_production:
             return self
         if self.debug:
             raise ValueError("MAKARIOS_DEBUG must be off when MAKARIOS_ENVIRONMENT=production")
+        # Without a database URL the app falls back to development's SQLite
+        # file. Inside a container that file is private to it and empty: the
+        # site starts, and every page that reads the database fails.
+        if not self.database_url.startswith("postgresql"):
+            raise ValueError(
+                "production needs a Postgres MAKARIOS_DATABASE_URL; without one the app "
+                "would fall back to a SQLite file"
+            )
         key = self.secret_key
         if key == DEVELOPMENT_SECRET_KEY or len(key) < MIN_SECRET_KEY_LENGTH:
             raise ValueError(

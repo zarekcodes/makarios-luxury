@@ -55,6 +55,19 @@ def test_production_refuses_a_guessable_secret_key(key: str) -> None:
         production_settings(secret_key=key)
 
 
+@pytest.mark.parametrize("url", ["sqlite:///makarios.db", "sqlite://", ""])
+def test_production_refuses_anything_but_postgres(url: str) -> None:
+    """A missing MAKARIOS_DATABASE_URL leaves the SQLite default: refuse, don't serve errors."""
+    with pytest.raises(ValidationError, match="MAKARIOS_DATABASE_URL"):
+        production_settings(database_url=url)
+
+
+def test_production_refuses_a_missing_database_url() -> None:
+    """The real failure: the variable simply isn't set, so the default applies."""
+    with pytest.raises(ValidationError, match="MAKARIOS_DATABASE_URL"):
+        Settings(_env_file=None, environment="production", secret_key="s" * 32)
+
+
 def test_production_accepts_its_own_secret_key() -> None:
     assert production_settings().is_production
 
