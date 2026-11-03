@@ -9,8 +9,8 @@ watches in production, and the owner can log in to a protected admin area.
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
-| Deploy to production | [#24] | 5 | In progress: built and passing CI; the live deploy waits on a Railway account |
-| Admin login | [#54], split from [#23] | 3 | In progress: built; ships once the deploy is live |
+| Deploy to production | [#24] | 5 | Live and checked on 2026-11-03; done when the sprint's PR merges |
+| Admin login | [#54], split from [#23] | 3 | Live on 2026-11-03; done when the sprint's PR merges |
 
 **Committed: 8 points**, against a Sprint 4 velocity of 9 points. Deploy comes first. See
 "Decisions" for the checkpoint.
@@ -160,6 +160,11 @@ open question about two-factor login are in `docs/BACKLOG.md`.
   settings. Railway's replacement, Infrastructure as Code, is a TypeScript file by default (Python
   is in beta), so moving the settings back into the repository is a backlog item rather than a
   same-day change.
+- **Live check, 2026-11-03.** https://makarios-luxury-production.up.railway.app serves over HTTPS
+  with both migrations applied on Postgres and no placeholder watches. PageSpeed Insights on
+  mobile scored 100 for performance, accessibility, best practices and SEO (first contentful
+  paint 0.8 s, largest contentful paint 1.2 s, total blocking time 0 ms, layout shift 0), against
+  a target of 90. The API docs are hidden, `/admin` redirects to its login, and pages are gzipped.
 - **The throttle counts two proxies on Railway.** The live check showed Railway's edge replaces a
   visitor's `X-Forwarded-For` with their real address, and that a Railway proxy then appends its
   own. With one hop, the throttle would have counted by the proxy's address, so every visitor would
