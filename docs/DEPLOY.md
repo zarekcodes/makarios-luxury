@@ -50,8 +50,8 @@ regenerate the Postgres password from the database service's settings.
    variables below, so let it be replaced once they're set.
 3. In the service's **Settings → Source**, set the branch (see [Which branch](#which-branch)) and
    turn on **Wait for CI**.
-4. In the project, **Create → Database → PostgreSQL**. Leave its name as `Postgres`, since the
-   variable reference above uses it.
+4. On the project canvas, click **+ New** and choose **PostgreSQL** (or press Ctrl/Cmd+K and
+   search for it). Leave its name as `Postgres`, since the variable reference above uses it.
 5. Set the variables above on the app service, then deploy the staged changes.
 6. **Settings → Networking → Generate Domain** for the public `*.up.railway.app` HTTPS URL.
 7. Create the owners' accounts (see [Admin accounts](#admin-accounts)), then run the checks below.
