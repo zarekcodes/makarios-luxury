@@ -30,11 +30,22 @@ Set on the app service under **Variables**. None of them live in the repository.
 | --- | --- | --- |
 | `MAKARIOS_ENVIRONMENT` | `production` | Turns on the production checks: no debug, no API docs, no seeding. |
 | `MAKARIOS_DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | A reference to the database service's private URL. The app rewrites its `postgresql://` scheme to use psycopg 3. |
-| `MAKARIOS_SECRET_KEY` | the output of `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` | Signs the admin's session cookie. Anyone who has it can forge a login, so it lives only here. |
+| `MAKARIOS_SECRET_KEY` | a generated key (see below) | Signs the admin's session cookie. Anyone who has it can forge a login, so it lives only here. |
 | `MAKARIOS_PROXY_HOPS` | leave unset (defaults to `1`) unless the check below calls for it | Which entry of `X-Forwarded-For` is the visitor's address, for the login throttle. |
 
-Railway sets `PORT` itself. `MAKARIOS_DEBUG` defaults to off. The app refuses to start in
-production if debug is on, or if the secret key is missing or shorter than 32 characters.
+Generate the secret key by running this **in a terminal**, then paste the 43 characters it
+prints, not the command itself:
+
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Set only the variables in this table. In particular, leave out `MAKARIOS_DEBUG`: it defaults to
+off, and `.env.example`'s `MAKARIOS_DEBUG=true` is for development only.
+
+Railway sets `PORT` itself. The app refuses to start in production if debug is on, or if the
+secret key is missing, shorter than 32 characters, or contains spaces, quotes or brackets, which a
+generated key never does. A settings error in the logs never shows the values it was given.
 Changing the secret key signs every owner out, which also makes it the emergency logout.
 
 Railway had a security incident on 2026-10-21 in which some customers' stored variables were

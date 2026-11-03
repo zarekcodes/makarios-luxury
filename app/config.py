@@ -10,11 +10,20 @@ DEVELOPMENT_SECRET_KEY = "development-only-not-secret"
 # guessing. Anything shorter is likely a placeholder typed by hand.
 MIN_SECRET_KEY_LENGTH = 32
 
+# A generated key is letters, digits and a few symbols, never spaces, quotes or
+# brackets. Those mean something else was pasted in: a placeholder from the
+# docs, or the command that generates a key instead of the key it prints.
+NOT_IN_A_GENERATED_KEY = frozenset(" \t\n\"'<>()")
+
 
 class Settings(BaseSettings):
     """App configuration, read from environment variables prefixed with MAKARIOS_ (or .env)."""
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="MAKARIOS_")
+    # hide_input_in_errors: a settings error would otherwise print the values
+    # it was given, the secret key among them, into the host's logs.
+    model_config = SettingsConfigDict(
+        env_file=".env", env_prefix="MAKARIOS_", hide_input_in_errors=True
+    )
 
     app_name: str = "Makarios Luxury"
     environment: str = "development"
@@ -71,13 +80,16 @@ class Settings(BaseSettings):
             return self
         if self.debug:
             raise ValueError("MAKARIOS_DEBUG must be off when MAKARIOS_ENVIRONMENT=production")
-        if (
-            self.secret_key == DEVELOPMENT_SECRET_KEY
-            or len(self.secret_key) < MIN_SECRET_KEY_LENGTH
-        ):
+        key = self.secret_key
+        if key == DEVELOPMENT_SECRET_KEY or len(key) < MIN_SECRET_KEY_LENGTH:
             raise ValueError(
                 f"production needs its own MAKARIOS_SECRET_KEY of at least "
                 f"{MIN_SECRET_KEY_LENGTH} characters"
+            )
+        if NOT_IN_A_GENERATED_KEY & set(key):
+            raise ValueError(
+                "MAKARIOS_SECRET_KEY looks like a command or placeholder, not a generated "
+                "key: set it to what the command in docs/DEPLOY.md prints"
             )
         return self
 
