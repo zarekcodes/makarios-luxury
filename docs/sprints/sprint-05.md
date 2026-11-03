@@ -76,6 +76,31 @@ into stories that each fit a sprint: add and edit watches, photo upload, status 
 admin (reusing `set_status()`), and removing watches. Two-factor login and login alerts ([#65])
 get their estimate too.
 
+Done on 2026-11-03. Every open story has acceptance criteria and points on the board:
+
+| Story | Points |
+| --- | --- |
+| Add watches from the admin ([#67], split from [#23]) | 2 |
+| Optimized images ([#28]) | 3 |
+| Photo upload ([#68], split from [#23]) | 3 |
+| Remove watches from the admin ([#69], split from [#23]) | 1 |
+| Catalog listing ([#25]) | 3 |
+| Catalog filters ([#26]) | 3 |
+| Watch detail page ([#27]) | 5 |
+| Inquiry form ([#31]) | 5 |
+| Inquiry notification ([#32]) | 3 |
+| Inquiries in admin ([#33]) | 2 |
+| SEO metadata ([#35]) | 2 |
+| Performance budget ([#36]) | 3 |
+| Accessibility pass ([#37]) | 2 |
+| About page ([#38]) | 1 |
+| Two-factor admin login and login alerts ([#65]) | 5 |
+| Railway's deploy settings in the repository ([#66]) | 2 |
+
+[#23] closed as split. Editing a watch and changing its status needed no story of their own: the
+edit view built for [#54] already does both. The re-planned Sprints 6–8, the new cut line and the
+open question about two-factor login are in `docs/BACKLOG.md`.
+
 ## Decisions made this sprint
 
 - **Railway, on the Hobby plan.** $5 a month, which includes $5 of usage. The app and Postgres
@@ -168,3 +193,18 @@ get their estimate too.
 [#63]: https://github.com/zarekcodes/makarios-luxury/issues/63
 [#64]: https://github.com/zarekcodes/makarios-luxury/issues/64
 [#65]: https://github.com/zarekcodes/makarios-luxury/issues/65
+[#25]: https://github.com/zarekcodes/makarios-luxury/issues/25
+[#26]: https://github.com/zarekcodes/makarios-luxury/issues/26
+[#27]: https://github.com/zarekcodes/makarios-luxury/issues/27
+[#28]: https://github.com/zarekcodes/makarios-luxury/issues/28
+[#31]: https://github.com/zarekcodes/makarios-luxury/issues/31
+[#32]: https://github.com/zarekcodes/makarios-luxury/issues/32
+[#33]: https://github.com/zarekcodes/makarios-luxury/issues/33
+[#35]: https://github.com/zarekcodes/makarios-luxury/issues/35
+[#36]: https://github.com/zarekcodes/makarios-luxury/issues/36
+[#37]: https://github.com/zarekcodes/makarios-luxury/issues/37
+[#38]: https://github.com/zarekcodes/makarios-luxury/issues/38
+[#66]: https://github.com/zarekcodes/makarios-luxury/issues/66
+[#67]: https://github.com/zarekcodes/makarios-luxury/issues/67
+[#68]: https://github.com/zarekcodes/makarios-luxury/issues/68
+[#69]: https://github.com/zarekcodes/makarios-luxury/issues/69

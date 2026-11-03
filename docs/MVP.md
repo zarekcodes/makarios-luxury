@@ -34,7 +34,7 @@ The site must feel **fast and premium on any device**, especially phones.
 - Buyer accounts, saved watches, wishlists
 - "Sell or trade your watch" submission form
 - Blog / educational content
-- Multiple admin users and roles
+- Admin roles and permissions (the two owners each have an account, with the same access)
 
 ## MVP is done when
 
