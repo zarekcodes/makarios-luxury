@@ -39,7 +39,8 @@ flowchart LR
 | Interactivity | **htmx** (+ Alpine.js only if needed) | About 14 KB of JS instead of a React bundle. Partial page updates (filters, forms) with no build step. |
 | Styling | **Tailwind CSS** (standalone CLI) | Fast to build a polished, responsive UI; the standalone binary means no Node.js. |
 | Database | **SQLAlchemy 2.0 + Alembic** on SQLite (dev) / PostgreSQL (prod) | Typed ORM, versioned migrations, zero setup locally. |
-| Admin | **SQLAdmin** (tentative, decide in Sprint 5) | Django-style admin panel for SQLAlchemy models; avoids hand-building inventory CRUD. |
+| Admin | **SQLAdmin** at `/admin`, with a hand-written login: one account per owner, Argon2 hashes, a signed session cookie, a failed-login throttle | Django-style admin panel for SQLAlchemy models; avoids hand-building inventory CRUD. It ships its own CSS and JavaScript (Tabler, jQuery), which the storefront rule allows because buyers never load it. Two-factor login is [#65]. |
+| Hosting | **Railway** (Hobby plan), app and Postgres, built from a `Dockerfile` | Doesn't sleep, keeps Postgres and the app on one platform, about $5–6 a month at this traffic. See [DEPLOY.md](DEPLOY.md). |
 | Package mgmt | **uv** | Fast, reproducible installs via `uv.lock`. |
 | Quality | **Ruff** (lint + format), **pytest**, GitHub Actions CI | Every PR is linted and tested automatically. |
 
@@ -52,6 +53,7 @@ app/
   paths.py       # Filesystem paths + shared Jinja templates object
   db.py          # Database engine and the per-request session (get_session)
   cli.py         # Owner and developer commands: python -m app.cli
+  admin.py       # The /admin area: SQLAdmin views, login backend, audit log
   seed.py        # Placeholder watches for development and tests
   models/        # SQLAlchemy models: the database tables
   services/      # Business logic, kept out of routes so it's testable
@@ -68,10 +70,11 @@ app/
     fonts/       #   self-hosted display serif, subset
     img/         #   brand assets and generated placeholders
 migrations/      # Alembic: one file per schema change, in versions/
-tests/           # pytest suite; conftest.py gives each test an in-memory database
+tests/           # pytest suite; conftest.py gives each test its own database (SQLite or Postgres)
 scripts/         # Developer tooling: CSS build, asset generators
 design/          # Source logos and photography (see docs/BRAND.md)
-docs/            # MVP, architecture, brand, workflow, sprint notes
+docs/            # MVP, architecture, brand, workflow, deploy, sprint notes
+Dockerfile       # The production image Railway builds
 ```
 
 ## Conventions
@@ -94,6 +97,7 @@ Speed on mobile is the top product priority, and for a watch site **images domin
   phone-sized images.
 - `loading="lazy"` on below-the-fold images; explicit `width`/`height` to prevent layout shift.
 - Minified Tailwind CSS containing only used classes; htmx is the only required script.
+- Responses over 1 KB are gzipped by the app, since Railway doesn't document compressing them.
 - Long cache headers on static assets (fingerprinted filenames).
 - **Everything is same-origin.** htmx is vendored and the display serif is self-hosted and subset
   to Latin, so no page needs a connection to a third-party origin before it can render.
@@ -105,9 +109,7 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 
 | Decision | Target sprint |
 | --- | --- |
-| Admin approach: SQLAdmin vs. hand-built pages | Sprint 5 |
-| Hosting (Render / Railway / Fly.io) and Postgres provider | Sprint 5 |
-| Image storage in production (e.g. Cloudflare R2, S3) | Sprint 5 |
+| Image storage in production (a Railway volume or object storage) | Sprint 6 |
 | Transactional email provider | Sprint 6 |
 | Dashboard frontend stack (React + TypeScript vs. a lighter option such as Preact or Svelte) | After the MVP |
 
@@ -152,3 +154,4 @@ doesn't need rebuilding. The storefront stays server-rendered because a JavaScri
 mobile speed and SEO for no gain there. Design tools that export HTML + Tailwind (such as Google
 Stitch) work for both: their output drops into Jinja templates as-is, or ports to components later.
 
+[#65]: https://github.com/zarekcodes/makarios-luxury/issues/65

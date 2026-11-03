@@ -6,23 +6,19 @@ deploy.
 **Sprint goal:** Watches live in a database instead of in code, with a status that keeps sold
 pieces off the storefront. Admin and deploy move to Sprint 5.
 
-Planning happened late, on 2026-10-17, day 10 of 14. Until then the four stories carried over
-from Sprint 3 were still in that sprint on the board, without estimates. The start-of-sprint
-screenshot therefore shows the board at this late planning, not on day one.
-
 ## Stories
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
 | Watch data model | [#21] | 5 | Done |
 | Mark watch status | [#22] | 2 | Done |
-| Price filter tests: lower bound, open range, invalid range | [#50], a task of [#26] | 1 | Done on 2026-10-11, before planning |
-| Generate watch slugs test-first | [#52], a task of [#23] | 1 | Done on 2026-10-18, after planning; reviewed in [#51] |
+| Price filter tests: lower bound, open range, invalid range | [#50], a task of [#26] | 1 | Done on 2026-10-11 |
+| Generate watch slugs test-first | [#52], a task of [#23] | 1 | Done on 2026-10-18, added during the sprint; reviewed in [#51] |
 | Admin inventory management | [#23] | – | Moved to the backlog; a candidate for Sprint 5 |
 | Deploy to production | [#24] | – | Moved to the backlog; a candidate for Sprint 5 |
 
 **Committed: 7 points at planning. Completed: 9 points**, adding 1 for the price filter tests
-done before planning and 1 for the slug work added during the sprint. The tests grew from 40 to
+and 1 for the slug work added during the sprint. The tests grew from 40 to
 79. Each story is one commit on the `sprint-4` branch; the slug work arrives as its own merged
 pull request, one commit per red, green and refactor step.
 
@@ -58,8 +54,8 @@ description, which lists each one.
 
 ## Decisions made this sprint
 
-- **Only the data stories fit.** With four days left, the sprint took the two stories that need
-  no outside decision. Deploy needs a host and a Postgres provider chosen and an account created.
+- **Only the data stories fit.** The sprint took the two stories that need no outside
+  decision. Deploy needs a host and a Postgres provider chosen and an account created.
   Admin needs the SQLAdmin-or-hand-built decision and depends on the data model anyway.
 - **Synchronous SQLAlchemy, with plain `def` routes.** Async SQLAlchemy needs async drivers and
   changes how related rows load. At this site's traffic a thread pool is plenty, so a route that

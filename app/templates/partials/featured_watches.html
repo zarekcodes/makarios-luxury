@@ -7,9 +7,36 @@
 
   A <ul> rather than a stack of <div>s, so screen readers announce how many
   pieces there are before reading them.
+
+  With nothing listed (production's first day, or a week between sales) the
+  grid gives way to a deliberate note that points buyers to sourcing, so the
+  section never reads as broken.
 #}
-<ul class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-  {% for watch in watches %}
-    {% include "partials/watch_card.html" %}
-  {% endfor %}
-</ul>
+{% if watches %}
+  <ul class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+    {% for watch in watches %}
+      {% include "partials/watch_card.html" %}
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="border border-gold-400/40 px-6 py-10 sm:px-10 md:py-12">
+    <p class="max-w-[52ch] text-lead text-royal-100">
+      Every piece is inspected, graded and photographed before it&rsquo;s listed. Looking for a
+      specific reference in the meantime? We&rsquo;ll source it.
+    </p>
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <a href="mailto:{{ settings.contact_email }}?subject={{ 'Sourcing request' | urlencode }}"
+         class="inline-flex items-center justify-center bg-white px-7 py-3.5 text-sm
+                font-medium tracking-wide text-royal-950 transition-colors hover:bg-royal-100">
+        Tell us what you&rsquo;re after
+      </a>
+      <a href="{{ settings.instagram_dm_url }}"
+         rel="noopener"
+         class="inline-flex items-center justify-center border border-gold-400 px-7 py-3.5
+                text-sm font-medium tracking-wide text-white transition-colors
+                hover:bg-white/10">
+        Message on Instagram
+      </a>
+    </div>
+  </div>
+{% endif %}

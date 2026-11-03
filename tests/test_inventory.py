@@ -12,6 +12,7 @@ from app.main import app
 from app.models import BoxPapers, Condition, Photo, Watch
 from app.seed import placeholder_watches, seed
 from app.services.featured import FEATURED_LIMIT, get_featured_watches
+from tests.conftest import production_settings
 
 client = TestClient(app)
 
@@ -99,3 +100,18 @@ def test_cli_seed_reports_what_it_added(
 
     assert exit_code == 0
     assert f"Added {len(placeholder_watches())}" in capsys.readouterr().out
+
+
+def test_cli_seed_refuses_in_production(
+    session: Session, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The placeholders are invented watches, so they must never reach real buyers."""
+    session.execute(Watch.__table__.delete())
+    session.commit()
+    production = production_settings()
+
+    exit_code = cli.main(["seed"], session_factory=lambda: session, settings=production)
+
+    assert exit_code == 1
+    assert "production" in capsys.readouterr().err
+    assert session.scalar(select(func.count()).select_from(Watch)) == 0

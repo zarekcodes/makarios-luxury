@@ -16,7 +16,8 @@ stack and structure and `docs/WORKFLOW.md` for process.
 ## Rules
 
 - Storefront: no JavaScript frameworks or Node.js. Interactivity is htmx first, Alpine.js only if
-  htmx can't do it. (The planned internal dashboard is the one exception; see `docs/ARCHITECTURE.md`.)
+  htmx can't do it. (The owner-only areas are the exception: the SQLAdmin admin at `/admin`,
+  which ships its own JS, and the planned internal dashboard; see `docs/ARCHITECTURE.md`.)
 - Mobile-first: every page must work well at ~400px wide. Performance is the top product priority.
 - Routes stay thin; put business logic in `app/services/`.
 - Routes that use the database are plain `def`, not `async def`: SQLAlchemy is synchronous here,
