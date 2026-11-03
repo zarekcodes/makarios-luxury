@@ -9,7 +9,7 @@ watches in production, and the owner can log in to a protected admin area.
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
-| Deploy to production | [#24] | 5 | In progress: built and passing CI; the live deploy waits on a Render account |
+| Deploy to production | [#24] | 5 | In progress: built and passing CI; the live deploy waits on a Railway account |
 | Admin login | [#54], split from [#23] | 3 | In progress: built; ships once the deploy is live |
 
 **Committed: 8 points**, against a Sprint 4 velocity of 9 points. Deploy comes first. See
@@ -21,7 +21,7 @@ As the owner, I want the site live on a real URL so that customers can use it.
 
 Acceptance criteria:
 
-- The site is served over HTTPS at a public Render URL.
+- The site is served over HTTPS at a public Railway URL.
 - Production reads Postgres through `MAKARIOS_DATABASE_URL`, and migrations run on every deploy
   before the new version takes traffic.
 - Production has no placeholder watches. The landing page reads well with no watches at all.
@@ -78,7 +78,7 @@ get their estimate too.
 
 ## Decisions made this sprint
 
-- **Railway, on the Hobby plan** (replaced by Render; see below). $5 a month, which includes $5 of usage. The app and Postgres
+- **Railway, on the Hobby plan.** $5 a month, which includes $5 of usage. The app and Postgres
   together are estimated at $5–6 a month at this site's traffic. Render's free tier was ruled out
   because its web service sleeps after 15 idle minutes and takes about a minute to wake, which
   defeats the performance goal, and its free Postgres is deleted after 30 days. Fly.io and a
@@ -109,6 +109,16 @@ get their estimate too.
   $6–7. Only the host's configuration changed, from `railway.toml` to `render.yaml`. The
   database now accepts no connections from the internet, and Render generates the secret key.
   Render compresses responses at its proxy, so the app's gzip middleware came out.
+- **Back to Railway on 2026-11-03, before anything was deployed.** Railway reopened signups on
+  2026-11-02 ([status](https://status.railway.com/incident/O1VGXWU5)), with a paid plan required
+  before the first deploy. With the reason for leaving gone, its lower cost decided it: about
+  $5–6 a month against Render's $13, roughly $12 less over the rest of the semester. The risk
+  accepted is a host 12 days past an incident in which some customers' stored secrets were
+  decrypted. The two secrets stored there, the session key and the database URL, can each be
+  rotated in minutes, and there's no customer data yet. `railway.toml` came back, and so did the
+  app's gzip middleware, since Railway doesn't document compressing responses. Railway's staff say
+  its edge replaces `X-Forwarded-For` rather than adding to it, so the throttle's default of one
+  proxy hop fits, which the live check confirms.
 - **Login was built while the deploy waited.** The checkpoint existed to keep effort on the
   deploy, and from 2026-10-28 the deploy needed only an account. So both stories were finished
   before the checkpoint, and the first deploy carries both.

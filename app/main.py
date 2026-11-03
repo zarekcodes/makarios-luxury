@@ -4,6 +4,7 @@ from collections.abc import Callable
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
+from starlette.middleware.gzip import GZipMiddleware
 
 from app.admin import mount_admin
 from app.config import get_settings
@@ -30,6 +31,12 @@ def create_app(session_maker: Callable[[], Session] = SessionLocal) -> FastAPI:
         redoc_url="/redoc" if docs else None,
         openapi_url="/openapi.json" if docs else None,
     )
+
+    # Railway doesn't document compressing responses, so the app does it
+    # rather than count on it. HTML, CSS and htmx shrink to about a quarter of
+    # their size, which a phone on a slow connection feels directly. Responses
+    # under 1 KB aren't worth the CPU. The deploy check confirms what arrives.
+    app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     app.include_router(pages.router)

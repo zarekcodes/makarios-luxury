@@ -1,4 +1,4 @@
-# The production image: what Render builds and runs (see docs/DEPLOY.md).
+# The production image: what Railway builds and runs (see docs/DEPLOY.md).
 #
 # Two stages. The first has uv and builds the virtualenv; the second copies
 # only the finished app across, so uv itself (about 40 MB) never ships.
@@ -38,7 +38,7 @@ USER app
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1
 
-# `fastapi run` serves on 0.0.0.0 and reads the port from $PORT, which Render
+# `fastapi run` serves on 0.0.0.0 and reads the port from $PORT, which Railway
 # sets. Trusting proxy headers from any address is for X-Forwarded-Proto, so the
 # app knows the visit was HTTPS and builds https:// links, since the proxy's own
 # address isn't known in advance. It also makes request.client the FIRST entry

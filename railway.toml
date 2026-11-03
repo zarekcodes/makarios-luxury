@@ -1,0 +1,15 @@
+# Railway's build and deploy settings, read on every deploy (see docs/DEPLOY.md).
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+# Runs in the new image before it takes traffic. If a migration fails, the
+# deploy stops and the previous version keeps serving, so new code never runs
+# against an old schema.
+preDeployCommand = ["alembic upgrade head"]
+# Railway sends traffic to the new version only once this answers 200.
+healthcheckPath = "/api/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
