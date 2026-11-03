@@ -127,6 +127,19 @@ get their estimate too.
   on each attempt avoided the limit. It now counts from the end of the header. A test that sent
   repeated failures from one fixed client had passed, and the bug was found by checking how the
   header behaves behind a proxy while choosing the new host. The tests now cover a made-up entry.
+- **Railway's deploy settings live in its dashboard, for now.** The first live deploy served 500s:
+  Railway had never read `railway.toml`, so the migrations never ran and no health check gated
+  traffic. Railway's docs say new services can't use that file at all, and it stops working for
+  older ones on 2026-12-01. The pre-deploy command and health check path were set in the
+  service's settings instead, `railway.toml` was removed, and `docs/DEPLOY.md` lists both
+  settings. Railway's replacement, Infrastructure as Code, is a TypeScript file by default (Python
+  is in beta), so moving the settings back into the repository is a backlog item rather than a
+  same-day change.
+- **The throttle counts two proxies on Railway.** The live check showed Railway's edge replaces a
+  visitor's `X-Forwarded-For` with their real address, and that a Railway proxy then appends its
+  own. With one hop, the throttle would have counted by the proxy's address, so every visitor would
+  share one count. `MAKARIOS_PROXY_HOPS` is set to 2 in production, and a forged two-entry header
+  was confirmed to be dropped by the edge.
 - **Two owners, each with an account; two-factor login is its own story.** On 2026-10-28, before
   login work started, it became clear the owner's business partner, who is less technical, will
   use the admin too. [#54] now gives each owner an account in an `admin_users` table instead of

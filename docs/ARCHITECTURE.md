@@ -75,7 +75,6 @@ scripts/         # Developer tooling: CSS build, asset generators
 design/          # Source logos and photography (see docs/BRAND.md)
 docs/            # MVP, architecture, brand, workflow, deploy, sprint notes
 Dockerfile       # The production image Railway builds
-railway.toml     # Railway's build, pre-deploy migration and health check
 ```
 
 ## Conventions

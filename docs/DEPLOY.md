@@ -10,12 +10,17 @@ signups were paused, are recorded in
 
 1. A push reaches the branch the service follows. With **Wait for CI** on, Railway waits until
    GitHub Actions (lint, tests on SQLite and on Postgres, the CSS check) has passed.
-2. Railway builds the image from `Dockerfile`, as `railway.toml` tells it to.
+2. Railway builds the image from `Dockerfile`, which it finds on its own.
 3. **Pre-deploy:** `alembic upgrade head` runs in the new image, against the production database.
    If it fails, the deploy stops there and the previous version keeps serving.
 4. The new container starts (`fastapi run`, on the port Railway assigns through `$PORT`).
 5. Railway calls `/api/health` until it answers 200, then moves traffic to the new version and
    stops the old one. A version that never becomes healthy never takes traffic.
+
+Steps 3 and 5 happen only because of two settings on the service (see
+[First-time setup](#first-time-setup)). They live in Railway's dashboard, not in this repository:
+new Railway services can't read a `railway.toml`, which Railway has deprecated. Without them a
+deploy skips the migrations and takes traffic as soon as its container starts, healthy or not.
 
 Migrations run before the code that needs them, so a new version never runs against an old schema.
 The old version keeps running for a few seconds after the migration, so a migration has to leave
@@ -31,7 +36,7 @@ Set on the app service under **Variables**. None of them live in the repository.
 | `MAKARIOS_ENVIRONMENT` | `production` | Turns on the production checks: no debug, no API docs, no seeding. |
 | `MAKARIOS_DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | A reference to the database service's private URL. The app rewrites its `postgresql://` scheme to use psycopg 3. |
 | `MAKARIOS_SECRET_KEY` | a generated key (see below) | Signs the admin's session cookie. Anyone who has it can forge a login, so it lives only here. |
-| `MAKARIOS_PROXY_HOPS` | leave unset (defaults to `1`) unless the check below calls for it | Which entry of `X-Forwarded-For` is the visitor's address, for the login throttle. |
+| `MAKARIOS_PROXY_HOPS` | `2` on Railway (see [Checking the throttle's address](#checking-the-throttles-address)) | Which entry of `X-Forwarded-For` is the visitor's address, for the login throttle. |
 
 Generate the secret key by running this **in a terminal**, then paste the 43 characters it
 prints, not the command itself:
@@ -64,9 +69,15 @@ regenerate the Postgres password from the database service's settings.
    turn on **Wait for CI**.
 4. On the project canvas, click **+ New** and choose **PostgreSQL** (or press Ctrl/Cmd+K and
    search for it). Leave its name as `Postgres`, since the variable reference above uses it.
-5. Set the variables above on the app service, then deploy the staged changes.
-6. **Settings → Networking → Generate Domain** for the public `*.up.railway.app` HTTPS URL.
-7. Create the owners' accounts (see [Admin accounts](#admin-accounts)), then run the checks below.
+5. Set the variables above on the app service.
+6. In the app service's **Settings → Deploy**:
+   - **+ Add pre-deploy step:** `alembic upgrade head`
+   - **Healthcheck Path:** `/api/health`
+
+   Leave **Custom Start Command** empty; the `Dockerfile` provides it. Then deploy the staged
+   changes, and check that the deploy log shows `Running upgrade`.
+7. **Settings → Networking → Generate Domain** for the public `*.up.railway.app` HTTPS URL.
+8. Create the owners' accounts (see [Admin accounts](#admin-accounts)), then run the checks below.
 
 ## Which branch
 
@@ -89,9 +100,17 @@ a performance score of 90 or above.
 
 The login throttle has to find the visitor's address in `X-Forwarded-For`. A visitor can write
 anything there, and some proxies add to the end of what was sent instead of replacing it.
-Railway's staff say its edge replaces the header, which is what the default of one hop assumes.
-After the first deploy, and after any change in front of the site, send one failed login with a
-made-up entry:
+On 2026-11-03 the check below found that Railway's edge replaces whatever the visitor sent with
+their real address, and then a Railway proxy appends its own address (`89.222.103.x`, varying):
+
+```
+forwarded=['<your IP>, 89.222.103.194']
+```
+
+So the visitor is the second entry from the end, and Railway needs `MAKARIOS_PROXY_HOPS=2`. With
+the default of `1`, every visitor shares the proxy's count, and five wrong guesses from anyone
+would refuse everyone. Repeat the check after the first deploy, and after any change in front of
+the site, by sending one failed login with a made-up entry:
 
 ```bash
 curl -s -o /dev/null -H 'X-Forwarded-For: 10.9.9.9' \
