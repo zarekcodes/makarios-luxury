@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{#
+  The catalog listing (#25), under construction. Reachable only with
+  MAKARIOS_CATALOG_PAGE_ENABLED=true (see the catalog route in
+  app/routes/pages.py); production keeps it hidden. The grid of watch cards
+  replaces the placeholder below, and the flag goes once the story is done.
+#}
+
+{% block title %}The collection · Makarios Luxury{% endblock %}
+
+{# Unfinished, so kept out of search results even where the flag is on. #}
+{% block extra_head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+  <section aria-labelledby="catalog-title" class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+    <h1 id="catalog-title" class="mt-4 text-display-2 text-white">The collection</h1>
+    <p class="mt-5 max-w-[62ch] text-royal-100">
+      The full catalog is on its way. Every watch we have in stock will be listed here.
+    </p>
+  </section>
+{% endblock %}
