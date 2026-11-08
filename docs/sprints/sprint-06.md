@@ -62,8 +62,13 @@ Acceptance criteria:
   taking it would push every MVP story back a sprint and the inquiry stories out of the semester.
   The admin holds no personal data until inquiries arrive, and per-owner passwords plus the login
   throttle protect it until then.
+- **The catalog page ([#25]) starts this sprint, behind a feature flag.** It's Sprint 7's story,
+  but building it in small commits that merge as they go means it lands on `main`, and Railway
+  deploys `main`, before it's finished. `MAKARIOS_CATALOG_PAGE_ENABLED` is off unless set, so
+  production keeps it hidden until the story is done; the flag is removed then.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
+[#25]: https://github.com/zarekcodes/makarios-luxury/issues/25
 [#28]: https://github.com/zarekcodes/makarios-luxury/issues/28
 [#52]: https://github.com/zarekcodes/makarios-luxury/issues/52
 [#65]: https://github.com/zarekcodes/makarios-luxury/issues/65

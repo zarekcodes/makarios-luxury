@@ -95,3 +95,25 @@ def test_a_settings_error_does_not_print_the_secret_key() -> None:
 
 def test_development_allows_debug_mode() -> None:
     assert settings(environment="development", debug=True).debug is True
+
+
+def test_the_catalog_page_flag_is_off_by_default() -> None:
+    """Unset, the half-built catalog page stays hidden, wherever the app runs."""
+    assert settings().catalog_page_enabled is False
+    assert production_settings().catalog_page_enabled is False
+
+
+def test_the_catalog_page_flag_reads_its_environment_variable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("MAKARIOS_CATALOG_PAGE_ENABLED", "true")
+    assert settings().catalog_page_enabled is True
+
+
+def test_the_catalog_page_flag_refuses_a_value_that_is_not_a_boolean(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A typo fails at startup rather than silently leaving the page off (or on)."""
+    monkeypatch.setenv("MAKARIOS_CATALOG_PAGE_ENABLED", "enabled-please")
+    with pytest.raises(ValidationError, match="catalog_page_enabled"):
+        settings()

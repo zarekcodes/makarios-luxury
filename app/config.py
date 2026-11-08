@@ -64,6 +64,12 @@ class Settings(BaseSettings):
     contact_email: str = "makarioslux@gmail.com"
     instagram_handle: str = "makariosluxury"
 
+    # Feature flag for the catalog page (#25), which is built in small commits
+    # that merge before it's finished. Off by default, so production never
+    # shows a half-built page; turn it on locally with
+    # MAKARIOS_CATALOG_PAGE_ENABLED=true. Remove the flag once the page ships.
+    catalog_page_enabled: bool = False
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
