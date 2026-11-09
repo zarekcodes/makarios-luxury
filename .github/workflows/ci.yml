@@ -8,13 +8,34 @@ on:
   pull_request:
 
 jobs:
+  # Runs the suite on both ends of the Python range we claim to support.
+  # pyproject.toml promises ">=3.12", but development and the Railway deploy
+  # use 3.14 (.python-version), so without the 3.12 leg that promise is never
+  # tested. The 3.12 leg catches code that quietly relies on something newer:
+  # e.g. 3.14 evaluates annotations lazily (PEP 649), so a model can name a
+  # class defined further down without quotes, which raises NameError at
+  # import on 3.12. It also catches a dependency that has dropped 3.12.
+  # 3.13 is skipped: like BVA, the boundary (3.12) and the production value
+  # (3.14) are where version breakage shows up.
   test:
+    name: test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      # Let both legs finish, so a failure shows whether it's version-specific.
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.14"]
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v6
+        with:
+          # Sets UV_PYTHON, which overrides the 3.14 pin in .python-version.
+          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: uv sync --locked
+      # Proof the leg runs the version it claims, not 3.14 twice.
+      - name: Show Python version
+        run: uv run python -V
       - name: Lint
         run: uv run ruff check .
       - name: Check formatting
