@@ -43,7 +43,16 @@ bin/
 # Not part of the deliverable; see docs/ for the project documentation.
 docs/LEARNING_GUIDE.md
 docs/CI_CD_GUIDE.md
+docs/CODEBASE_MAP.md
 
 # Sprint reviews and retrospectives: the owner's written reflection, drafted
 # here and submitted through the course LMS. The sprint plans stay committed.
 docs/sprints/local/
+
+# Original watch photography, straight off the camera. The finished photos are
+# public, but the originals aren't the same files: they carry the phone's GPS
+# location in their metadata, and Git keeps every byte of every version
+# forever. Photos reach the site through the upload pipeline, which strips the
+# metadata and makes the web sizes (#28, #68). The logos in design/logo/ stay
+# committed: they're small, already public, and build_brand_assets.py needs them.
+design/photos/
