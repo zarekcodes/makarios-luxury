@@ -1,8 +1,8 @@
 """Derive the site's logo and favicon files from the design sources.
 
-The originals in design/ are gitignored, so this script only runs on a machine
-that has them. Its *outputs* are committed under app/static/img/brand/, which
-is why a fresh clone can still build and serve the site.
+The logo originals in design/logo/ are committed, so any clone can rerun this
+script. Its *outputs* are committed too, under app/static/img/brand/, so the
+site builds and serves without ever running it.
 
 Run it after changing a logo:
 
@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 from PIL import Image
@@ -83,19 +84,32 @@ def build(source: Path, out_dir: Path) -> list[Path]:
     return written
 
 
-def main() -> int:
+def display_path(path: Path) -> str:
+    """The path as the report prints it: relative to the repo when inside it, else absolute.
+
+    Resolved first, because --out may be relative to wherever the script runs
+    from, and a relative path is never "inside" the absolute REPO_ROOT.
+    """
+    resolved = path.resolve()
+    if resolved.is_relative_to(REPO_ROOT):
+        return str(resolved.relative_to(REPO_ROOT))
+    return str(resolved)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """Build the assets and report each file. argv is a parameter so tests can call it."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.source.exists():
         print(f"error: source logo not found at {args.source}", file=sys.stderr)
-        print("The design/ folder is gitignored; this script needs a local copy.", file=sys.stderr)
+        print("Put the source logo in design/logo/ (see docs/BRAND.md).", file=sys.stderr)
         return 1
 
     for path in build(args.source, args.out):
-        print(f"wrote {path.relative_to(REPO_ROOT)} ({path.stat().st_size:,} bytes)")
+        print(f"wrote {display_path(path)} ({path.stat().st_size:,} bytes)")
     return 0
 
 
