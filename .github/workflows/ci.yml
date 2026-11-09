@@ -2,8 +2,8 @@ name: CI
 
 on:
   push:
-    # Sprint branches too: Railway deploys the current sprint's branch only
-    # after these checks pass (see docs/DEPLOY.md).
+    # Sprint branches too, so each story is checked as it's pushed, before its
+    # pull request to main, the branch Railway deploys (see docs/DEPLOY.md).
     branches: [main, "sprint-*"]
   pull_request:
 
@@ -17,6 +17,11 @@ jobs:
   # import on 3.12. It also catches a dependency that has dropped 3.12.
   # 3.13 is skipped: like BVA, the boundary (3.12) and the production value
   # (3.14) are where version breakage shows up.
+  #
+  # Every job's check name ("test (Python 3.12)", "test (Python 3.14)",
+  # "test-postgres", "css") is a required check in the "Protect main" ruleset.
+  # Rename a job or change the matrix, and update the ruleset to match, or pull
+  # requests to main wait forever for a check that never runs.
   test:
     name: test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
@@ -50,7 +55,9 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:17
+        # Production's major version (Railway's postgres-ssl:18). Bump the two
+        # together, and the docker run line in docs/DEPLOY.md with them.
+        image: postgres:18
         env:
           POSTGRES_PASSWORD: test
         ports:
