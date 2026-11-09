@@ -81,10 +81,18 @@ regenerate the Postgres password from the database service's settings.
 
 ## Which branch
 
-During Sprint 5 the service follows **`sprint-5`**, because the site had to go live within the
-sprint, and the sprint's work reaches `main` only when its pull request merges at the sprint
-review. Once that pull request merges, switch the service's branch to **`main`** and leave it
-there. From then on, production is whatever `main` holds.
+The service follows **`main`**, so production is whatever `main` holds. A push to a sprint branch
+runs CI and deploys nothing. Work reaches `main` only through a pull request from the sprint
+branch, and the **Protect main** ruleset (Settings → Rules → Rulesets) enforces that: no direct
+pushes, force-pushes or deletion; every required CI check must pass before the merge; and merges
+are merge commits only, so the per-story commits survive.
+
+The required checks are listed by name: `test (Python 3.12)`, `test (Python 3.14)`,
+`test-postgres` and `css`. Renaming a CI job or changing its matrix means updating the ruleset to
+match. Otherwise the pull request waits forever for a check that never reports.
+
+During Sprint 5 the service followed `sprint-5` instead, so the site could go live within the
+sprint. It moved to `main` once that sprint's pull request merged.
 
 ## Checking a deploy
 
@@ -159,7 +167,7 @@ CI does this on every push. To do it locally, start a throwaway Postgres in Dock
 test suite at it:
 
 ```bash
-docker run -d --rm --name makarios-pg -p 5433:5432 -e POSTGRES_PASSWORD=test postgres:17
+docker run -d --rm --name makarios-pg -p 5433:5432 -e POSTGRES_PASSWORD=test postgres:18
 MAKARIOS_TEST_DATABASE_URL=postgresql+psycopg://postgres:test@localhost:5433/postgres uv run pytest
 docker stop makarios-pg
 ```

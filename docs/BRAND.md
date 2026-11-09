@@ -204,5 +204,6 @@ To swap in a new logo:
    `app/templates/partials/_brandmark.html` with a single `<img>`. Nothing
    else in the site needs to change.
 
-The originals in `design/` are committed, so a fresh clone can regenerate every derived asset
-without hunting for the source files.
+The logo originals in `design/logo/` are committed, so a fresh clone can regenerate every derived
+asset without hunting for the source files. Photo originals in `design/photos/` are not: they're
+gitignored, because camera files carry location metadata and would bloat the history.

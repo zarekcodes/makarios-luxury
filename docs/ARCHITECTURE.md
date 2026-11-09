@@ -72,7 +72,7 @@ app/
 migrations/      # Alembic: one file per schema change, in versions/
 tests/           # pytest suite; conftest.py gives each test its own database (SQLite or Postgres)
 scripts/         # Developer tooling: CSS build, asset generators
-design/          # Source logos and photography (see docs/BRAND.md)
+design/          # Source logos (committed); photo originals stay local, gitignored (docs/BRAND.md)
 docs/            # MVP, architecture, brand, workflow, deploy, sprint notes
 Dockerfile       # The production image Railway builds
 ```
