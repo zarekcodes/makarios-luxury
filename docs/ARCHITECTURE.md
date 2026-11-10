@@ -17,7 +17,7 @@ flowchart LR
         Models["SQLAlchemy models"]
     end
     DB[("Database<br/>SQLite dev / Postgres prod")]
-    Media[("Image storage<br/>local dev / object storage prod")]
+    Media[("Photo files<br/>media/ dev / Railway volume prod")]
     Email["Email provider"]
 
     Browser -->|HTTP| Pages
@@ -93,8 +93,10 @@ Dockerfile       # The production image Railway builds
 
 Speed on mobile is the top product priority, and for a watch site **images dominate page weight**.
 
-- Generate resized WebP/AVIF variants on upload; serve with `srcset`/`sizes` so phones download
-  phone-sized images.
+- Generate resized WebP variants on upload (`app/services/images.py`: 400/800/1200 px, the
+  largest under 250 KB); serve with `srcset`/`sizes` so phones download phone-sized images.
+  Uploads are served from the Railway volume at `/media`, cached for a year, since each upload
+  gets a new name (`docs/DEPLOY.md`, "Photo storage").
 - `loading="lazy"` on below-the-fold images; explicit `width`/`height` to prevent layout shift.
 - Minified Tailwind CSS containing only used classes; htmx is the only required script.
 - Responses over 1 KB are gzipped by the app, since Railway doesn't document compressing them.
@@ -109,7 +111,6 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 
 | Decision | Target sprint |
 | --- | --- |
-| Image storage in production (a Railway volume or object storage) | Sprint 6 |
 | Transactional email provider | Sprint 6 |
 | Dashboard frontend stack (React + TypeScript vs. a lighter option such as Preact or Svelte) | After the MVP |
 

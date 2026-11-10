@@ -7,14 +7,24 @@
 #}
 
 {#
+  image_url(name, width, mount): one file's URL. mount is "static" for the
+  images in the repository (under /static/img) or "media" for owners'
+  uploads (under /media); a Photo knows which as photo.mount.
+#}
+{% macro image_url(name, width, mount="static") -%}
+  {%- set path = name if mount == "media" else "img/" ~ name -%}
+  {{- url_for(mount, path=path ~ '-' ~ width ~ '.webp') -}}
+{%- endmacro %}
+
+{#
   srcset(name, widths): the srcset string on its own. Used directly by a
   <source> inside a <picture>, where the hero offers a different crop per
   screen shape (art direction), and by responsive_img below.
 #}
-{% macro srcset(name, widths) -%}
+{% macro srcset(name, widths, mount="static") -%}
   {%- set candidates = [] -%}
   {%- for w in widths -%}
-    {%- set _ = candidates.append(url_for('static', path='img/' ~ name ~ '-' ~ w ~ '.webp') ~ ' ' ~ w ~ 'w') -%}
+    {%- set _ = candidates.append(image_url(name, w, mount) ~ ' ' ~ w ~ 'w') -%}
   {%- endfor -%}
   {{ candidates | join(', ') }}
 {%- endmacro %}
@@ -23,7 +33,8 @@
   responsive_img(...): a complete <img>.
 
   Arguments:
-    name    path under /static/img, without the "-<width>.webp" suffix
+    name    the image's name, without the "-<width>.webp" suffix
+    mount   "static" (the default) or "media" for an owner's upload; see image_url
     widths  the generated widths, e.g. [400, 800, 1200]
     sizes   how wide the image will be displayed, per breakpoint. Getting this
             roughly right is what makes srcset actually save bytes.
@@ -34,9 +45,9 @@
             more than it saves.
     class_  extra classes for the <img>
 #}
-{% macro responsive_img(name, widths, sizes, alt, width, height, eager=false, class_="") -%}
-  <img src="{{ url_for('static', path='img/' ~ name ~ '-' ~ widths[0] ~ '.webp') }}"
-       srcset="{{ srcset(name, widths) }}"
+{% macro responsive_img(name, widths, sizes, alt, width, height, eager=false, class_="", mount="static") -%}
+  <img src="{{ image_url(name, widths[0], mount) }}"
+       srcset="{{ srcset(name, widths, mount) }}"
        sizes="{{ sizes }}"
        width="{{ width }}" height="{{ height }}"
        alt="{{ alt }}"

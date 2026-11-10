@@ -11,7 +11,7 @@ somewhere that survives a deploy.
 | --- | --- | --- | --- |
 | Add watches from the admin | [#67], split from [#23] | 2 | Done |
 | Optimized images | [#28] | 3 | Done |
-| Photo upload | [#68], split from [#23] | 3 | Todo |
+| Photo upload | [#68], split from [#23] | 3 | In Progress: built; the Railway volume and a phone check remain |
 
 **Committed: 8 points**, against a velocity of about 8.5 (9 in Sprint 4, 8 in Sprint 5). Add
 watches comes first, since it's the smallest and the other two attach photos to the watches it
@@ -82,6 +82,13 @@ Acceptance criteria:
   middle. iPhone HEIC files are refused with a message pointing to the camera's "Most Compatible"
   setting, since Pillow needs an extra library to read them and Safari usually sends JPEG anyway.
   A photo must be at least 1200×1500, so nothing is enlarged into blur.
+- **Photos live on a Railway volume, not a bucket ([#68]).** Railway's buckets can't be public, so
+  every image would go through the app or an expiring signed URL, which defeats the browser cache;
+  from a volume the app serves `/media` with a year-long cache. The costs are no replicas and a
+  few seconds of downtime per redeploy. The app runs as a non-root user and Railway mounts volumes
+  owned by root, so production sets `RAILWAY_RUN_UID=0`, Railway's documented fix, at the cost of
+  running as root inside the container (`docs/DEPLOY.md`, "Photo storage"). Until the volume is
+  set, the admin refuses uploads instead of accepting photos a deploy would erase.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25

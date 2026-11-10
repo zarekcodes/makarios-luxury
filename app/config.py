@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 from typing import Self
 
 from pydantic import Field, field_validator, model_validator
@@ -70,9 +71,27 @@ class Settings(BaseSettings):
     # MAKARIOS_CATALOG_PAGE_ENABLED=true. Remove the flag once the page ships.
     catalog_page_enabled: bool = False
 
+    # Where owners' uploaded photos are written (#68), and served from at
+    # /media. In development, the gitignored media/ folder. In production it
+    # must be on the Railway volume, e.g. MAKARIOS_MEDIA_DIR=/data/media:
+    # anywhere else is the container's own disk, which every deploy replaces,
+    # photos and all (see docs/DEPLOY.md).
+    media_dir: Path = Path("media")
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
+
+    @property
+    def photo_storage_ready(self) -> bool:
+        """Whether uploaded photos would survive a deploy.
+
+        A relative media_dir in production means MAKARIOS_MEDIA_DIR was never
+        set to the volume, so the admin refuses uploads rather than accept
+        photos that vanish at the next deploy. It isn't a startup error, so a
+        deploy without the volume still serves the site.
+        """
+        return not self.is_production or self.media_dir.is_absolute()
 
     @model_validator(mode="after")
     def refuse_unsafe_production_settings(self) -> Self:

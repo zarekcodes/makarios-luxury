@@ -11,6 +11,7 @@ from app.config import get_settings
 from app.db import SessionLocal
 from app.paths import STATIC_DIR
 from app.routes import api, pages
+from app.services.media import mount_media
 
 # The app's own log lines (admin logins and changes) at INFO. The server only
 # sets up its own loggers, so without this they'd be dropped as below WARNING.
@@ -39,6 +40,7 @@ def create_app(session_maker: Callable[[], Session] = SessionLocal) -> FastAPI:
     app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    mount_media(app, settings.media_dir)
     app.include_router(pages.router)
     app.include_router(api.router, prefix="/api")
     mount_admin(app, settings, session_maker)

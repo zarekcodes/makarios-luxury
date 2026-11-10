@@ -37,6 +37,8 @@ Set on the app service under **Variables**. None of them live in the repository.
 | `MAKARIOS_DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | A reference to the database service's private URL. The app rewrites its `postgresql://` scheme to use psycopg 3. |
 | `MAKARIOS_SECRET_KEY` | a generated key (see below) | Signs the admin's session cookie. Anyone who has it can forge a login, so it lives only here. |
 | `MAKARIOS_PROXY_HOPS` | `2` on Railway (see [Checking the throttle's address](#checking-the-throttles-address)) | Which entry of `X-Forwarded-For` is the visitor's address, for the login throttle. |
+| `MAKARIOS_MEDIA_DIR` | `/data/media` (see [Photo storage](#photo-storage)) | Where owners' uploaded photos are saved and served from. Must be on the volume. |
+| `RAILWAY_RUN_UID` | `0` (see [Photo storage](#photo-storage)) | Lets the app write to the volume, which Railway mounts owned by root. |
 
 Generate the secret key by running this **in a terminal**, then paste the 43 characters it
 prints, not the command itself:
@@ -129,6 +131,38 @@ The service's log then shows `admin login failed address=... forwarded=[...]`. `
 your real IP address (`curl -s https://api.ipify.org`), and never `10.9.9.9`. If it's instead an
 address belonging to a proxy, raise `MAKARIOS_PROXY_HOPS` by one and check again. Too low only
 makes visitors share a count, while too high lets them choose their own address.
+
+## Photo storage
+
+Owners' photos (#68) are files, not database rows, and a container's own disk is replaced on
+every deploy. So they live on a **Railway volume**, a disk that outlives deploys, mounted into the
+app service.
+
+1. On the app service, **Settings → Volumes → Add volume**, mount path `/data`.
+2. Under **Variables**, set `MAKARIOS_MEDIA_DIR=/data/media` and `RAILWAY_RUN_UID=0`.
+3. Redeploy, then in `/admin` open a watch's **Photos** and add one. The page says so if either
+   step is missing, and refuses uploads rather than lose them.
+4. Check the photo shows on the live landing page, then redeploy once more and check it's still
+   there.
+
+Why a volume and not a Railway bucket: buckets can't be public, so every image would have to go
+through the app or a signed URL that expires, which defeats the browser's cache. From the volume,
+the app serves `/media` itself, with a year-long cache header (each upload gets a new name, so a
+cached copy is never stale).
+
+What the volume costs: the app can't run replicas, and each redeploy has a few seconds of downtime
+while the old container lets go of the disk. Railway's volumes can be backed up from the volume's
+settings; turn on scheduled backups there.
+
+**`RAILWAY_RUN_UID=0` runs the container as root.** The Dockerfile runs the app as the
+unprivileged `app` user, but Railway mounts volumes owned by root, so that user can't write to
+it. Running as root is Railway's documented fix. The cost is defence in depth: code that broke
+out of the app would be root inside the container (still inside the container). The stricter
+alternative, an entrypoint that `chown`s `/data` as root and then drops to `app`, is noted for
+after the MVP.
+
+Moving to object storage later (for a CDN, say) means replacing `MediaStore` and the `/media`
+mount in `app/services/media.py`; nothing else touches the files.
 
 ## Rolling back
 

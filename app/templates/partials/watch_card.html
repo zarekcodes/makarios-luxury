@@ -28,6 +28,7 @@
       {% if photo %}
         {{ responsive_img(
              name=photo.image,
+             mount=photo.mount,
              widths=[400, 800, 1200],
              sizes="(min-width: 1024px) 341px, (min-width: 640px) 45vw, 92vw",
              alt=photo.alt,
