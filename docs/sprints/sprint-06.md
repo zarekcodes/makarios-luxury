@@ -10,7 +10,7 @@ somewhere that survives a deploy.
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
 | Add watches from the admin | [#67], split from [#23] | 2 | Done |
-| Optimized images | [#28] | 3 | Todo |
+| Optimized images | [#28] | 3 | Done |
 | Photo upload | [#68], split from [#23] | 3 | Todo |
 
 **Committed: 8 points**, against a velocity of about 8.5 (9 in Sprint 4, 8 in Sprint 5). Add
@@ -77,6 +77,11 @@ Acceptance criteria:
   box and papers, and status selects show "Very Good", not `VERY_GOOD`, though the database still
   stores the name. A price can be typed `12500`, `12,500` or `$12,500`. Both are for the
   non-technical partner, who adds watches from a phone.
+- **The image pipeline crops, and doesn't take HEIC ([#28]).** Photos are cropped to the centre
+  4:5, not padded, so every card has the same edge-to-edge look; owners frame the watch in the
+  middle. iPhone HEIC files are refused with a message pointing to the camera's "Most Compatible"
+  setting, since Pillow needs an extra library to read them and Safari usually sends JPEG anyway.
+  A photo must be at least 1200×1500, so nothing is enlarged into blur.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25
