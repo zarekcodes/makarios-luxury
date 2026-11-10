@@ -4,7 +4,10 @@ Each test builds its own app around the test's database, with a throttle
 whose clock the test controls, so nothing here waits fifteen real minutes.
 """
 
+import logging
+import re
 from collections.abc import Callable
+from datetime import date
 from html.parser import HTMLParser
 
 import httpx
@@ -18,7 +21,7 @@ from starlette.requests import Request
 from app.admin import client_address, mount_admin
 from app.config import Settings
 from app.main import app as real_app
-from app.models import Watch
+from app.models import BoxPapers, Condition, Watch, WatchStatus
 from app.services import admin_accounts
 from app.services.login_throttle import LoginThrottle
 from tests.conftest import production_settings
@@ -296,11 +299,243 @@ def test_the_edit_form_leaves_out_the_slug_and_photos(
     assert {"brand", "model", "price", "status", "featured"} <= form.keys()
 
 
-def test_owners_cannot_create_or_delete_watches_yet(client: TestClient, owner: str) -> None:
-    """Adding and removing watches are their own stories, still to come."""
+def test_owners_cannot_delete_watches(client: TestClient, owner: str, session: Session) -> None:
+    """Removing a watch is its own story; a sold watch is marked sold instead."""
     log_in(client, owner, PASSWORD)
 
-    assert client.get("/admin/watch/create").status_code in (403, 404)
+    response = client.delete("/admin/watch/delete?pks=1")
+
+    assert response.status_code in (403, 404)
+    assert session.get(Watch, 1) is not None
+
+
+# Adding a watch (#67).
+
+NEW_WATCH = {
+    "brand": "Halden",
+    "model": "Fjord Diver",
+    "reference": "HF-200",
+    "year": "2021",
+    "condition": "VERY_GOOD",
+    "box_papers": "PAPERS_ONLY",
+    "price": "6400",
+    "status": "AVAILABLE",
+    "save": "Save",
+}
+
+
+def add_watch(client: TestClient, **changes: str | None) -> httpx.Response:
+    """Submit the Add form, as a browser would. A change of None leaves that field out."""
+    data = {key: value for key, value in (NEW_WATCH | changes).items() if value is not None}
+    return client.post("/admin/watch/create", data=data, follow_redirects=False)
+
+
+def watch_named(session: Session, brand: str, model: str) -> list[Watch]:
+    query = select(Watch).where(Watch.brand == brand, Watch.model == model).order_by(Watch.id)
+    return list(session.scalars(query))
+
+
+def test_the_add_form_has_every_catalog_field_but_the_slug(client: TestClient, owner: str) -> None:
+    log_in(client, owner, PASSWORD)
+
+    fields = set(re.findall(r'name="(\w+)"', client.get("/admin/watch/create").text))
+
+    assert {
+        "brand",
+        "model",
+        "reference",
+        "year",
+        "condition",
+        "box_papers",
+        "price",
+        "status",
+        "featured",
+    } <= fields
+    assert "slug" not in fields
+
+
+def test_an_owner_can_add_a_watch(client: TestClient, owner: str, session: Session) -> None:
+    log_in(client, owner, PASSWORD)
+
+    response = add_watch(client)
+
+    assert response.status_code == 302
+    [watch] = watch_named(session, "Halden", "Fjord Diver")
+    assert watch.slug == "halden-fjord-diver"
+    assert watch.reference == "HF-200"
+    assert watch.year == 2021
+    assert watch.condition is Condition.VERY_GOOD
+    assert watch.box_papers is BoxPapers.PAPERS_ONLY
+    assert watch.price == 6400
+    assert watch.status is WatchStatus.AVAILABLE
+    assert watch.featured is False
+
+
+def test_a_blank_price_and_year_mean_on_request_and_undocumented(
+    client: TestClient, owner: str, session: Session
+) -> None:
+    log_in(client, owner, PASSWORD)
+
+    add_watch(client, price="", year="")
+
+    [watch] = watch_named(session, "Halden", "Fjord Diver")
+    assert watch.price is None
+    assert watch.price_label == "Price on request"
+    assert watch.year is None
+
+
+def test_a_second_watch_of_the_same_model_gets_its_own_slug(
+    client: TestClient, owner: str, session: Session
+) -> None:
+    """A placeholder Aurelian Meridian Chronograph already holds the plain slug."""
+    log_in(client, owner, PASSWORD)
+
+    add_watch(client, brand="Aurelian", model="Meridian Chronograph", reference="AM-1")
+    add_watch(client, brand="Aurelian", model="Meridian Chronograph", reference="AM-2")
+
+    slugs = [watch.slug for watch in watch_named(session, "Aurelian", "Meridian Chronograph")]
+    assert slugs == [
+        "aurelian-meridian-chronograph",
+        "aurelian-meridian-chronograph-2",
+        "aurelian-meridian-chronograph-3",
+    ]
+
+
+def test_a_typed_slug_is_ignored(client: TestClient, owner: str, session: Session) -> None:
+    """The slug isn't on the form, and one slipped into the request changes nothing."""
+    log_in(client, owner, PASSWORD)
+
+    add_watch(client, slug="my-own-address")
+
+    [watch] = watch_named(session, "Halden", "Fjord Diver")
+    assert watch.slug == "halden-fjord-diver"
+
+
+def test_editing_a_watch_keeps_its_slug(client: TestClient, owner: str, session: Session) -> None:
+    """Renaming a watch mustn't break the links already pointing at it."""
+    log_in(client, owner, PASSWORD)
+    add_watch(client)
+    [watch] = watch_named(session, "Halden", "Fjord Diver")
+
+    form = edit_form(client.get(f"/admin/watch/edit/{watch.id}").text)
+    form["model"] = "Fjord Diver II"
+    client.post(f"/admin/watch/edit/{watch.id}", data=form, follow_redirects=False)
+
+    session.refresh(watch)
+    assert watch.model == "Fjord Diver II"
+    assert watch.slug == "halden-fjord-diver"
+
+
+@pytest.mark.parametrize(
+    "field, value, message",
+    [
+        ("brand", "", "Required."),
+        ("brand", "   ", "Required."),
+        ("model", "", "Required."),
+        ("reference", "", "Required."),
+        ("year", "1899", "Enter a year from 1900 to"),
+        ("year", str(date.today().year + 2), "Enter a year from 1900 to"),
+        ("price", "0", "Enter a whole-dollar price above zero"),
+        ("price", "-500", "Enter a whole-dollar price above zero"),
+        ("price", "12500.50", "Enter a whole-dollar price above zero"),
+        ("price", "twelve grand", "Enter a whole-dollar price above zero"),
+    ],
+)
+def test_an_invalid_field_is_refused_with_a_message(
+    client: TestClient, owner: str, session: Session, field: str, value: str, message: str
+) -> None:
+    log_in(client, owner, PASSWORD)
+
+    response = add_watch(client, **{field: value})
+
+    assert response.status_code == 400
+    assert message in response.text
+    assert watch_named(session, "Halden", "Fjord Diver") == []
+
+
+def test_a_price_refusal_shows_one_message_not_two(client: TestClient, owner: str) -> None:
+    """WTForms' own "Not a valid integer value" would sit on top of ours."""
+    log_in(client, owner, PASSWORD)
+
+    response = add_watch(client, price="12500.50")
+
+    assert "Not a valid integer value" not in response.text
+    assert response.text.count("Enter a whole-dollar price above zero") == 1
+
+
+@pytest.mark.parametrize("typed", ["12500", "12,500", "$12,500", " 12500 "])
+def test_a_price_can_be_typed_the_way_people_write_one(
+    client: TestClient, owner: str, session: Session, typed: str
+) -> None:
+    log_in(client, owner, PASSWORD)
+
+    add_watch(client, price=typed)
+
+    [watch] = watch_named(session, "Halden", "Fjord Diver")
+    assert watch.price == 12500
+
+
+def test_text_fields_are_saved_without_surrounding_spaces(
+    client: TestClient, owner: str, session: Session
+) -> None:
+    log_in(client, owner, PASSWORD)
+
+    add_watch(client, brand=" Halden ", model="Fjord Diver  ", reference=" HF-200")
+
+    [watch] = watch_named(session, "Halden", "Fjord Diver")
+    assert watch.reference == "HF-200"
+
+
+def test_each_field_keeps_its_own_length_limit(client: TestClient, owner: str) -> None:
+    """SQLAdmin adds validators to the form's field lists on every request.
+
+    Lists shared between fields, or kept between requests, would give every
+    text box the shortest limit of all of them, and grow without end.
+    """
+    log_in(client, owner, PASSWORD)
+
+    for _ in range(3):
+        page = client.get("/admin/watch/create").text
+
+    assert 'id="brand" maxlength="60"' in page
+    assert 'id="model" maxlength="120"' in page
+    assert 'id="reference" maxlength="40"' in page
+
+
+def test_the_selects_show_labels_and_keep_the_saved_choice(client: TestClient, owner: str) -> None:
+    """Owners pick "Very Good", not VERY_GOOD; the edit form shows what's saved."""
+    log_in(client, owner, PASSWORD)
+
+    page = client.get("/admin/watch/edit/1").text
+
+    assert '<option selected value="EXCELLENT">Excellent</option>' in page
+    assert '<option selected value="BOX_AND_PAPERS">Box and papers</option>' in page
+    assert ">Very Good</option>" in page
+    assert ">VERY_GOOD<" not in page
+
+
+def test_a_featured_watch_is_on_the_landing_page_once_saved(client: TestClient, owner: str) -> None:
+    log_in(client, owner, PASSWORD)
+
+    add_watch(client, featured="y")
+
+    landing = TestClient(real_app).get("/")
+    assert "Halden Fjord Diver" in landing.text
+
+
+def test_the_audit_log_records_who_added_a_watch(
+    client: TestClient, owner: str, caplog: pytest.LogCaptureFixture
+) -> None:
+    log_in(client, owner, PASSWORD)
+    caplog.set_level(logging.INFO, logger="makarios.admin.audit")
+
+    add_watch(client)
+
+    [entry] = [
+        record.getMessage() for record in caplog.records if "admin create" in record.getMessage()
+    ]
+    assert "by=owner" in entry
+    assert "Fjord Diver" in entry
 
 
 def edit_form(html: str) -> dict[str, str]:

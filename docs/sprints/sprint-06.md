@@ -9,7 +9,7 @@ somewhere that survives a deploy.
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
-| Add watches from the admin | [#67], split from [#23] | 2 | Todo |
+| Add watches from the admin | [#67], split from [#23] | 2 | Done |
 | Optimized images | [#28] | 3 | Todo |
 | Photo upload | [#68], split from [#23] | 3 | Todo |
 
@@ -73,6 +73,10 @@ Acceptance criteria:
 - **The board's Sprint 6 was set up late.** The Sprint 6–8 iterations were added to the board, and
   this sprint's stories moved into Sprint 6, on 2026-11-10 rather than at planning on 11-05, so
   the start-of-sprint screenshot is from that day. Nothing had started before it.
+- **The admin form shows labels and takes prices as people type them ([#67]).** The condition,
+  box and papers, and status selects show "Very Good", not `VERY_GOOD`, though the database still
+  stores the name. A price can be typed `12500`, `12,500` or `$12,500`. Both are for the
+  non-technical partner, who adds watches from a phone.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25

@@ -9,21 +9,27 @@ storefront's no-framework rule is about what buyers download; the admin is two
 owners' tool, not a page buyers ever load.
 """
 
+import enum
 import logging
 from collections.abc import Callable
+from datetime import date
+from typing import Any
 
 from fastapi import FastAPI
 from sqladmin import Admin, ModelView
 from sqladmin.audit import AuditBackend, AuditEntry
 from sqladmin.authentication import AuthenticationBackend, get_current_user_id
+from sqladmin.fields import SelectField
 from sqlalchemy.orm import Session
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import Request
 from starlette.responses import Response
+from wtforms import Field, Form, IntegerField, ValidationError, validators
+from wtforms.widgets import TextInput
 
 from app.config import Settings
-from app.models import AdminUser, Watch
-from app.services import admin_accounts
+from app.models import AdminUser, BoxPapers, Condition, Watch, WatchStatus
+from app.services import admin_accounts, inventory
 from app.services.login_throttle import LoginThrottle
 
 # A day without a request signs the owner out. Each admin request re-signs the
@@ -201,6 +207,95 @@ class NamedAuditBackend(AuditBackend):
         )
 
 
+# Wristwatches were rare before 1900, and a year beyond next year is a typo.
+EARLIEST_YEAR = 1900
+
+
+def strip(value: Any) -> Any:
+    """A form filter: drop the spaces a phone keyboard leaves around a word."""
+    return value.strip() if isinstance(value, str) else value
+
+
+def sensible_year(form: Form, field: Field) -> None:
+    """A year from 1900 to next year (a new model can carry next year's date).
+
+    Checked against today's date on every save, rather than a year fixed when
+    the app started, so the range moves forward on its own.
+    """
+    if field.data is None:
+        return  # Left blank: the year isn't documented.
+    latest = date.today().year + 1
+    if not EARLIEST_YEAR <= field.data <= latest:
+        raise ValidationError(f"Enter a year from {EARLIEST_YEAR} to {latest}.")
+
+
+PRICE_MESSAGE = "Enter a whole-dollar price above zero, like 12500, or leave it blank."
+
+
+class WholeDollarField(IntegerField):
+    """A price in whole US dollars, typed the way people write one.
+
+    "12500", "12,500" and "$12,500" all mean 12500. Cents, a zero or a
+    negative are refused with one plain message, rather than WTForms' "Not a
+    valid integer value". Blank is allowed, and means price on request.
+    """
+
+    widget = TextInput()
+
+    def process_formdata(self, valuelist: list[Any]) -> None:
+        self.data = None
+        text = str(valuelist[0]).strip() if valuelist else ""
+        if not text:
+            return
+        digits = text.removeprefix("$").replace(",", "")
+        if not (digits.isascii() and digits.isdigit()) or int(digits) < 1:
+            raise ValueError(PRICE_MESSAGE)
+        self.data = int(digits)
+
+
+def enum_name(value: Any) -> str:
+    """What a select stores for a member: its name (VERY_GOOD), as the database does."""
+    return value.name if isinstance(value, enum.Enum) else str(value)
+
+
+def labelled_choices(enum_class: type[enum.Enum]) -> dict[str, Any]:
+    """A select that shows each member's label ("Very Good") but stores its name."""
+    return {
+        "choices": [(member.name, member.value) for member in enum_class],
+        "coerce": enum_name,
+    }
+
+
+def watch_form_args() -> dict[str, dict[str, Any]]:
+    """The admin's checks for each field, shown beside the field when they fail.
+
+    SQLAdmin already requires the columns that can't be empty and lets the rest
+    be blank; these add what it can't tell from the columns. DataRequired,
+    unlike SQLAdmin's InputRequired, also refuses a field of nothing but spaces.
+
+    A function, so every field gets lists of its own each time: SQLAdmin builds
+    the form on every request and appends its own validators to these lists.
+    Shared lists would pass one field's checks to another, and grow forever.
+    """
+
+    def text() -> dict[str, Any]:
+        return {"filters": [strip], "validators": [validators.DataRequired(message="Required.")]}
+
+    return {
+        "brand": text(),
+        "model": text(),
+        "reference": text(),
+        "year": {
+            "description": "Leave blank if the year isn't documented.",
+            "validators": [sensible_year],
+        },
+        "price": {"description": "Leave blank for price on request."},
+        "condition": labelled_choices(Condition),
+        "box_papers": labelled_choices(BoxPapers),
+        "status": labelled_choices(WatchStatus),
+    }
+
+
 class WatchAdmin(ModelView, model=Watch):
     name = "Watch"
     name_plural = "Watches"
@@ -217,14 +312,42 @@ class WatchAdmin(ModelView, model=Watch):
     column_searchable_list = [Watch.brand, Watch.model, Watch.reference]
     column_default_sort = [(Watch.listed_at, True)]
 
-    # The slug is the watch's address on the site, so it stays as it was
-    # created. Photos wait for upload (Sprint 6); the listing date is set once.
+    # The slug is the watch's address on the site, so it's generated when the
+    # watch is added and never edited. Photos wait for upload (#68); the
+    # listing date is set once, by the database.
     form_excluded_columns = [Watch.slug, Watch.photos, Watch.listed_at]
+    form_overrides = {
+        "price": WholeDollarField,
+        "condition": SelectField,
+        "box_papers": SelectField,
+        "status": SelectField,
+    }
+    # A phone shows its number pad for the price.
+    form_widget_args = {"price": {"inputmode": "numeric", "placeholder": "Price on request"}}
 
-    # Adding and removing watches are their own stories, still to come.
-    can_create = False
+    @property
+    def form_args(self) -> dict[str, dict[str, Any]]:  # type: ignore[override]
+        return watch_form_args()
+
+    can_create = True
+    # Removing a watch is its own story; a sold watch is marked sold instead.
     can_delete = False
     can_export = False
+
+    async def on_model_change(
+        self, data: dict[str, Any], model: Watch, is_created: bool, request: Request
+    ) -> None:
+        """Give a new watch its slug, before SQLAdmin saves it.
+
+        SQLAdmin calls this on the event loop, so the database lookup runs on
+        the thread pool, like every other blocking call in the admin.
+        """
+        if is_created:
+            model.slug = await run_in_threadpool(self._new_slug, data["brand"], data["model"])
+
+    def _new_slug(self, brand: str, model: str) -> str:
+        with self.session_maker() as session:
+            return inventory.new_slug(session, brand, model)
 
 
 def mount_admin(
