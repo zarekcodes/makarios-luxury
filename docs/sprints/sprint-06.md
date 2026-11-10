@@ -66,6 +66,13 @@ Acceptance criteria:
   but building it in small commits that merge as they go means it lands on `main`, and Railway
   deploys `main`, before it's finished. `MAKARIOS_CATALOG_PAGE_ENABLED` is off unless set, so
   production keeps it hidden until the story is done; the flag is removed then.
+- **Re-planned for the 2026-12-09 final presentation (2026-11-10).** Two-week sprints would end
+  Sprint 8 a week after it, so Sprint 8 is one week (12-03 to 12-09) and the work moves earlier:
+  catalog listing ([#25]) is pulled into this sprint once the three stories above are done, and
+  Sprint 7 takes the detail page and the inquiry form. See `docs/BACKLOG.md`.
+- **The board's Sprint 6 was set up late.** The Sprint 6–8 iterations were added to the board, and
+  this sprint's stories moved into Sprint 6, on 2026-11-10 rather than at planning on 11-05, so
+  the start-of-sprint screenshot is from that day. Nothing had started before it.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25

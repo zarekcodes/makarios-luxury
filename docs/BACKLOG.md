@@ -14,9 +14,9 @@ keeps what a board shows poorly: the sprint-by-sprint roadmap and a summary of e
 | 3 | **Landing page refresh:** photo-led redesign (catalog data + deploy carried over) |
 | 4 | **Catalog data:** database, watch model, watch status (admin + deploy moved to Sprint 5) |
 | 5 | **Live site:** first deploy (Railway), admin login (catalog pages moved to Sprint 6) |
-| 6 | **Real inventory** (proposed): add watches, image pipeline, photo upload (8 points) |
-| 7 | **Browse** (proposed): catalog listing, watch detail page (8 points) |
-| 8 | **Inquiries + final demo** (proposed): inquiry form, notification, inquiries in admin (10 points) |
+| 6 | **Real inventory:** add watches, image pipeline, photo upload (8 points; catalog listing pulled in once they're done) |
+| 7 | **Browse + inquire** (proposed): watch detail page, inquiry form (10 points) |
+| 8 | **Final demo** (proposed, one week, ends 2026-12-09): inquiry notification (3 points; inquiries in admin as a stretch) |
 
 Deploying early rather than at the end means every sprint after that ships a working increment
 to a live URL. That's a core Agile principle and makes sprint reviews real demos.
@@ -48,11 +48,26 @@ removing watches (#69, 1), accessibility pass (#37, 2), SEO metadata (#35, 2), t
 (#38, 1; it also needs the owners' text), and Railway's settings in code (#66, 2). Testimonials,
 shop by brand, the sold archive, the sell-or-source form and the blog stay out.
 
-**Open for Sprint 6 planning:** two-factor login (#65) was agreed for Sprint 6 on 2026-10-28.
-Taking it there pushes every MVP story back one sprint, and the inquiry stories out of the
-semester. The alternative is to keep 2FA just after the MVP, or swap it in for #33 in Sprint 8,
-since the admin holds no personal data until inquiries arrive. Until then, the admin is protected
-by per-owner passwords and the login throttle.
+**Decided at Sprint 6 planning:** two-factor login (#65) stays below the cut line (see
+`sprints/sprint-06.md`). Until inquiries arrive the admin holds no personal data, and per-owner
+passwords and the login throttle protect it.
+
+### Sprints 6–8, re-planned on 2026-11-10 for the final presentation
+
+The final presentations are on 2026-12-09, a Wednesday. Two-week sprints would end Sprint 8 on
+2026-12-16, a week too late, so Sprint 8 is cut to one week (2026-12-03 to 2026-12-09) and the
+work moves earlier:
+
+| Sprint | Dates | Stories | Points |
+| --- | --- | --- | --- |
+| 6 | 11-05 – 11-18 | Add watches (#67), optimized images (#28), photo upload (#68); then catalog listing (#25) | 8, +3 |
+| 7 | 11-19 – 12-02 | Watch detail page (#27), inquiry form (#31) | 10 |
+| 8 | 12-03 – 12-09 | Inquiry notification (#32); inquiries in admin (#33) only if there's time | 3 (+2) |
+
+Catalog listing (#25) is already started behind its flag, and is pulled into Sprint 6 at
+refinement once the three committed stories are done, which keeps Sprint 7 near velocity. Sprint 8
+leaves room to rehearse the demo against a site that has stopped changing. The MVP's definition
+of done still holds without #33: the owners get every inquiry by email.
 
 ## Epics
 
