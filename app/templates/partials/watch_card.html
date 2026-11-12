@@ -1,11 +1,14 @@
 {#
-  One watch in the featured grid. Expects `watch` (a Watch model).
+  One watch in a grid of cards (watch_grid.html). Expects `watch` (a Watch
+  model), and optionally `card_heading`: the tag for the watch's name, "h3"
+  by default, under the landing page's <h2>. The catalog, whose page heading
+  is the <h1>, passes "h2", so no heading level is skipped.
 
-  Written as its own file because the catalog grid (#25) renders the same
+  Its own file because the landing page and the catalog (#25) render the same
   card, and htmx will swap these in when the filters change (#26).
 
   The card is not a link yet: there is no detail page to link to until the
-  watch detail page (#27). At that point the <h3> text becomes the anchor.
+  watch detail page (#27). At that point the name becomes the anchor.
 
   A watch not yet photographed keeps the card's 4:5 shape with an empty frame,
   so the grid doesn't jump.
@@ -42,7 +45,8 @@
 
     <div class="mt-5 flex flex-1 flex-col border-t border-white/15 pt-4 transition-colors
                 group-hover:border-gold-500">
-      <h3 class="text-display-3 text-white">{{ watch.name }}</h3>
+      {% set heading = card_heading | default("h3") %}
+      <{{ heading }} class="text-display-3 text-white">{{ watch.name }}</{{ heading }}>
       {% if not watch.is_available %}
         <p class="mt-3 text-eyebrow font-medium uppercase text-gold-400">{{ watch.status }}</p>
       {% endif %}

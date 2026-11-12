@@ -7,7 +7,10 @@
 
   Takes an optional `tone`: "dark" for the footer, light otherwise.
 
-  Catalog listing (#25): "Collection" points at /watches once that page exists.
+  "Collection" is the catalog (/watches, #25). The other two are sections of
+  the landing page, written "/#trust" rather than "#trust" so they work from
+  every page; on the landing page itself the browser just scrolls. The link to
+  the page being shown carries aria-current, which screen readers announce.
 #}
 {% set tone = tone | default("light") %}
 {% set link_class = (
@@ -16,12 +19,13 @@
      "text-slate-600 hover:text-royal-700"
    ) %}
 {% for item in [
-     ("#featured", "Collection"),
-     ("#trust", "Authentication"),
-     ("#contact", "Contact"),
+     ("/watches", "Collection"),
+     ("/#trust", "Authentication"),
+     ("/#contact", "Contact"),
    ] %}
   <li>
     <a href="{{ item[0] }}"
+       {% if request and request.url.path == item[0] %}aria-current="page"{% endif %}
        class="inline-block py-1.5 text-sm underline-offset-4 transition-colors hover:underline
               {{ link_class }}">
       {{ item[1] }}

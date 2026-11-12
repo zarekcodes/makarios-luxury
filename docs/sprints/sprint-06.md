@@ -12,6 +12,7 @@ somewhere that survives a deploy.
 | Add watches from the admin | [#67], split from [#23] | 2 | Done |
 | Optimized images | [#28] | 3 | Done |
 | Photo upload | [#68], split from [#23] | 3 | In Progress: built; the Railway volume and a phone check remain |
+| Catalog listing (pulled in 2026-11-11) | [#25] | 3 | In Progress: built; the live mobile score remains |
 
 **Committed: 8 points**, against a velocity of about 8.5 (9 in Sprint 4, 8 in Sprint 5). Add
 watches comes first, since it's the smallest and the other two attach photos to the watches it
@@ -89,6 +90,11 @@ Acceptance criteria:
   owned by root, so production sets `RAILWAY_RUN_UID=0`, Railway's documented fix, at the cost of
   running as root inside the container (`docs/DEPLOY.md`, "Photo storage"). Until the volume is
   set, the admin refuses uploads instead of accepting photos a deploy would erase.
+- **Catalog listing ([#25]) pulled in on 2026-11-11, and its flag removed with it.** With the three
+  committed stories built, refinement pulled #25 forward from Sprint 7 (3 points, 11 in all). The
+  page was finished in one commit, so it ships without the flag: the flag existed to hide a
+  half-built page, and there no longer is one. What's left is the live check, a mobile
+  PageSpeed score of 90 or more, on the same assets as the landing page.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25

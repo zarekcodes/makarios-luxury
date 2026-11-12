@@ -63,8 +63,7 @@
         </p>
 
         <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-          {# Catalog listing (#25): this becomes /catalog once that page exists. #}
-          <a href="#featured"
+          <a href="/watches"
              class="inline-flex items-center justify-center bg-white px-7 py-3.5 text-sm
                     font-medium tracking-wide text-royal-950 transition-colors
                     hover:bg-royal-100">
@@ -107,8 +106,17 @@
     {% endif %}
 
     <div class="mt-12">
-      {% include "partials/featured_watches.html" %}
+      {% include "partials/watch_grid.html" %}
     </div>
+    {% if watches %}
+      <p class="mt-10">
+        <a href="/watches"
+           class="text-sm font-medium tracking-wide text-gold-400 underline-offset-4
+                  hover:underline">
+          See every watch in stock <span aria-hidden="true">&rarr;</span>
+        </a>
+      </p>
+    {% endif %}
   </section>
 
   {# One step lighter than the page, so the dark page still has a rhythm of
