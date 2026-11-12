@@ -29,16 +29,16 @@ stack and structure and `docs/WORKFLOW.md` for process.
 - Before you call a change finished, remove the dead code it left behind. Anything your change
   replaced or stopped using goes, in the same commit: functions, classes, routes, services,
   templates and partials, static files, CSS rules, settings, fixtures, tests for behavior that no
-  longer exists, and commented-out code. `ruff check` already flags unused imports and variables.
-  It can't see the rest, so grep before deleting anything. Templates are referenced by path string
+  longer exists, and commented-out code. `ruff check` already flags unused imports and variables. It
+  can't see the rest, so grep before deleting anything. Templates are referenced by path string
   (`TemplateResponse`, `{% include %}`, `{% extends %}`), and routes and static files through
   `url_for`. Some code is not dead even though nothing calls it yet: code behind a feature flag in
   `app/config.py`, anything under "Built vs. not wired up yet" in `docs/CODEBASE_MAP.md`, and
   Alembic migrations (never delete or edit one that has been applied). When a story removes its
   feature flag, delete the old code path the flag replaced and any tests for it, along with the
-  setting and every check that reads it. Only remove code that this
-  change made dead. If you notice older dead code, list it in your summary and don't delete it, so
-  each commit stays scoped to its story. When you're done, say what you removed.
+  setting and every check that reads it. Only remove code that this change made dead. If you notice
+  older dead code, list it in your summary and don't delete it, so each commit stays scoped to its
+  story. When you're done, say what you removed.
 - Work happens on the sprint branch (`sprint-6`) in small commits, each leaving CI green and each
   named for the story it belongs to. The commit that finishes a story carries `Closes #N` in its
   body; earlier ones may say `Refs #N`. Work buyers shouldn't see yet goes behind a feature flag
