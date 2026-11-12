@@ -17,9 +17,15 @@
  * in the stylesheet, and the output then depends on files that may not exist
  * in a fresh clone. CI byte-compares this build against the committed
  * app.css, so it has to depend on the templates and nothing else.
+ *
+ * templates/admin/ is left out. Those pages extend SQLAdmin's layout, which
+ * loads its own Bootstrap-based stylesheet and never app.css. Their class
+ * names (mb-3, gap-1, rounded) overlap with Tailwind's, so scanning them would
+ * put rules in app.css that no storefront page uses.
  */
 @import "tailwindcss" source(none);
 @source "../../templates";
+@source not "../../templates/admin";
 
 @theme {
   /* ---- Brand blue -------------------------------------------------------
