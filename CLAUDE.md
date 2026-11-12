@@ -34,7 +34,9 @@ stack and structure and `docs/WORKFLOW.md` for process.
   (`TemplateResponse`, `{% include %}`, `{% extends %}`), and routes and static files through
   `url_for`. Some code is not dead even though nothing calls it yet: code behind a feature flag in
   `app/config.py`, anything under "Built vs. not wired up yet" in `docs/CODEBASE_MAP.md`, and
-  Alembic migrations (never delete or edit one that has been applied). Only remove code that this
+  Alembic migrations (never delete or edit one that has been applied). When a story removes its
+  feature flag, delete the old code path the flag replaced and any tests for it, along with the
+  setting and every check that reads it. Only remove code that this
   change made dead. If you notice older dead code, list it in your summary and don't delete it, so
   each commit stays scoped to its story. When you're done, say what you removed.
 - Work happens on the sprint branch (`sprint-6`) in small commits, each leaving CI green and each
