@@ -95,9 +95,15 @@ Acceptance criteria:
   page was finished in one commit, so it ships without the flag: the flag existed to hide a
   half-built page, and there no longer is one. What's left is the live check, a mobile
   PageSpeed score of 90 or more, on the same assets as the landing page.
+- **The watch detail page ([#27]) starts this sprint, behind a feature flag (2026-11-15).** It's
+  Sprint 7's first story, started early because Sprint 8 is only one week long. Its commits merge
+  into `main`, which production deploys, before the page is finished.
+  `MAKARIOS_WATCH_DETAIL_PAGE_ENABLED` is off unless it's set, so `/watches/<slug>` is a 404 in
+  production until the commit that closes #27 removes the flag. Cards link to the page only then.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25
+[#27]: https://github.com/zarekcodes/makarios-luxury/issues/27
 [#28]: https://github.com/zarekcodes/makarios-luxury/issues/28
 [#52]: https://github.com/zarekcodes/makarios-luxury/issues/52
 [#65]: https://github.com/zarekcodes/makarios-luxury/issues/65

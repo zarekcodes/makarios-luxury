@@ -72,6 +72,13 @@ class Settings(BaseSettings):
     # photos and all (see docs/DEPLOY.md).
     media_dir: Path = Path("media")
 
+    # Feature flag for the watch detail page (#27), built in small commits
+    # that merge into main, which production deploys, before it's finished.
+    # Off by default, so buyers never land on a half-built page; turn it on
+    # locally with MAKARIOS_WATCH_DETAIL_PAGE_ENABLED=true. Remove the flag,
+    # and every check that reads it, in the commit that finishes the story.
+    watch_detail_page_enabled: bool = False
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
