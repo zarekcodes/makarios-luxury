@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{#
+  The watch detail page (#27), under construction. Reachable only with
+  MAKARIOS_WATCH_DETAIL_PAGE_ENABLED=true (see the watch_detail route in
+  app/routes/pages.py); production keeps it hidden. The watch's details and
+  photo gallery replace the placeholder below, and the flag goes once the
+  story is done.
+#}
+
+{% block title %}Watch details · Makarios Luxury{% endblock %}
+
+{# Unfinished, so kept out of search results even where the flag is on. #}
+{% block extra_head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+  <section aria-labelledby="watch-title" class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+    <h1 id="watch-title" class="mt-4 text-display-2 text-white">Watch details</h1>
+    <p class="mt-5 max-w-[62ch] text-royal-100">
+      This watch's page is on its way: every detail, and a gallery of its photos.
+    </p>
+  </section>
+{% endblock %}
