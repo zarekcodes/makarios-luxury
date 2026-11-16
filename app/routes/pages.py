@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from app.config import Settings, get_settings
 from app.db import SessionDep
 from app.paths import templates
-from app.services.catalog import get_catalog_watches
+from app.services.catalog import get_catalog_watches, get_watch_by_slug
 from app.services.featured import get_featured_watches
 
 router = APIRouter(include_in_schema=False)
@@ -42,12 +42,18 @@ def catalog(request: Request, session: SessionDep) -> HTMLResponse:
 
 
 @router.get("/watches/{slug}", response_class=HTMLResponse)
-def watch_detail(request: Request, slug: str, settings: SettingsDep) -> HTMLResponse:
+def watch_detail(
+    request: Request, slug: str, session: SessionDep, settings: SettingsDep
+) -> HTMLResponse:
     """The watch detail page (#27), built behind a feature flag until it ships.
 
     With MAKARIOS_WATCH_DETAIL_PAGE_ENABLED off, which is the default and what
     production runs, the page answers exactly like a URL that doesn't exist.
+    With it on, an unknown slug is a 404 too.
     """
     if not settings.watch_detail_page_enabled:
         raise HTTPException(status_code=404)
-    return templates.TemplateResponse(request, "pages/watch_detail.html")
+    watch = get_watch_by_slug(session, slug)
+    if watch is None:
+        raise HTTPException(status_code=404)
+    return templates.TemplateResponse(request, "pages/watch_detail.html", {"watch": watch})

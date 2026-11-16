@@ -1,7 +1,8 @@
 """Catalog queries: which watches a buyer sees on /watches, and narrowing them.
 
-get_catalog_watches() is the listing itself (#25). filter_by_price() is for
-the catalog filters (#26); it filters watches already loaded, so it needs no
+get_catalog_watches() is the listing itself (#25), and get_watch_by_slug()
+finds the one watch a detail page shows (#27). filter_by_price() is for the
+catalog filters (#26); it filters watches already loaded, so it needs no
 database of its own.
 """
 
@@ -29,6 +30,16 @@ def get_catalog_watches(session: Session) -> list[Watch]:
         .options(selectinload(Watch.photos))
     )
     return list(session.scalars(query))
+
+
+def get_watch_by_slug(session: Session, slug: str) -> Watch | None:
+    """The watch with this slug, or None if there isn't one.
+
+    A sold watch is still returned, unlike the listing: links to it have been
+    shared, so its page stays up and says it's sold.
+    """
+    query = select(Watch).where(Watch.slug == slug).options(selectinload(Watch.photos))
+    return session.scalars(query).one_or_none()
 
 
 def filter_by_price(
