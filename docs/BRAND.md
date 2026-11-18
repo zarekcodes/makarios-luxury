@@ -183,10 +183,18 @@ The layout is built around photographs, so the photographs have a brief.
 - **Weight budget:** each hero file stays under 150 KB (a test enforces it).
   An unedited camera file is several megabytes; resize and export as WebP.
 
-Until real photography arrives, `scripts/generate_placeholder_images.py` draws
-stand-ins that follow this brief. To swap a real photo in, export it at the same
-widths with the same names (`hero-portrait-600.webp` and so on), or point the
-`name=` in `pages/home.html` and `partials/watch_card.html` at the new files.
+**Making the hero from a real photo:** `scripts/build_hero_image.py` turns one
+photo (or a portrait and a separate landscape one, with `--wide-photo`) into
+all six hero files in `app/static/img/hero/`, metadata stripped and within the
+budget. `--portrait-focus` and `--wide-focus` move each crop up or down. Try
+candidates locally, `git restore app/static/img/hero` to go back, and commit
+only the winner, with new alt text in `pages/home.html`. Keep the originals in
+`design/photos/` (gitignored): the repo is public. A busy background, such as
+the foam of a watch case, compresses badly and can push a crop over the budget;
+the script refuses it rather than ship it heavy.
+
+Card photos come from owners' uploads in the admin. The cards' stand-ins, for
+development, are drawn by `scripts/generate_placeholder_images.py`.
 
 ## Replacing the logo
 

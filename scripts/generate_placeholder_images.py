@@ -85,8 +85,6 @@ class Shot:
     widths: tuple[int, ...]
     centre: tuple[float, float]  # watch centre, as fractions of width and height
     case_radius: float  # as a fraction of the image width
-    tilt: float = 0.0  # degrees, positive is anticlockwise
-    halo: bool = False
 
 
 CHRONOGRAPH = Watch(
@@ -122,50 +120,15 @@ DIVER = Watch(
     strap=(30, 35, 46),
     stitching=None,
 )
-# The hero piece: gold on navy leather, the brand's own two colours.
-HERO_PIECE = Watch(
-    kind="dress",
-    brand="CALLOWAY",
-    subtitle="AUTOMATIC",
-    metal=GOLD,
-    dial=(222, 216, 204),
-    dial_sheen=(250, 248, 242),
-    ink=(98, 76, 40),
-    strap=ROYAL_900,
-    stitching=(176, 150, 96),
-)
 
 CARD = {"aspect": (4, 5), "widths": (400, 800, 1200), "centre": (0.5, 0.47), "case_radius": 0.3}
 
+# The cards' stand-ins. The hero is made from a real photo instead, by
+# scripts/build_hero_image.py.
 SHOTS = (
     Shot("watch-01", CHRONOGRAPH, **CARD),
     Shot("watch-02", DRESS, **CARD),
     Shot("watch-03", DIVER, **CARD),
-    # Portrait screens: shown at its natural shape across the top of the hero,
-    # fading into the navy page. The text starts below the watch, which the
-    # hero's top padding in home.html (90vw) assumes ends about 70% of the way down.
-    Shot(
-        "hero-portrait",
-        HERO_PIECE,
-        aspect=(4, 5),
-        widths=(600, 900, 1200),
-        centre=(0.5, 0.4),
-        case_radius=0.3,
-        tilt=-8,
-        halo=True,
-    ),
-    # Landscape screens: the watch sits in the right quarter, leaving the left
-    # side dark for the text even on a 1024px tablet.
-    Shot(
-        "hero-wide",
-        HERO_PIECE,
-        aspect=(16, 9),
-        widths=(960, 1440, 1920),
-        centre=(0.74, 0.5),
-        case_radius=0.14,
-        tilt=-12,
-        halo=True,
-    ),
 )
 
 
@@ -543,19 +506,9 @@ def render(shot: Shot) -> Image.Image:
 
     image = backdrop((width, height), (cx, cy - r * 0.2), max(width, height) * 0.62).convert("RGBA")
 
-    if shot.halo:
-        # A thin gold ring behind the watch: the logo's halo, as a hairline.
-        halo = Image.new("RGBA", image.size, (0, 0, 0, 0))
-        ImageDraw.Draw(halo).ellipse(
-            disc(cx, cy, r * 1.62), outline=rgba(GOLD_400, 120), width=max(round(r * 0.012), 2)
-        )
-        image.alpha_composite(halo.filter(ImageFilter.GaussianBlur(r * 0.004)))
-
-    # The strap must run off both edges of the frame even once tilted.
-    strap_half = max(cy, height - cy) / math.cos(math.radians(shot.tilt)) + r
+    # The strap must run off both edges of the frame.
+    strap_half = max(cy, height - cy) + r
     watch = render_watch(shot.watch, r, strap_half)
-    if shot.tilt:
-        watch = watch.rotate(shot.tilt, resample=Image.BICUBIC, expand=True)
     origin = (round(cx - watch.width / 2), round(cy - watch.height / 2))
 
     shadow_mask = Image.new("L", image.size, 0)

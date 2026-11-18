@@ -92,15 +92,67 @@ def process_photo(data: bytes, max_bytes: int = MAX_UPLOAD_BYTES) -> ProcessedPh
     big, isn't a photo, is too small for the largest width, or is too detailed
     to fit the size budget.
     """
-    image = _open(data, max_bytes)
-    image = ImageOps.exif_transpose(image)
-    image = _to_srgb(image)
-    image = _crop_to_shape(image)
-
-    quality, largest = _encode_within_budget(image, WIDTHS[-1])
-    files = {width: _encode(_resize(image, width), quality) for width in WIDTHS[:-1]}
-    files[WIDTHS[-1]] = largest
+    image = _crop_to_shape(load_photo(data, max_bytes))
+    quality, files = encode_widths(image, WIDTHS, (ASPECT_WIDTH, ASPECT_HEIGHT), MAX_LARGEST_BYTES)
     return ProcessedPhoto(files=files, quality=quality)
+
+
+def load_photo(data: bytes, max_bytes: int = MAX_UPLOAD_BYTES) -> Image.Image:
+    """Steps 1 to 3: the photo checked, turned upright, and in sRGB, ready to crop.
+
+    Raises PhotoRejected for a file that's too big, isn't a photo, or claims
+    too many pixels.
+    """
+    return _to_srgb(ImageOps.exif_transpose(_open(data, max_bytes)))
+
+
+def crop_to_aspect(
+    image: Image.Image, aspect: tuple[int, int], focus: tuple[float, float] = (0.5, 0.5)
+) -> Image.Image:
+    """The largest rectangle of the given shape, centred as near `focus` as fits.
+
+    focus is a fraction across and down: (0.5, 0.5) is the middle, (0.5, 0.3)
+    keeps more of the top. The crop never runs off the photo, so a focus too
+    near an edge just stops at that edge.
+    """
+    aspect_width, aspect_height = aspect
+    width = min(image.width, image.height * aspect_width // aspect_height)
+    height = width * aspect_height // aspect_width
+    left = round(focus[0] * image.width - width / 2)
+    top = round(focus[1] * image.height - height / 2)
+    left = max(0, min(left, image.width - width))
+    top = max(0, min(top, image.height - height))
+    return image.crop((left, top, left + width, top + height))
+
+
+def encode_widths(
+    image: Image.Image, widths: tuple[int, ...], aspect: tuple[int, int], budget: int
+) -> tuple[int, dict[int, bytes]]:
+    """Step 5: WebP bytes at each width, all at one quality, the largest within `budget`.
+
+    The quality is the best in QUALITY_STEPS whose largest file fits; the
+    smaller files are made at the same quality, so they all look alike.
+    Raises PhotoRejected if even the lowest step is over the budget.
+    """
+    aspect_width, aspect_height = aspect
+
+    def resized(width: int) -> Image.Image:
+        height = width * aspect_height // aspect_width
+        # reducing_gap shrinks by whole steps first, then filters the last bit:
+        # several times faster on a 12-megapixel photo, with no visible difference.
+        return image.resize((width, height), Image.Resampling.LANCZOS, reducing_gap=3.0)
+
+    largest = resized(widths[-1])
+    for quality in QUALITY_STEPS:
+        encoded = _encode(largest, quality)
+        if len(encoded) <= budget:
+            files = {width: _encode(resized(width), quality) for width in widths[:-1]}
+            files[widths[-1]] = encoded
+            return quality, files
+    raise PhotoRejected(
+        "That photo has too much fine detail to load quickly on a phone. "
+        "Try a shot with a plainer background."
+    )
 
 
 def _open(data: bytes, max_bytes: int) -> Image.Image:
@@ -172,16 +224,7 @@ def _crop_to_shape(image: Image.Image) -> Image.Image:
             f"That photo is too small ({image.width}×{image.height}). "
             f"It needs at least {need_width}×{need_height} pixels."
         )
-    crop_height = height_for(crop_width)
-    left = (image.width - crop_width) // 2
-    top = (image.height - crop_height) // 2
-    return image.crop((left, top, left + crop_width, top + crop_height))
-
-
-def _resize(image: Image.Image, width: int) -> Image.Image:
-    # reducing_gap shrinks by whole steps first, then filters the last bit:
-    # several times faster on a 12-megapixel photo, with no visible difference.
-    return image.resize((width, height_for(width)), Image.Resampling.LANCZOS, reducing_gap=3.0)
+    return crop_to_aspect(image, (ASPECT_WIDTH, ASPECT_HEIGHT))
 
 
 def _encode(image: Image.Image, quality: int) -> bytes:
@@ -190,19 +233,6 @@ def _encode(image: Image.Image, quality: int) -> bytes:
     image.info.clear()
     image.save(buffer, "WEBP", quality=quality, method=WEBP_METHOD)
     return buffer.getvalue()
-
-
-def _encode_within_budget(image: Image.Image, width: int) -> tuple[int, bytes]:
-    """The best quality whose largest file fits MAX_LARGEST_BYTES, and that file."""
-    resized = _resize(image, width)
-    for quality in QUALITY_STEPS:
-        encoded = _encode(resized, quality)
-        if len(encoded) <= MAX_LARGEST_BYTES:
-            return quality, encoded
-    raise PhotoRejected(
-        "That photo has too much fine detail to load quickly on a phone. "
-        "Try a shot with a plainer background."
-    )
 
 
 def _too_many_pixels() -> PhotoRejected:

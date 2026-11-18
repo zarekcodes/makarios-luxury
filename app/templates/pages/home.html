@@ -21,22 +21,26 @@
        watch ends in that crop, so on a short phone the hero grows a little
        rather than laying the headline across the dial. If a real photo frames
        the watch differently, adjust that number to match.
-     - Landscape (tablets, laptops): a 16:9 crop covering the whole hero, with
-       the watch on the right and the text on the left. #}
+     - Landscape (tablets, laptops): a 16:9 crop covering the whole hero, meant
+       to have the watch on the right and the text on the left. Today's hero
+       (Girard-Perregaux, from design/photos/hero/GP/GP_Cinematic.jpeg, built by
+       scripts/build_hero_image.py --portrait-focus 0.65) is a portrait shot, so
+       its wide crop centres the watch under the text; a landscape photo passed
+       with --wide-photo fixes that. #}
   <section aria-labelledby="hero-title"
            class="relative isolate flex min-h-svh flex-col justify-end overflow-hidden
                   landscape:min-h-[88svh] landscape:justify-center">
     <picture>
       <source media="(orientation: landscape)"
-              srcset="{{ srcset('placeholder/hero-wide', [960, 1440, 1920]) }}"
+              srcset="{{ srcset('hero/hero-wide', [960, 1440, 1920]) }}"
               sizes="100vw"
               width="1920" height="1080">
       {{ responsive_img(
-           name="placeholder/hero-portrait",
+           name="hero/hero-portrait",
            widths=[600, 900, 1200],
            sizes="100vw",
-           alt="A gold dress watch with a pale dial on a navy leather strap, lit against a
-                dark background.",
+           alt="A Girard-Perregaux Laureato chronograph in steel, its silver dial picked out in
+                blue, resting in a dark watch case.",
            width=1200, height=1500,
            eager=true,
            class_="absolute inset-x-0 top-0 -z-20 h-auto w-full landscape:inset-y-0

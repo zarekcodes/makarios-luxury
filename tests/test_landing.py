@@ -174,7 +174,8 @@ def test_hero_image_is_not_lazy_loaded() -> None:
     """
     response = client.get("/")
 
-    hero = [i for i in collect(response.text, "img") if "placeholder/hero" in (i.get("src") or "")]
+    images = collect(response.text, "img")
+    hero = [i for i in images if "hero/hero-portrait" in (i.get("src") or "")]
     assert len(hero) == 1, "expected exactly one hero image"
 
     assert hero[0].get("loading") != "lazy"
@@ -207,7 +208,7 @@ def test_hero_images_fit_the_performance_budget() -> None:
     straight off a camera easily produces several megabytes.
     """
     budget = 150_000
-    variants = sorted((STATIC_DIR / "img" / "placeholder").glob("hero-*.webp"))
+    variants = sorted((STATIC_DIR / "img" / "hero").glob("hero-*.webp"))
     assert variants, "no hero images found"
 
     for path in variants:
