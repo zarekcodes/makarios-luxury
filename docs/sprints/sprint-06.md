@@ -11,7 +11,7 @@ somewhere that survives a deploy.
 | --- | --- | --- | --- |
 | Add watches from the admin | [#67], split from [#23] | 2 | Done |
 | Optimized images | [#28] | 3 | Done |
-| Photo upload | [#68], split from [#23] | 3 | In Progress: built; the Railway volume and a phone check remain |
+| Photo upload | [#68], split from [#23] | 3 | Done |
 | Catalog listing (pulled in 2026-11-11) | [#25] | 3 | In Progress: built; the live mobile score remains |
 
 **Committed: 8 points**, against a velocity of about 8.5 (9 in Sprint 4, 8 in Sprint 5). Add
@@ -90,6 +90,14 @@ Acceptance criteria:
   owned by root, so production sets `RAILWAY_RUN_UID=0`, Railway's documented fix, at the cost of
   running as root inside the container (`docs/DEPLOY.md`, "Photo storage"). Until the volume is
   set, the admin refuses uploads instead of accepting photos a deploy would erase.
+- **Photo upload verified live (2026-11-18), and the outage before it.** Merging #79 took the site
+  down: Pillow was a dev-only dependency, so the production image (`uv sync --no-dev`) lacked it
+  and the app crashed at startup (`No module named 'PIL'`), while CI, which installs the dev group,
+  stayed green. The Nov 8 deployment was redeployed to restore the site, and #80 made Pillow a
+  runtime dependency, adding `tests/test_dependencies.py` so CI now fails on an import that
+  production wouldn't have. The owner then chose `RAILWAY_RUN_UID=0` and set it with
+  `MAKARIOS_MEDIA_DIR=/data/media`, uploaded a Rolex Submariner's photo from a phone, redeployed,
+  and the photo was still there: it lives on the volume, not in the container.
 - **Catalog listing ([#25]) pulled in on 2026-11-11, and its flag removed with it.** With the three
   committed stories built, refinement pulled #25 forward from Sprint 7 (3 points, 11 in all). The
   page was finished in one commit, so it ships without the flag: the flag existed to hide a
