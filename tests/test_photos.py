@@ -437,3 +437,29 @@ def test_an_uploaded_photo_is_served_from_media_on_the_landing_page(
     assert "/media/uploads/0123456789abcdef-400.webp 400w" in landing
     assert "/media/uploads/0123456789abcdef-1200.webp 1200w" in landing
     assert 'alt="The real piece"' in landing
+
+
+def test_only_the_ends_have_a_disabled_move_button(
+    client: TestClient, session: Session, watch: Watch
+) -> None:
+    """Rendered, not just posted: a template bug once disabled every move button.
+
+    The buttons sit in an inner loop over ("up", "down"), whose `loop` hid the
+    photos loop's, so loop.first and loop.last were true for every photo.
+    """
+    for alt in ("Front", "Back", "Clasp"):
+        upload(client, watch, alt=alt)
+    first, middle, last = stored_photos(session, watch)
+    page = client.get(page_url(watch)).text
+
+    def disabled(action: str, photo: Photo) -> bool:
+        form = re.search(
+            rf'value="{action}">\s*<input type="hidden" name="photo_id" value="{photo.id}">'
+            r"\s*<button([^>]*)>",
+            page,
+        )
+        assert form, f"no {action} button for photo {photo.id}"
+        return "disabled" in form.group(1)
+
+    assert [disabled("up", photo) for photo in (first, middle, last)] == [True, False, False]
+    assert [disabled("down", photo) for photo in (first, middle, last)] == [False, False, True]

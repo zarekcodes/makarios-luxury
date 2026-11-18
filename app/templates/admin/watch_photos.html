@@ -35,12 +35,14 @@
             {{ photo.alt }}
           </div>
           <div class="d-flex gap-1">
+            {# Saved before the loop below, whose own `loop` would hide this one's. #}
+            {% set is_first, is_last = loop.first, loop.last %}
             {% for action, label in [("up", "Move up"), ("down", "Move down")] %}
             <form method="post">
               <input type="hidden" name="action" value="{{ action }}">
               <input type="hidden" name="photo_id" value="{{ photo.id }}">
               <button class="btn btn-sm"
-                      {% if (action == "up" and loop.first) or (action == "down" and loop.last) %}disabled{% endif %}>
+                      {% if (action == "up" and is_first) or (action == "down" and is_last) %}disabled{% endif %}>
                 {{ label }}</button>
             </form>
             {% endfor %}
