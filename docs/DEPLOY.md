@@ -172,19 +172,31 @@ one more reason each migration has to stay compatible with the release before it
 
 ## Admin accounts
 
-Each owner has their own account at `/admin`. Accounts are rows in the production database, so
-they're managed from a laptop that connects to it. Copy the database's **public** URL from the
-Postgres service's **Variables** (`DATABASE_PUBLIC_URL`) and paste it at a hidden prompt, so it
-stays out of your shell history:
+Each owner has their own account at `/admin`. Accounts are rows in the production database, and
+the database has no public address: only services inside the Railway project can reach it. So the
+account commands run **inside the app's own container**, through the
+[Railway CLI](https://github.com/railwayapp/cli/releases), which already has the database's
+settings:
 
 ```bash
-read -rs MAKARIOS_DATABASE_URL && export MAKARIOS_DATABASE_URL   # bash or zsh
-read -sx MAKARIOS_DATABASE_URL                                   # fish
-uv run python -m app.cli admin-password <name>   # create the account, or set a new password
-uv run python -m app.cli admin-remove <name>     # delete it
+railway login                 # once, in the browser
+railway link                  # in the repo: the project, production, the makarios-luxury service
+railway ssh                   # a shell inside the running app container
+/app/.venv/bin/python -m app.cli admin-password <name>   # create the account, or set a new password
+/app/.venv/bin/python -m app.cli admin-remove <name>     # delete it
+exit
 ```
 
-Close the terminal afterwards, so the URL doesn't linger in its environment.
+Use the full `/app/.venv/bin/python` path: the ssh shell's `python` is the image's bare system
+Python, without the app's dependencies (`No module named 'sqlalchemy'`).
+
+Install the CLI from its GitHub release rather than npm, which only wraps the same Rust binary.
+The release publishes no checksum file, but GitHub records each asset's SHA-256 (`gh api
+repos/railwayapp/cli/releases/latest --jq '.assets[] | "\(.name) \(.digest)"'`) to check the
+download against. Avoid `extra/railway` on Arch: it's an unrelated train-timetable app.
+
+Running the commands from a laptop instead would need the Postgres service's TCP proxy turned on,
+which gives the database a public address protected only by its password. Leave it off.
 
 The password is typed at a prompt that doesn't echo, twice, and needs at least 12 characters. A
 passphrase of a few words works well. Let each owner type their own password, so nobody else
