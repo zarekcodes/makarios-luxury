@@ -114,6 +114,25 @@ Acceptance criteria:
   `MAKARIOS_WATCH_DETAIL_PAGE_ENABLED` is off unless it's set, so `/watches/<slug>` is a 404 in
   production until the commit that closes #27 removes the flag. Cards link to the page only then.
 
+## What shipped (sprint review, 2026-11-18)
+
+**Sprint goal met.** The owners list real watches from the admin, with photos stored on a volume
+that survives a deploy, and buyers browse them on the live site. Three real watches were listed
+from a phone on the last day.
+
+**Delivered: 11 points**, all four stories done and verified on production: the 8 committed
+([#67], [#28], [#68]) and [#25] (3), pulled in from Sprint 7. Also shipped: a real hero photo and
+`scripts/build_hero_image.py`, owner accounts created through `railway ssh`, and fixes found in
+use: Pillow missing in production (outage, [#80]), the photos page's move buttons, and the
+`dnspython` security update ([#78]). Carried into Sprint 7: the detail page ([#27]), already
+started behind its flag. Filed for after the MVP: managing the hero from the admin ([#81]).
+
+## Sprint review and retrospective
+
+Kept out of the repository, in `docs/sprints/local/` (gitignored), because they are the owner's
+written reflection and feed coursework submissions rather than the codebase. The board
+screenshots are there too.
+
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25
 [#27]: https://github.com/zarekcodes/makarios-luxury/issues/27
@@ -123,3 +142,6 @@ Acceptance criteria:
 [#67]: https://github.com/zarekcodes/makarios-luxury/issues/67
 [#68]: https://github.com/zarekcodes/makarios-luxury/issues/68
 [#36]: https://github.com/zarekcodes/makarios-luxury/issues/36
+[#78]: https://github.com/zarekcodes/makarios-luxury/pull/78
+[#80]: https://github.com/zarekcodes/makarios-luxury/pull/80
+[#81]: https://github.com/zarekcodes/makarios-luxury/issues/81
