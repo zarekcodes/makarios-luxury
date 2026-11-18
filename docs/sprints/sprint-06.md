@@ -12,7 +12,7 @@ somewhere that survives a deploy.
 | Add watches from the admin | [#67], split from [#23] | 2 | Done |
 | Optimized images | [#28] | 3 | Done |
 | Photo upload | [#68], split from [#23] | 3 | Done |
-| Catalog listing (pulled in 2026-11-11) | [#25] | 3 | In Progress: built; the live mobile score remains |
+| Catalog listing (pulled in 2026-11-11) | [#25] | 3 | Done |
 
 **Committed: 8 points**, against a velocity of about 8.5 (9 in Sprint 4, 8 in Sprint 5). Add
 watches comes first, since it's the smallest and the other two attach photos to the watches it
@@ -101,13 +101,37 @@ Acceptance criteria:
 - **Catalog listing ([#25]) pulled in on 2026-11-11, and its flag removed with it.** With the three
   committed stories built, refinement pulled #25 forward from Sprint 7 (3 points, 11 in all). The
   page was finished in one commit, so it ships without the flag: the flag existed to hide a
-  half-built page, and there no longer is one. What's left is the live check, a mobile
-  PageSpeed score of 90 or more, on the same assets as the landing page.
+  half-built page, and there no longer is one.
+- **Both pages score 100 on mobile (2026-11-18).** PageSpeed Insights on the live site, with the
+  real hero and three real watches listed: the landing page and `/watches` each scored 100 for
+  Performance, Accessibility, Best Practices and SEO. Landing page: FCP 0.8 s, LCP 1.5 s, TBT
+  0 ms, CLS 0. `/watches`: FCP 0.8 s, LCP 1.7 s, TBT 0 ms, CLS 0. The improvements it suggested
+  (static cache lifetimes, hero delivery, render-blocking CSS, and on `/watches` a lazy-loaded
+  first card that's the largest paint) are recorded on the performance budget story, [#36].
 - **The watch detail page ([#27]) starts this sprint, behind a feature flag (2026-11-15).** It's
   Sprint 7's first story, started early because Sprint 8 is only one week long. Its commits merge
   into `main`, which production deploys, before the page is finished.
   `MAKARIOS_WATCH_DETAIL_PAGE_ENABLED` is off unless it's set, so `/watches/<slug>` is a 404 in
   production until the commit that closes #27 removes the flag. Cards link to the page only then.
+
+## What shipped (sprint review, 2026-11-18)
+
+**Sprint goal met.** The owners list real watches from the admin, with photos stored on a volume
+that survives a deploy, and buyers browse them on the live site. Three real watches were listed
+from a phone on the last day.
+
+**Delivered: 11 points**, all four stories done and verified on production: the 8 committed
+([#67], [#28], [#68]) and [#25] (3), pulled in from Sprint 7. Also shipped: a real hero photo and
+`scripts/build_hero_image.py`, owner accounts created through `railway ssh`, and fixes found in
+use: Pillow missing in production (outage, [#80]), the photos page's move buttons, and the
+`dnspython` security update ([#78]). Carried into Sprint 7: the detail page ([#27]), already
+started behind its flag. Filed for after the MVP: managing the hero from the admin ([#81]).
+
+## Sprint review and retrospective
+
+Kept out of the repository, in `docs/sprints/local/` (gitignored), because they are the owner's
+written reflection and feed coursework submissions rather than the codebase. The board
+screenshots are there too.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25
@@ -117,3 +141,7 @@ Acceptance criteria:
 [#65]: https://github.com/zarekcodes/makarios-luxury/issues/65
 [#67]: https://github.com/zarekcodes/makarios-luxury/issues/67
 [#68]: https://github.com/zarekcodes/makarios-luxury/issues/68
+[#36]: https://github.com/zarekcodes/makarios-luxury/issues/36
+[#78]: https://github.com/zarekcodes/makarios-luxury/pull/78
+[#80]: https://github.com/zarekcodes/makarios-luxury/pull/80
+[#81]: https://github.com/zarekcodes/makarios-luxury/issues/81
