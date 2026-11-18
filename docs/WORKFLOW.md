@@ -65,9 +65,9 @@ estimate in its Points field, and it's small enough to finish within one sprint.
 - **One branch per sprint**, named for the sprint (`sprint-6`), kept for the whole sprint.
 - **Small commits.** A story lands as one commit or several. Each is small enough to review and
   revert on its own, and each leaves CI green, so any one of them is safe to deploy. Work buyers
-  shouldn't see yet goes behind a feature flag that's off by default (the catalog page's
-  `MAKARIOS_CATALOG_PAGE_ENABLED` in `app/config.py` is the first), and the flag is removed when
-  the story is done.
+  shouldn't see yet goes behind a feature flag in `app/config.py` that's off by default, and the
+  flag is removed when the story is done. The first, the catalog page's
+  `MAKARIOS_CATALOG_PAGE_ENABLED`, went with the commit that finished the page.
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/):
   `feat: add watch detail page`, `fix: ...`, `docs: ...`, `test: ...`, `chore: ...`
 - Name the story in each commit's subject line, so the sprint reads story by story. The commit

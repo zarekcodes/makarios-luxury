@@ -8,6 +8,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
+# How an owner's uploaded photo's name begins (see Photo.image).
+UPLOADS_PREFIX = "uploads/"
+
 
 class Condition(enum.StrEnum):
     """The grading scale the landing page publishes, best first."""
@@ -106,9 +109,10 @@ class Photo(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     watch_id: Mapped[int] = mapped_column(ForeignKey("watches.id", ondelete="CASCADE"), index=True)
-    # The image's path under /static/img, without the "-<width>.webp" suffix,
-    # e.g. "placeholder/watch-01". Owner uploads will need media storage
-    # instead (#28), which may change what this holds.
+    # The image's name, without the "-<width>.webp" ending. An owner's upload
+    # is "uploads/<random>" and lives in media storage, served at /media
+    # (#68); anything else, such as "placeholder/watch-01", is under
+    # /static/img.
     image: Mapped[str] = mapped_column(String(200))
     # Describes the photo for screen readers and for when it fails to load.
     alt: Mapped[str] = mapped_column(String(300))
@@ -116,3 +120,12 @@ class Photo(Base):
     position: Mapped[int] = mapped_column(default=0)
 
     watch: Mapped[Watch] = relationship(back_populates="photos")
+
+    @property
+    def is_upload(self) -> bool:
+        return self.image.startswith(UPLOADS_PREFIX)
+
+    @property
+    def mount(self) -> str:
+        """Which of the app's file mounts serves it: "media" for uploads, else "static"."""
+        return "media" if self.is_upload else "static"

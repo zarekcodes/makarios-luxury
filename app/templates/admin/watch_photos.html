@@ -1,0 +1,97 @@
+{#
+  The photos page for one watch (WatchPhotosAdmin in app/admin.py).
+
+  Lives under templates/admin/, which mount_admin hands SQLAdmin as its own
+  templates folder, so it can extend SQLAdmin's layout and match the rest of
+  the admin. Plain forms throughout: every button works with JavaScript off.
+#}
+{% extends "sqladmin/layout.html" %}
+{% block content %}
+<div class="col-12">
+  <div class="card">
+    <div class="card-header d-flex flex-wrap gap-2 justify-content-between">
+      <h3 class="card-title mb-0">Photos: {{ watch.name }}
+        <span class="text-secondary">· ref. {{ watch.reference }}</span></h3>
+      <a href="{{ edit_url }}" class="btn btn-sm">Edit the watch</a>
+    </div>
+
+    <div class="card-body">
+      {% if notice %}
+      <div class="alert alert-success" role="status">{{ notice }}</div>
+      {% endif %}
+      {% if error %}
+      <div class="alert alert-danger" role="alert">{{ error }}</div>
+      {% endif %}
+
+      {% if photos %}
+      <p class="text-secondary">The first photo is the one the cards show.</p>
+      <ol class="list-unstyled">
+        {% for photo in photos %}
+        <li class="d-flex flex-wrap align-items-center gap-3 py-2 border-bottom">
+          <img src="{{ photo.thumb }}" alt="{{ photo.alt }}" width="80" height="100"
+               style="object-fit: cover" class="rounded">
+          <div class="flex-fill" style="min-width: 12rem">
+            {% if loop.first %}<span class="badge bg-blue-lt mb-1">Shown on cards</span><br>{% endif %}
+            {{ photo.alt }}
+          </div>
+          <div class="d-flex gap-1">
+            {% for action, label in [("up", "Move up"), ("down", "Move down")] %}
+            <form method="post">
+              <input type="hidden" name="action" value="{{ action }}">
+              <input type="hidden" name="photo_id" value="{{ photo.id }}">
+              <button class="btn btn-sm"
+                      {% if (action == "up" and loop.first) or (action == "down" and loop.last) %}disabled{% endif %}>
+                {{ label }}</button>
+            </form>
+            {% endfor %}
+            <form method="post" onsubmit="return confirm('Delete this photo?')">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="photo_id" value="{{ photo.id }}">
+              <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="text-secondary">No photos yet. Until it has one, the watch's card shows an empty frame.</p>
+      {% endif %}
+    </div>
+
+    <div class="card-body border-top">
+      <h4>Add a photo</h4>
+      {% if not storage_problem %}
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="action" value="add">
+        <div class="mb-3">
+          <label class="form-label" for="photo">Photo</label>
+          <input class="form-control" type="file" id="photo" name="photo" accept="image/*" required>
+          <small class="form-hint">JPEG, PNG or WebP, up to {{ max_megabytes }} MB and at least
+            {{ min_size }} pixels. It's cropped from the centre to the cards' 4:5 shape, so keep
+            the watch in the middle.</small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="alt">Description</label>
+          <input class="form-control" type="text" id="alt" name="alt" value="{{ alt }}"
+                 maxlength="{{ max_alt }}" required
+                 placeholder="e.g. Dial close-up in daylight">
+          <small class="form-hint">Read out by screen readers, and shown if the photo fails to load.</small>
+        </div>
+        <button class="btn btn-primary">Add photo</button>
+      </form>
+      {% elif storage_problem == "unset" %}
+      <div class="alert alert-warning" role="alert">
+        Photo storage isn't set up on this server, so uploads are off: a photo saved now would be
+        lost at the next deploy. Set <code>MAKARIOS_MEDIA_DIR</code> to the volume (see
+        <code>docs/DEPLOY.md</code>).
+      </div>
+      {% else %}
+      <div class="alert alert-warning" role="alert">
+        The app can't write to its photo folder, so uploads are off. On Railway, the volume needs
+        the step in <code>docs/DEPLOY.md</code> under "Photo storage".
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

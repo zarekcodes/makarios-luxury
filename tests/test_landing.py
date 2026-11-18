@@ -308,7 +308,7 @@ def test_navigation_works_without_javascript() -> None:
     assert "<details" in response.text
     assert "<summary" in response.text
 
-    for href in ("#featured", "#trust", "#contact"):
+    for href in ("/watches", "/#trust", "/#contact"):
         assert f'href="{href}"' in response.text
 
 

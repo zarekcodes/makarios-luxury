@@ -1,22 +1,29 @@
 {% extends "base.html" %}
 
 {#
-  The catalog listing (#25), under construction. Reachable only with
-  MAKARIOS_CATALOG_PAGE_ENABLED=true (see the catalog route in
-  app/routes/pages.py); production keeps it hidden. The grid of watch cards
-  replaces the placeholder below, and the flag goes once the story is done.
+  The catalog listing (#25) at /watches: every watch that isn't sold, newest
+  first, in the same grid and cards as the landing page's featured section.
+  With nothing listed, the grid gives way to the same sourcing note.
 #}
 
 {% block title %}The collection · Makarios Luxury{% endblock %}
 
-{# Unfinished, so kept out of search results even where the flag is on. #}
-{% block extra_head %}<meta name="robots" content="noindex">{% endblock %}
-
 {% block content %}
   <section aria-labelledby="catalog-title" class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
-    <h1 id="catalog-title" class="mt-4 text-display-2 text-white">The collection</h1>
-    <p class="mt-5 max-w-[62ch] text-royal-100">
-      The full catalog is on its way. Every watch we have in stock will be listed here.
-    </p>
+    <p class="text-eyebrow font-medium uppercase text-gold-400">The collection</p>
+    {# The heading only promises watches when there are some to show. #}
+    <h1 id="catalog-title" class="mt-4 text-display-2 text-white">
+      {% if watches %}Every watch in stock.{% else %}New pieces arriving.{% endif %}
+    </h1>
+    {% if watches %}
+      <p class="mt-5 max-w-[62ch] text-royal-100">
+        {{ watches | length }} {{ "piece" if watches | length == 1 else "pieces" }}, newest first.
+        Every listing shows its reference, year, condition grade, and what comes with it.
+      </p>
+    {% endif %}
+
+    <div class="mt-12">
+      {% with card_heading = "h2" %}{% include "partials/watch_grid.html" %}{% endwith %}
+    </div>
   </section>
 {% endblock %}

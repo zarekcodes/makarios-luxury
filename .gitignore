@@ -35,6 +35,10 @@ htmlcov/
 # Claude Code's per-machine settings. This machine's global gitignore already
 # covers it; listed here so a clone anywhere else ignores it too.
 .claude/settings.local.json
+# Claude Code's worktrees: separate checkouts of this repository, each on its
+# own branch, that background sessions work in. Their commits reach the repo
+# through those branches, never as files here.
+.claude/worktrees/
 
 # Tailwind standalone binary (downloaded by scripts/tailwind.sh)
 bin/

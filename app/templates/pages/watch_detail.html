@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{#
+  The watch detail page (#27), under construction. Reachable only with
+  MAKARIOS_WATCH_DETAIL_PAGE_ENABLED=true (see the watch_detail route in
+  app/routes/pages.py); production keeps it hidden. Expects `watch` (a Watch
+  model).
+
+  Built so far: the watch's name, status, details and price. Still to come
+  before the flag goes: the photo gallery, the inquiry call to action, and
+  sourcing in place of an inquiry for a sold watch.
+#}
+
+{% block title %}{{ watch.name }} · Makarios Luxury{% endblock %}
+{% block description %}{{ watch.name }}, ref. {{ watch.reference }}: {{ watch.condition }}, {{ watch.box_papers | lower }}. {{ watch.price_label }}.{% endblock %}
+
+{# Unfinished, so kept out of search results even where the flag is on. #}
+{% block extra_head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+  <section aria-labelledby="watch-title" class="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+    <h1 id="watch-title" class="mt-4 text-display-2 text-white">{{ watch.name }}</h1>
+    {% if not watch.is_available %}
+      <p class="mt-3 text-eyebrow font-medium uppercase text-gold-400">{{ watch.status }}</p>
+    {% endif %}
+
+    <p class="mt-5 font-display text-2xl text-gold-300">{{ watch.price_label }}</p>
+
+    {# The year is None when it isn't documented, common for vintage pieces. #}
+    <dl class="mt-8 max-w-md space-y-1 text-sm text-silver-400">
+      <div class="flex gap-2">
+        <dt class="min-w-28">Reference</dt>
+        <dd class="text-royal-100">{{ watch.reference }}</dd>
+      </div>
+      <div class="flex gap-2">
+        <dt class="min-w-28">Year</dt>
+        <dd class="text-royal-100">{{ watch.year if watch.year is not none else "Not documented" }}</dd>
+      </div>
+      <div class="flex gap-2">
+        <dt class="min-w-28">Condition</dt>
+        <dd class="text-royal-100">{{ watch.condition }}</dd>
+      </div>
+      <div class="flex gap-2">
+        <dt class="min-w-28">Box &amp; papers</dt>
+        <dd class="text-royal-100">{{ watch.box_papers }}</dd>
+      </div>
+      <div class="flex gap-2">
+        <dt class="min-w-28">Status</dt>
+        <dd class="text-royal-100">{{ watch.status }}</dd>
+      </div>
+    </dl>
+  </section>
+{% endblock %}

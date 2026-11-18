@@ -9,9 +9,10 @@ somewhere that survives a deploy.
 
 | Story | Issue | Points | Status |
 | --- | --- | --- | --- |
-| Add watches from the admin | [#67], split from [#23] | 2 | Todo |
-| Optimized images | [#28] | 3 | Todo |
-| Photo upload | [#68], split from [#23] | 3 | Todo |
+| Add watches from the admin | [#67], split from [#23] | 2 | Done |
+| Optimized images | [#28] | 3 | Done |
+| Photo upload | [#68], split from [#23] | 3 | In Progress: built; the Railway volume and a phone check remain |
+| Catalog listing (pulled in 2026-11-11) | [#25] | 3 | In Progress: built; the live mobile score remains |
 
 **Committed: 8 points**, against a velocity of about 8.5 (9 in Sprint 4, 8 in Sprint 5). Add
 watches comes first, since it's the smallest and the other two attach photos to the watches it
@@ -66,9 +67,43 @@ Acceptance criteria:
   but building it in small commits that merge as they go means it lands on `main`, and Railway
   deploys `main`, before it's finished. `MAKARIOS_CATALOG_PAGE_ENABLED` is off unless set, so
   production keeps it hidden until the story is done; the flag is removed then.
+- **Re-planned for the 2026-12-09 final presentation (2026-11-10).** Two-week sprints would end
+  Sprint 8 a week after it, so Sprint 8 is one week (12-03 to 12-09) and the work moves earlier:
+  catalog listing ([#25]) is pulled into this sprint once the three stories above are done, and
+  Sprint 7 takes the detail page and the inquiry form. See `docs/BACKLOG.md`.
+- **The board's Sprint 6 was set up late.** The Sprint 6–8 iterations were added to the board, and
+  this sprint's stories moved into Sprint 6, on 2026-11-10 rather than at planning on 11-05, so
+  the start-of-sprint screenshot is from that day. Nothing had started before it.
+- **The admin form shows labels and takes prices as people type them ([#67]).** The condition,
+  box and papers, and status selects show "Very Good", not `VERY_GOOD`, though the database still
+  stores the name. A price can be typed `12500`, `12,500` or `$12,500`. Both are for the
+  non-technical partner, who adds watches from a phone.
+- **The image pipeline crops, and doesn't take HEIC ([#28]).** Photos are cropped to the centre
+  4:5, not padded, so every card has the same edge-to-edge look; owners frame the watch in the
+  middle. iPhone HEIC files are refused with a message pointing to the camera's "Most Compatible"
+  setting, since Pillow needs an extra library to read them and Safari usually sends JPEG anyway.
+  A photo must be at least 1200×1500, so nothing is enlarged into blur.
+- **Photos live on a Railway volume, not a bucket ([#68]).** Railway's buckets can't be public, so
+  every image would go through the app or an expiring signed URL, which defeats the browser cache;
+  from a volume the app serves `/media` with a year-long cache. The costs are no replicas and a
+  few seconds of downtime per redeploy. The app runs as a non-root user and Railway mounts volumes
+  owned by root, so production sets `RAILWAY_RUN_UID=0`, Railway's documented fix, at the cost of
+  running as root inside the container (`docs/DEPLOY.md`, "Photo storage"). Until the volume is
+  set, the admin refuses uploads instead of accepting photos a deploy would erase.
+- **Catalog listing ([#25]) pulled in on 2026-11-11, and its flag removed with it.** With the three
+  committed stories built, refinement pulled #25 forward from Sprint 7 (3 points, 11 in all). The
+  page was finished in one commit, so it ships without the flag: the flag existed to hide a
+  half-built page, and there no longer is one. What's left is the live check, a mobile
+  PageSpeed score of 90 or more, on the same assets as the landing page.
+- **The watch detail page ([#27]) starts this sprint, behind a feature flag (2026-11-15).** It's
+  Sprint 7's first story, started early because Sprint 8 is only one week long. Its commits merge
+  into `main`, which production deploys, before the page is finished.
+  `MAKARIOS_WATCH_DETAIL_PAGE_ENABLED` is off unless it's set, so `/watches/<slug>` is a 404 in
+  production until the commit that closes #27 removes the flag. Cards link to the page only then.
 
 [#23]: https://github.com/zarekcodes/makarios-luxury/issues/23
 [#25]: https://github.com/zarekcodes/makarios-luxury/issues/25
+[#27]: https://github.com/zarekcodes/makarios-luxury/issues/27
 [#28]: https://github.com/zarekcodes/makarios-luxury/issues/28
 [#52]: https://github.com/zarekcodes/makarios-luxury/issues/52
 [#65]: https://github.com/zarekcodes/makarios-luxury/issues/65
