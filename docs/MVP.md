@@ -41,3 +41,26 @@ The site must feel **fast and premium on any device**, especially phones.
 A buyer on a phone can land on the site, find a watch, view its details and photos, and send an
 inquiry, and the owner receives it and can manage it in the admin area, all on the deployed
 production site.
+
+## Status at the end of the semester (2026-11-19)
+
+The scope and the definition of done above are what was agreed in Sprint 1, kept as written. This
+is how the build compares, after six sprints.
+
+| MVP scope item | Status |
+| --- | --- |
+| 1. Landing page | **Done.** Brand introduction, featured watches from the database, the trust section, a call to action to the catalog. |
+| 2. Catalog | **Listing done** (`/watches`, every watch in stock, newest first). **Filters not built**: the price filter exists in the service layer and is tested, with no page using it (#26). |
+| 3. Watch detail page | **Started, not shipped.** Name, status, price and specs, behind a feature flag that's off in production. No photo gallery (#27). |
+| 4. Inquiry form | **Not built** (#31, #32). Buyers inquire by email instead: each card's Inquire link opens a message with the watch's name and reference in the subject, and the contact band offers email and an Instagram message. |
+| 5. Admin area | **Inventory done**: per-owner accounts, adding and editing watches, status changes, photo upload, reordering and deleting. Deleting a watch isn't built (#69). **Inquiries list not built** (#33). |
+| 6. Mobile-first and fast | **Done.** The landing page and `/watches` score 100 for mobile performance on the live site (2026-11-18), against a target of 90. |
+
+**Against the definition of done:** a buyer on a phone can land on the live site, find a watch and
+send an inquiry by email, which the owner receives. Viewing a watch on its own page, and managing
+inquiries in the admin area, aren't built.
+
+Requirement changes along the way: two owners each get an account instead of one shared
+password (Sprint 5, once the business partner joined); owners' photos are stored on a Railway
+volume, decided in Sprint 6. Both are recorded in the sprint notes.
+

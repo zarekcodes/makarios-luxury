@@ -127,6 +127,12 @@ use: Pillow missing in production (outage, [#80]), the photos page's move button
 `dnspython` security update ([#78]). Carried into Sprint 7: the detail page ([#27]), already
 started behind its flag. Filed for after the MVP: managing the hero from the admin ([#81]).
 
+## After the sprint (2026-11-19)
+
+Sprint 6 was the semester's last sprint. The review above carries the detail page ([#27]) into a
+Sprint 7 that didn't happen, so it stays behind its flag, off in production, and the inquiry
+stories stay in the backlog. See [`BACKLOG.md`](../BACKLOG.md#semester-end).
+
 ## Sprint review and retrospective
 
 Kept out of the repository, in `docs/sprints/local/` (gitignored), because they are the owner's

@@ -15,8 +15,8 @@ keeps what a board shows poorly: the sprint-by-sprint roadmap and a summary of e
 | 4 | **Catalog data:** database, watch model, watch status (admin + deploy moved to Sprint 5) |
 | 5 | **Live site:** first deploy (Railway), admin login (catalog pages moved to Sprint 6) |
 | 6 | **Real inventory:** add watches, image pipeline, photo upload (8 points; catalog listing pulled in once they're done) |
-| 7 | **Browse + inquire** (proposed): watch detail page, inquiry form (10 points) |
-| 8 | **Final demo** (proposed, one week, ends 2026-12-09): inquiry notification (3 points; inquiries in admin as a stretch) |
+| 7 | **Browse + inquire** (proposed): watch detail page, inquiry form (10 points). *Did not happen: see [Semester end](#semester-end).* |
+| 8 | **Final demo** (proposed, one week, ends 2026-12-09): inquiry notification (3 points; inquiries in admin as a stretch). *Did not happen.* |
 
 Deploying early rather than at the end means every sprint after that ships a working increment
 to a live URL. That's a core Agile principle and makes sprint reviews real demos.
@@ -69,6 +69,25 @@ refinement once the three committed stories are done, which keeps Sprint 7 near 
 leaves room to rehearse the demo against a site that has stopped changing. The MVP's definition
 of done still holds without #33: the owners get every inquiry by email.
 
+## Semester end
+
+Sprint 6 (2026-11-05 to 2026-11-18) turned out to be the semester's last sprint. The two re-plans
+above both assumed Sprints 7 and 8, which didn't happen, so their stories stay open in the
+backlog. The project's final increment is what Sprint 6 shipped.
+
+| Sprint | Delivered (points) |
+| --- | --- |
+| 1 | 7 |
+| 2 | 20 |
+| 3 | 12 |
+| 4 | 9 |
+| 5 | 8 |
+| 6 | 11 |
+
+Still open: the watch detail page (#27, started behind its flag and off in production), the
+inquiry form (#31), the inquiry notification (#32) and inquiries in admin (#33), plus every story
+below the cut line. `MVP.md` compares the build with the MVP's scope item by item.
+
 ## Epics
 
 Each epic is an issue, and its stories are its sub-issues on the board.
@@ -77,16 +96,17 @@ Each epic is an issue, and its stories are its sub-issues on the board.
   and the backlog. The board itself was added on the last day of Sprint 3.
 - **Landing page** ([#2]), Sprints 2–3: a responsive landing page on placeholder content, then a
   photo-led refresh with one obvious way to ask about a watch.
-- **Catalog** ([#3]), Sprints 4–7: watches in a database, the first deploy and admin login, then
-  adding watches with photos (Sprint 6) and the catalog listing and detail page (Sprint 7).
-  Filters are below the semester's cut line. Stretch: shop by
+- **Catalog** ([#3]), Sprints 4–6: watches in a database, the first deploy and admin login, then
+  adding watches with photos and the catalog listing (Sprint 6). The detail page was started
+  behind a flag in Sprint 6 and isn't finished. Filters are below the semester's cut line. Stretch: shop by
   brand, and an archive of watches already sold.
-- **Inquiries** ([#4]), Sprint 8: an inquiry or offer form for a specific watch, an email to the
-  owner, and inquiries tracked in the admin area. Stretch: a form for selling a watch to Makarios
+- **Inquiries** ([#4]), planned for Sprints 7–8 and not started: an inquiry or offer form for a
+  specific watch, an email to the owner, and inquiries tracked in the admin area. Until then,
+  buyers inquire by email from each watch's card. Stretch: a form for selling a watch to Makarios
   or asking it to source one.
 - **Polish** ([#5]), below the semester's cut line: SEO metadata, a mobile performance budget, an
   accessibility pass and an About page. Each page story carries its own performance target. Stretch: testimonials, real and attributed only.
-- **Blog** ([#6]), stretch, Sprint 8 or after the MVP: posts in the owner's own voice, answering the
+- **Blog** ([#6]), stretch, after the MVP: posts in the owner's own voice, answering the
   questions prospective buyers ask most. `MVP.md` lists it as a stretch goal. Its stories are rough
   and get split into issues when the epic is scheduled.
 - **Internal dashboard** ([#7]), after the MVP: a private dashboard for the owner and partner on the

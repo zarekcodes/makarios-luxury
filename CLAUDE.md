@@ -39,8 +39,9 @@ stack and structure and `docs/WORKFLOW.md` for process.
   setting and every check that reads it. Only remove code that this change made dead. If you notice
   older dead code, list it in your summary and don't delete it, so each commit stays scoped to its
   story. When you're done, say what you removed.
-- Work happens on the sprint branch (`sprint-6`) in small commits, each leaving CI green and each
-  named for the story it belongs to. The commit that finishes a story carries `Closes #N` in its
+- Work happens on a branch in small commits, each leaving CI green and each named for the story
+  it belongs to. During the semester that was the sprint branch (`sprint-N`); Sprint 6 was the
+  last sprint, so a change now goes on a short-lived branch named for it. The commit that finishes a story carries `Closes #N` in its
   body; earlier ones may say `Refs #N`. Work buyers shouldn't see yet goes behind a feature flag
   in `app/config.py`, off by default. `main` changes only through a pull request with every
   required check passing, merged with a merge commit. The backlog and sprints are tracked on the

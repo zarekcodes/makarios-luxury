@@ -6,6 +6,25 @@ inventory and send inquiries; the owner manages listings from an admin area.
 Built as a semester project for Development Processes & Methodologies using Agile (Scrum-style,
 1–2 week sprints).
 
+**Live:** https://makarios-luxury-production.up.railway.app
+
+## Project status (end of the semester, 2026-11-19)
+
+Six sprints ran, from 2026-09-14 to 2026-11-18. The roadmap had planned eight, so the last two,
+the watch detail page and the inquiry stories, didn't happen in the semester.
+
+| Built and live | Not built |
+| --- | --- |
+| Landing page with featured watches, a real hero photo, the trust section and contact links | Inquiry form and the owner's email notification (#31, #32) |
+| Catalog of every watch in stock at `/watches` | Inquiries in the admin (#33) |
+| Inquiry by email: each card's Inquire link opens a message with the watch's name and reference | Watch detail page: started behind a feature flag, off in production (#27) |
+| Admin at `/admin`: per-owner accounts, adding and editing watches, status, photo upload with an image pipeline | Catalog filters (#26), removing watches (#69), two-factor login (#65) |
+| Postgres on Railway, migrations on every deploy, CI on every push | |
+
+Both public pages score 100 on mobile PageSpeed Insights (Performance, Accessibility, Best
+Practices, SEO). The full story is in [the backlog](docs/BACKLOG.md#semester-end) and the
+[sprint notes](docs/sprints/).
+
 **Stack:** FastAPI · Jinja2 · htmx · Tailwind CSS · SQLAlchemy + Alembic · pytest · GitHub Actions
 
 ## Getting started
@@ -77,6 +96,8 @@ Asset generators, only needed when the source material changes:
 
 ```bash
 uv run python scripts/build_brand_assets.py        # logo badge + favicons from design/
+uv run python scripts/build_hero_image.py <photo>  # the six hero files (docs/BRAND.md, Photography)
+uv run python scripts/generate_placeholder_images.py  # the development stand-in card photos
 ```
 
 ## Documentation

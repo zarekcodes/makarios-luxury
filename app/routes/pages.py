@@ -1,4 +1,8 @@
-"""HTML page routes. These render Jinja templates; HTMX requests return partials."""
+"""HTML page routes. These render Jinja templates.
+
+No route returns an htmx partial yet. When the first one does (the catalog filters, #26), it
+answers a request carrying the HX-Request header with the fragment from templates/partials/.
+"""
 
 from typing import Annotated
 

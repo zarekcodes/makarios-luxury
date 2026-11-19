@@ -18,7 +18,7 @@ flowchart LR
     end
     DB[("Database<br/>SQLite dev / Postgres prod")]
     Media[("Photo files<br/>media/ dev / Railway volume prod")]
-    Email["Email provider"]
+    Email["Email provider<br/>(planned, not built)"]
 
     Browser -->|HTTP| Pages
     Browser --> API
@@ -27,7 +27,7 @@ flowchart LR
     Admin --> Services
     Services --> Models --> DB
     Services --> Media
-    Services --> Email
+    Services -.-> Email
 ```
 
 ## Stack and rationale
@@ -81,7 +81,9 @@ Dockerfile       # The production image Railway builds
 
 - **Routes stay thin.** They parse the request, call a service, and render a template.
 - **One URL, two responses.** A page route returns the full page normally, and only the
-  changed fragment when the request has the `HX-Request` header.
+  changed fragment when the request has the `HX-Request` header. This is the convention for the
+  first htmx interaction, the catalog filters (#26). No route needs it yet: htmx is loaded on
+  every page, but nothing swaps.
 - **Progressive enhancement.** Links and forms work without JavaScript; htmx makes them smoother.
 - **Synchronous database access.** SQLAlchemy runs synchronously, so a route that uses the
   database is a plain `def`, which FastAPI runs on a thread pool. An `async def` route would block
@@ -100,7 +102,10 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 - `loading="lazy"` on below-the-fold images; explicit `width`/`height` to prevent layout shift.
 - Minified Tailwind CSS containing only used classes; htmx is the only required script.
 - Responses over 1 KB are gzipped by the app, since Railway doesn't document compressing them.
-- Long cache headers on static assets (fingerprinted filenames).
+- Uploaded photos under `/media` are cached for a year (`immutable`), which is safe because
+  every upload gets a new name. Files under `/static` aren't fingerprinted and get no long cache
+  header yet. PageSpeed lists it as an improvement, recorded on the performance budget story
+  (#36).
 - **Everything is same-origin.** htmx is vendored and the display serif is self-hosted and subset
   to Latin, so no page needs a connection to a third-party origin before it can render.
 - The font is preloaded, since the browser otherwise only discovers it after parsing the CSS.
@@ -111,7 +116,7 @@ Speed on mobile is the top product priority, and for a watch site **images domin
 
 | Decision | Target sprint |
 | --- | --- |
-| Transactional email provider | Sprint 6 |
+| Transactional email provider, for the inquiry notification (#32) | Not decided: the semester ended before the inquiry stories |
 | Dashboard frontend stack (React + TypeScript vs. a lighter option such as Preact or Svelte) | After the MVP |
 
 ## Future: internal dashboard
