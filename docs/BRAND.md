@@ -146,9 +146,10 @@ checked against the photograph, not assumed:
 
 - The gradient runs from solid navy behind the text to transparent over the
   watch, so the watch stays bright and the words stay legible.
-- Measure the worst pixel under each line of text at common screen sizes. At
-  the time of writing, with the stand-in images: headline 8.3:1 or better,
-  body text 10:1 or better, the small gold eyebrow 4.5:1 or better.
+- Measure the worst pixel under each line of text at common screen sizes.
+  Measured with the stand-in images: headline 8.3:1 or better, body text 10:1
+  or better, the small gold eyebrow 4.5:1 or better. **Not yet re-measured
+  against the real hero** (the Girard-Perregaux photo, `ba690dd`).
 - Re-check whenever the hero photograph changes.
 
 ## Voice

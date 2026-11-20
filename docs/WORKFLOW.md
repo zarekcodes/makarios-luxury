@@ -80,6 +80,9 @@ estimate in its Points field, and it's small enough to finish within one sprint.
   commit survives on `main`. After the merge, keep working on the same branch. The next pull
   request from it carries only the newer commits.
 - Delete the sprint branch after the sprint's final merge, at the review.
+- **After Sprint 6**, the semester's last sprint, there is no sprint branch. A change goes on a
+  short-lived branch named for it (such as `docs/final-state`) and still reaches `main` only
+  through a pull request with every check passing.
 - **Dependabot** opens its own pull requests into `main` when a dependency has a known
   vulnerability. Read the changelog for a major-version bump, merge once CI passes, then bring the
   change into the sprint branch (`git merge origin/main`) so `uv.lock` doesn't conflict later.
