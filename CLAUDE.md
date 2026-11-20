@@ -51,7 +51,8 @@ stack and structure and `docs/WORKFLOW.md` for process.
   is present, any change that adds, moves, renames or removes a file, wires up something listed
   under "Built vs. not wired up yet", or changes a flow it traces also updates the map. Keep its
   entries short: what the file does and when you'd touch it. When it is absent, carry on without it.
-- `docs/LEARNING_GUIDE.md` and `docs/CI_CD_GUIDE.md` are the owner's personal reference notes. They
+- `docs/LEARNING_GUIDE.md`, `docs/CI_CD_GUIDE.md` and the backend and system design guides in
+  `docs/guides/` are the owner's personal reference notes. They
   are gitignored on purpose, so they exist only on the owner's machine and never appear in a diff or
   a PR. When they are present locally and you add a new folder, pattern, or tool, still update the
   relevant section (and change its `[Sprint N]` label to `[built]`); when they are absent, carry on
