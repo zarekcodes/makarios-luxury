@@ -79,6 +79,14 @@ class Settings(BaseSettings):
     # and every check that reads it, in the commit that finishes the story.
     watch_detail_page_enabled: bool = False
 
+    # Where flags are read at request time (app/services/flags.py): a path or
+    # an http(s) URL of a JSON file like {"watch_detail_page": true}. A flag
+    # set there overrides its setting above, and an edit to the file takes
+    # effect within flags_ttl_seconds, without a restart. Unset, which is what
+    # production runs, the settings above decide.
+    flags_source: str | None = None
+    flags_ttl_seconds: float = Field(default=30.0, ge=0)
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
