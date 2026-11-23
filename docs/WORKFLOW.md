@@ -68,6 +68,8 @@ estimate in its Points field, and it's small enough to finish within one sprint.
   shouldn't see yet goes behind a feature flag in `app/config.py` that's off by default, and the
   flag is removed when the story is done. The first, the catalog page's
   `MAKARIOS_CATALOG_PAGE_ENABLED`, went with the commit that finished the page.
+  A flag can also be flipped without a restart through the flags file
+  (see [DEPLOY.md](DEPLOY.md#flags-without-a-redeploy)).
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/):
   `feat: add watch detail page`, `fix: ...`, `docs: ...`, `test: ...`, `chore: ...`
 - Name the story in each commit's subject line, so the sprint reads story by story. The commit

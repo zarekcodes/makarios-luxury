@@ -207,6 +207,80 @@ oldest failure is 15 minutes old. The count lives in the app's memory, so a rede
 Every login, failed login and change made in the admin is written to the service's logs, with
 the owner's name.
 
+## Flags without a redeploy
+
+A flag's setting in `app/config.py` is an environment variable, read when the app starts, and
+changing a variable on Railway restarts the service. A **flags file** turns a flag on or off with
+no restart: the app re-reads it at request time (`app/services/flags.py`).
+
+| Variable | Value | Why |
+| --- | --- | --- |
+| `MAKARIOS_FLAGS_SOURCE` | a path, or an `http(s)` URL | The JSON file, e.g. `{"watch_detail_page": true}`. A flag set there overrides its setting. |
+| `MAKARIOS_FLAGS_TTL_SECONDS` | `30` (the default) | How old the last read may get before the next one, so the most an edit waits to take effect. |
+
+Production doesn't set `MAKARIOS_FLAGS_SOURCE`, so the settings decide, as before. A missing,
+unreachable or broken file keeps the last values that read cleanly (or the settings, before any
+read succeeds), and a value that isn't `true` or `false` is ignored, so a bad edit can't take the
+site down or switch a feature on by accident.
+
+Trying it locally:
+
+```bash
+echo '{"watch_detail_page": false}' > flags.json
+MAKARIOS_FLAGS_SOURCE=flags.json MAKARIOS_FLAGS_TTL_SECONDS=2 uv run fastapi dev app/main.py
+curl -o /dev/null -w '%{http_code}\n' localhost:8000/watches/aurelian-meridian-chronograph   # 404
+echo '{"watch_detail_page": true}' > flags.json      # no restart
+curl -o /dev/null -w '%{http_code}\n' localhost:8000/watches/aurelian-meridian-chronograph   # 200
+```
+
+From S3, the file lives at `<folder>/config/flags.json`, beside the two slots rather than inside
+either, so a deploy never changes a flag. A private bucket's object is read through a presigned
+URL (it lasts up to 7 days):
+
+```bash
+aws s3 cp flags.json "s3://$S3_BUCKET/$S3_PREFIX/config/flags.json" --content-type application/json
+export MAKARIOS_FLAGS_SOURCE="$(aws s3 presign "s3://$S3_BUCKET/$S3_PREFIX/config/flags.json" --expires-in 604800)"
+```
+
+Editing the object in S3 (re-run the `cp` with the other value, or edit it in the console) then
+flips the page in the running app within the TTL.
+
+## Blue/green to the class S3 bucket
+
+Besides Railway, the storefront deploys as static files to a folder in the class S3 bucket, in two
+slots, and a pointer at the folder's root says which one is live:
+
+```text
+<folder>/
+  index.html        the pointer: sends visitors to the live slot (scripts/s3_switch_live.sh)
+  live.json         {"live": "blue", "switched_at": "..."}
+  blue/             one build (scripts/build_static_site.py), with its version.json
+  green/            the other
+  config/flags.json the flags file, shared by both slots
+```
+
+**Deploying is not releasing.** The `deploy` job fills a slot and changes nothing visitors get.
+Switching the pointer is the release, and switching back is the rollback, with the old build still
+in place.
+
+Setup, once: the class credentials go in the repository's **Settings > Secrets and variables >
+Actions** as the secrets `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. `S3_BUCKET`, `S3_PREFIX`
+(your folder) and `AWS_REGION` (default `us-east-1`) may be secrets or variables. The job stops
+with the name of whatever is missing.
+
+A release:
+
+1. **Actions > CI > Run workflow**, on the branch to deploy, with the slot that isn't live. The
+   checks run first; then the job builds and uploads into that slot. It refuses to deploy into the
+   live slot, since that would change what visitors get without a switch.
+2. Check the new slot directly: `<folder>/green/index.html`, whose ribbon names the slot and commit.
+3. Switch: `S3_BUCKET=... S3_PREFIX=... scripts/s3_switch_live.sh green`. It refuses a slot with
+   nothing deployed in it. `--dry-run` prints the pointer without uploading anything.
+4. Roll back, if needed: `scripts/s3_switch_live.sh blue`.
+
+The switch script needs the AWS CLI with the same credentials (`aws configure`). Editing
+`index.html` and `live.json` in the S3 console does the same thing by hand.
+
 ## Running the tests against Postgres
 
 CI does this on every push. To do it locally, start a throwaway Postgres in Docker and point the
