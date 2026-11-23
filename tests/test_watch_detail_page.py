@@ -5,6 +5,9 @@ with the flag set the way that test needs, the same override that swaps in
 the test database.
 """
 
+import json
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -12,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.config import Settings, get_settings
 from app.main import app
 from app.models import BoxPapers, Condition, Watch, WatchStatus
+from app.services.flags import FlagFile, get_flags
 
 client = TestClient(app)
 
@@ -154,3 +158,32 @@ def test_an_unknown_slug_is_a_404() -> None:
 
     assert response.status_code == 404
     assert response.json() == client.get("/no-such-page").json()
+
+
+def test_the_flags_file_turns_the_page_on_and_off_without_a_restart(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Same running app, same settings: only the flags file changes between the requests."""
+    set_detail_flag(monkeypatch, enabled=False)
+    source = tmp_path / "flags.json"
+    # One FlagFile for every request, as in the app; ttl 0 so each request re-reads it.
+    flags_file = FlagFile(str(source), ttl_seconds=0)
+    monkeypatch.setitem(app.dependency_overrides, get_flags, lambda: flags_file)
+
+    source.write_text(json.dumps({"watch_detail_page": True}))
+    assert client.get(f"/watches/{SEEDED_SLUG}").status_code == 200
+
+    source.write_text(json.dumps({"watch_detail_page": False}))
+    assert client.get(f"/watches/{SEEDED_SLUG}").status_code == 404
+
+
+def test_without_the_flag_in_the_file_the_environment_variable_decides(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    set_detail_flag(monkeypatch, enabled=True)
+    source = tmp_path / "flags.json"
+    source.write_text(json.dumps({"some_other_flag": False}))
+    flags_file = FlagFile(str(source))
+    monkeypatch.setitem(app.dependency_overrides, get_flags, lambda: flags_file)
+
+    assert client.get(f"/watches/{SEEDED_SLUG}").status_code == 200

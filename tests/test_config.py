@@ -117,3 +117,23 @@ def test_the_watch_detail_page_flag_refuses_a_value_that_is_not_a_boolean(
     monkeypatch.setenv("MAKARIOS_WATCH_DETAIL_PAGE_ENABLED", "enabled-please")
     with pytest.raises(ValidationError, match="watch_detail_page_enabled"):
         settings()
+
+
+def test_there_is_no_flags_file_unless_one_is_named() -> None:
+    """Unset, which is what production runs, the settings above decide every flag."""
+    assert settings().flags_source is None
+    assert production_settings().flags_source is None
+
+
+def test_the_flags_file_reads_its_environment_variables(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("MAKARIOS_FLAGS_SOURCE", "config/flags.json")
+    monkeypatch.setenv("MAKARIOS_FLAGS_TTL_SECONDS", "5")
+    assert settings().flags_source == "config/flags.json"
+    assert settings().flags_ttl_seconds == 5
+
+
+def test_the_flags_ttl_cannot_be_negative() -> None:
+    with pytest.raises(ValidationError, match="flags_ttl_seconds"):
+        settings(flags_ttl_seconds=-1)
